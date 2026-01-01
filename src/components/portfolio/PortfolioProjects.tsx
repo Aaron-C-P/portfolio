@@ -49,7 +49,7 @@ const projects = [
       "Real-time hurricane and weather monitoring application for Jamaica, providing live camera feeds and weather updates during storm events.",
     technologies: ["JavaScript", "APIs", "Real-time Data"],
     image: null,
-    liveUrl: null,
+    liveUrl: "https://safe-eye.netlify.app/#storm-tracker",
     githubUrl: null,
     featured: false,
   },
