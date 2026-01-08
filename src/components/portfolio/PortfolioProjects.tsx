@@ -77,6 +77,18 @@ const projects = [
     githubUrl: "https://github.com/Aaron-C-P/Orbita",
     featured: false,
   },
+  {
+    id: 7,
+    title: "R Code Data Lab",
+    subtitle: "QR Code Data Platform",
+    description:
+      "A platform to explore QR code data storage, chunking for larger files, and WhatsApp-style session authentication. Designed with a technical, cybersecurity-focused aesthetic inspired by tools like Vercel and Linear. Features include QR code generator, data size analyzer, and chunking demos.",
+    technologies: ["React", "QR Code", "Authentication", "Cybersecurity UI"],
+    image: null,
+    liveUrl: null,
+    githubUrl: null,
+    featured: true,
+  },
 ];
 
 export const PortfolioProjects = () => {

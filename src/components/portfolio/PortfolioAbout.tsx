@@ -152,7 +152,18 @@ export const PortfolioAbout = () => {
                 {publications.map((pub, index) => (
                   <li key={index} className="flex items-start gap-2 text-portfolio-text">
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-portfolio-accent shrink-0" />
-                    <span>{pub}</span>
+                    {pub.link ? (
+                      <a
+                        href={pub.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-portfolio-accent transition-colors underline decoration-portfolio-accent/30 underline-offset-4"
+                      >
+                        {pub.title}
+                      </a>
+                    ) : (
+                      <span>{pub.title}</span>
+                    )}
                   </li>
                 ))}
               </ul>
