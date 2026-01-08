@@ -86,7 +86,7 @@ const Portfolio = () => {
                 transition={{ duration: 0.6, delay: 0.15 }}
                 className="text-xl md:text-2xl font-semibold text-portfolio-text/80 mb-6"
               >
-                Software Engineering | Web Development | Network Design
+                Software Engineering | Web Developement | Network Design | 	Cybersecurity
               </motion.h2>
 
               <motion.p
