@@ -89,6 +89,18 @@ const projects = [
     githubUrl: null,
     featured: true,
   },
+  {
+    id: 8,
+    title: "Smart Baby Bed Set",
+    subtitle: "IoT Safety & Accessibility Solution",
+    description:
+      "A human-centered smart baby bed designed to minimize SIDS risks and support caregivers with disabilities. Features automated temperature regulation, gentle rocking, and multimodal alerts (tactile, visual, audio). Built with economical hardware (~$14 USD prototype) and offline-first capabilities for low-resource environments. Developed in collaboration with Xaiere Headley and Tatiana Morrison for Human and Computer Interaction (CPTR415).",
+    technologies: ["IoT", "C++", "HCI Design", "Arduino/Hardware", "Accessibility"],
+    image: null,
+    liveUrl: null,
+    githubUrl: null,
+    featured: true,
+  },
 ];
 
 export const PortfolioProjects = () => {

@@ -27,7 +27,18 @@ export const PortfolioAbout = () => {
   ];
 
   const publications = [
-    "Madden, O.N., Prince, A., Stennett, K., & Higgs, R. (2025). GenAI, future role and professionalization of foreign language teachers (in progress)",
+    {
+      title: "Madden, O.N., Prince, A., Stennett, K., & Higgs, R. (2025). GenAI, future role and professionalization of foreign language teachers (in progress)",
+      link: null,
+    },
+    {
+      title: "Lines of frustration: The aftermath of chaos (Jamaica Gleaner)",
+      link: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos",
+    },
+    {
+      title: "Enhancing education without replacing traditional methods (Jamaica Observer)",
+      link: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/",
+    },
   ];
 
   const achievements = [
