@@ -15,6 +15,8 @@ const skills: [string, string[]][] = [
 
 
 const certs = [
+  "8 CSEC subjects and 9 CAPE units (Caribbean Examinations Council)",
+  "2 NVQ qualifications (National Vocational Qualifications)",
   "Microsoft Power BI Data Analyst (in progress)",
   "Introduction to Data Science, Simplilearn (2024)",
   "CompTIA Security+ 701, Infosec (2025)",

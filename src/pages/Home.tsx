@@ -121,7 +121,7 @@ const Home = () => {
             {[
               { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
               { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner and Jamaica Observer", "Volunteer workshop facilitator, SBA"] },
-              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
+              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "8 CSEC subjects, 9 CAPE units and 2 NVQ qualifications", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
             ].map((c) => (
               <div key={c.h}>
                 <h3 className="font-hand text-2xl text-violet-light">{c.h}</h3>
