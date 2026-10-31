@@ -50,22 +50,8 @@ export const PortfolioAbout = () => {
   ];
 
   return (
-    <section id="about" className="py-24 px-6 relative overflow-hidden">
+    <section id="about" className="py-16 px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-16 text-center"
-        >
-          <span className="text-portfolio-accent font-semibold mb-4 block uppercase tracking-wider text-sm">
-            About Me
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">My Journey</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-portfolio-accent to-portfolio-secondary mx-auto rounded-full" />
-        </motion.div>
-
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Bio Section */}
           <motion.div

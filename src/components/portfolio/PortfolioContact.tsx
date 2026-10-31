@@ -34,25 +34,11 @@ export const PortfolioContact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 px-6 relative">
+    <section id="contact" className="py-16 px-6 relative">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-portfolio-card/50 to-transparent pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-16 text-center"
-        >
-          <span className="text-portfolio-accent font-semibold mb-4 block uppercase tracking-wider text-sm">
-            Get In Touch
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Contact Me</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-portfolio-accent to-portfolio-secondary mx-auto rounded-full" />
-        </motion.div>
-
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Info */}
           <motion.div
