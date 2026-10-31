@@ -1,4 +1,4 @@
-﻿// Offline fallback for the AI chat, used when /api/chat is unavailable
+// Offline fallback for the AI chat, used when /api/chat is unavailable
 // (local dev, or no ANTHROPIC_API_KEY set on Vercel).
 export function localReply(raw: string): string {
   const t = raw.toLowerCase();

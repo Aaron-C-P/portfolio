@@ -1,4 +1,4 @@
-﻿// Vercel Serverless Function — Aaron Prince's AI clone
+// Vercel Serverless Function — Aaron Prince's AI clone
 // Lives at /api/chat. Calls Anthropic with a persona system prompt.
 //
 // SETUP (one time): in Vercel → Project → Settings → Environment Variables,
