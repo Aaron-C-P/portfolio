@@ -5,14 +5,13 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
-import { brand, projects, principles, schoolQuals, findProject } from "@/data/studio";
+import { brand, projects, principles, findProject } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
 const proof = [
   { value: "2", label: "live business applications" },
   { value: "400+", label: "automated tests on the cake platform" },
   { value: "5", label: "pieces in national newspapers" },
-  { value: "6 + 2", label: "CSEC subjects and NVQ qualifications" },
   { value: "2026", label: "Computer Science graduate" },
 ];
 
@@ -97,9 +96,9 @@ const Home = () => {
       </section>
 
       <section aria-label="At a glance" className="mx-auto -mt-2 max-w-6xl px-5">
-        <dl className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {proof.map((p) => (
-            <div key={p.label} className="glass rounded-2xl p-5 last:col-span-2 md:last:col-span-1">
+            <div key={p.label} className="glass rounded-2xl p-5">
               <dt className="sr-only">{p.label}</dt>
               <dd className="text-4xl font-extrabold text-cream">{p.value}</dd>
               <p className="mt-1 text-sm text-soft">{p.label}</p>
@@ -122,7 +121,7 @@ const Home = () => {
             {[
               { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
               { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner and Jamaica Observer", "Volunteer workshop facilitator, SBA"] },
-              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "6 CSEC subjects and 2 NVQ qualifications", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
+              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
             ].map((c) => (
               <div key={c.h}>
                 <h3 className="font-hand text-2xl text-violet-light">{c.h}</h3>
@@ -189,7 +188,7 @@ const Home = () => {
         </div>
         <div id="eng-title" className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
           <ul className="flex flex-wrap gap-2 text-sm text-soft">
-            {["Dimensioning and cut lists", "Thermal simulation", "Sizing from stated rules", "Calculus and constraints", ...schoolQuals.map((q) => `${q.value} ${q.label}`)].map((t) => (
+            {["Dimensioning and cut lists", "Thermal simulation", "Sizing from stated rules", "Calculus and constraints"].map((t) => (
               <li key={t} className="rounded-full border border-line px-3 py-1">{t}</li>
             ))}
           </ul>

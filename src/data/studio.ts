@@ -829,8 +829,3 @@ export const courses: Course[] = [
   { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
 ];
 
-/** School and vocational qualifications. Subjects are added only once confirmed. */
-export const schoolQuals = [
-  { value: "6", label: "CSEC subjects", note: "Caribbean Secondary Education Certificate" },
-  { value: "2", label: "NVQ qualifications", note: "National Vocational Qualifications" },
-];

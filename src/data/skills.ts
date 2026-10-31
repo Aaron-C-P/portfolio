@@ -216,15 +216,6 @@ export const skills: Skill[] = [
     keywords: ["maths", "math", "mathematics", "calculus", "statistics", "modelling", "modeling", "simulation", "optimisation", "optimization", "physics"],
   },
   {
-    name: "School and vocational qualifications",
-    group: "Engineering and maths",
-    level: "Coursework and labs",
-    roles: ["it", "developer", "analyst"],
-    proof: "6 CSEC subjects and 2 NVQ qualifications. Ask me for the subjects and levels.",
-    links: [{ label: "Credentials", to: "/about" }],
-    keywords: ["csec", "nvq", "nvq-j", "vocational", "electrical", "caribbean examinations council"],
-  },
-  {
     name: "Networking (CCNA path, Packet Tracer)",
     group: "Network and security",
     level: "Coursework and labs",
