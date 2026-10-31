@@ -60,15 +60,23 @@ const Home = () => {
           <motion.img
             src={heroPhoto}
             alt="Aaron Prince"
-            className="h-full w-full object-cover object-[60%_25%] opacity-70 md:ml-auto md:w-3/5"
+            className="hidden h-full w-full object-cover object-[60%_25%] opacity-70 md:ml-auto md:block md:w-3/5"
             initial={{ opacity: 0, scale: 1.2 }}
             animate={{ opacity: 0.7, scale: [1.08, 1.16, 1.08] }}
             transition={{ opacity: { duration: 1.2 }, scale: { duration: 22, repeat: Infinity, ease: "easeInOut" } }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-transparent md:via-ink/60" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/50" />
+          <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/85 to-transparent md:block md:via-ink/60" />
+          <div className="absolute inset-0 hidden bg-gradient-to-t from-ink via-transparent to-ink/50 md:block" />
         </div>
-        <div className="mx-auto max-w-6xl px-5 pb-20 pt-12 md:pt-24">
+        <div className="mx-auto max-w-6xl px-5 pb-10 pt-2 md:pb-20 md:pt-24">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="relative mx-auto mb-6 aspect-[4/3] w-full max-w-sm overflow-hidden rounded-3xl border border-line shadow-xl md:hidden"
+          >
+            <img src={heroPhoto} alt="Aaron Prince" className="h-full w-full object-cover object-[55%_20%]" />
+          </motion.div>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
             <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-medium text-emerald-300">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
@@ -79,10 +87,10 @@ const Home = () => {
             <h1 className="mt-2 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
               I turn real problems into <Underlined>working software</Underlined>.
             </h1>
-            <p className="mt-8 max-w-xl text-lg text-soft md:text-xl">
+            <p className="mt-5 max-w-xl text-lg text-soft md:mt-8 md:text-xl">
               Ordering systems, business applications and data tools, built for real businesses in Jamaica, and explained in plain language.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3 md:mt-9">
               <Link to="/work" className="btn-primary">
                 See the work <ArrowRight className="h-4 w-4" />
               </Link>
@@ -107,7 +115,7 @@ const Home = () => {
         </dl>
       </section>
 
-      <section id="hiring" aria-labelledby="hiring-title" className="mx-auto max-w-6xl px-5 pt-24">
+      <section id="hiring" aria-labelledby="hiring-title" className="mx-auto max-w-6xl px-5 pt-14 md:pt-24">
         <Reveal className="rounded-3xl border border-line bg-panel p-6 md:p-10">
           <Note>For hiring teams</Note>
           <h2 id="hiring-title" className="h-section mt-1">
@@ -147,7 +155,7 @@ const Home = () => {
         </Reveal>
       </section>
 
-      <section className="mx-auto max-w-4xl px-5 pt-24">
+      <section className="mx-auto max-w-4xl px-5 pt-14 md:pt-24">
         <SectionHead eyebrow="Watch" title="Ten seconds per project." intro="Pick one. Each tour runs for ten seconds." />
         <Tours />
       </section>
