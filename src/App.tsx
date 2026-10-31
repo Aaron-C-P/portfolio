@@ -103,6 +103,33 @@ const marqueeTechs = [
 const secondaryProjects = [
   {
     ref: "REF_005",
+    title: "Christmas Cake Order Platform",
+    sub: "Live Client System · Concurrency",
+    desc: "A seasonal ordering platform for a local bakery. Under simultaneous real-world load some customers were turned away with a system-busy error. I traced it to a single global lock that every request queued behind — including reads — reproduced the failure in a discrete-event simulation running the real client and server code, then moved reads and the slow dashboard refresh out of the lock and added a last-good stock fallback, retries with jittered backoff, and idempotency keys so a retried order can never be placed twice. In simulation a 40-customer burst went from 9 failures to zero. 406 automated tests pass. (Figures from simulation with modelled latency, not live measurement.)",
+    tags: ["React", "TypeScript", "Concurrency", "Load Simulation"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_006",
+    title: "Personal Finance Wallet",
+    sub: "Financial Data Management",
+    desc: "Extended a digital wallet with full personal finance management — income, expenses, transfers, refunds, merchants and spending categories, with balance and transaction records. Monthly budgeting with spending alerts, budget utilisation tracking and projected month-end expenditure, plus summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection, audit logging and historical record preservation keep the data accurate and traceable, with automated tests protecting existing behaviour during updates.",
+    tags: ["Python", "SQLite", "Automated Testing"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_007",
+    title: "FileTrack Pro",
+    sub: "Records Custody & Audit Trail",
+    desc: "A records-custody system where every movement is time-stamped against holder, location and a mandatory reason code. Bulk movements carry a shared batch identifier, legacy records with no code follow a defined onboarding path, and manager corrections are tagged distinctly so an amendment can never be mistaken for an original entry. Automated overdue detection reports exceptions against ageing thresholds through a management dashboard.",
+    tags: ["Audit Trail", "Data Governance", "Dashboard"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_008",
     title: "Orbita Commerce",
     sub: "Relational E-Commerce",
     desc: "Full-stack storefront with secure checkout, role-based access control, and stored procedures for order processing — prepared statements against SQL injection (OWASP) and composite indexing for performance.",
@@ -111,7 +138,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_006",
+    ref: "REF_009",
     title: "Vault Guardian",
     sub: "Encrypted Password Manager",
     desc: "A secure tool for password storage and generation using industry-standard encryption practices to keep user credentials safe at rest and in transit.",
@@ -120,7 +147,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_007",
+    ref: "REF_010",
     title: "Hurricane Watch JA",
     sub: "Real-Time Weather Monitoring",
     desc: "A live hurricane and weather monitoring app for Jamaica with real-time camera feeds and storm updates during severe-weather events.",
@@ -129,7 +156,7 @@ const secondaryProjects = [
     icon: "external" as const,
   },
   {
-    ref: "REF_008",
+    ref: "REF_011",
     title: "R Code Data Lab",
     sub: "QR Data Platform",
     desc: "A platform exploring QR-code data storage, chunking for larger files, and session authentication — built with a technical, cybersecurity-focused aesthetic. Generator, size analyzer, and chunking demos.",
@@ -138,7 +165,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_009",
+    ref: "REF_012",
     title: "Smart Baby Bed Set",
     sub: "IoT Safety & Accessibility",
     desc: "A human-centered smart bed designed to minimize SIDS risk and support caregivers with disabilities — automated temperature regulation, gentle rocking, and multimodal (tactile / visual / audio) alerts. Spans software engineering, networking, databases, QA, and HCI.",
@@ -147,7 +174,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_010",
+    ref: "REF_013",
     title: "More on GitHub",
     sub: "Full Repository Archive",
     desc: "Explore the complete archive of repositories, experiments, and works in progress — including coursework and ongoing builds.",
@@ -234,6 +261,7 @@ const recognition = [
 
 const suggestedQuestions = [
   "What do you build?",
+  "Tell me about the cake platform",
   "Tell me about EGZIT",
   "What's Jamoment?",
   "Your tech stack?",
@@ -263,6 +291,12 @@ function localReply(raw: string): string {
     return "SoftQ / TAJ Pre-Queue is a real-time scheduling system for Tax Administration Jamaica. The key piece is concurrency-safe booking — no double-booking — which cuts in-person wait times.";
   if (has("jamoment"))
     return 'Jamoment is my own venture: a marketplace for authentic Jamaican experiences with verified local hosts and an AI "Dream Engine" for curation — built so tourism money stays local. Real places, real people, real moments.';
+  if (has("cake", "bakery", "christmas", "concurrency", "lock", "race"))
+    return "The Christmas Cake Order Platform is a live client system. Under real simultaneous load some customers hit a system-busy error \u2014 one global lock that every request, including reads, queued behind. I reproduced it in a discrete-event simulation first, then moved reads out of the lock and added a last-good fallback, jittered-backoff retries and idempotency keys. In simulation a 40-customer burst went from 9 failures to zero. 406 automated tests pass.";
+  if (has("wallet", "finance", "budget", "spending"))
+    return "The Personal Finance Wallet is a Python and SQLite system \u2014 income, expenses, transfers, refunds, merchants and categories, with budgeting, spending alerts, projected month-end expenditure, and summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection and audit logging keep the data traceable.";
+  if (has("filetrack", "file track", "custody", "audit"))
+    return "FileTrack Pro tracks physical records \u2014 every movement time-stamped against holder, location and a mandatory reason code, batch IDs for bulk moves, an onboarding path for legacy files with no code, and corrections tagged distinctly so an amendment can never be mistaken for an original entry.";
   if (has("orbita"))
     return "Orbita Commerce is a full-stack storefront — secure checkout, role-based access control, and stored procedures, with prepared statements against SQL injection. PHP + MySQL.";
   if (has("vault"))
@@ -277,6 +311,8 @@ function localReply(raw: string): string {
     return "Security is my engineering bias — secure coding, OWASP / SQL-injection prevention, RBAC, and data integrity from the first commit, not bolted on later.";
   if (has("langgraph", "rag", "llm", "claude", " ai", "ai ", "agent", "model"))
     return "On the AI side I work with LangGraph and RAG pipelines, and I use Claude Code in my workflow — always human-validated. This chat is a small example of that.";
+  if (has("scotiabank", "bank of nova", "bns job", "operation support", "day job", "current job"))
+    return "I've been an Operation Support Officer at Bank of Nova Scotia in Mandeville since May 2023 \u2014 day-to-day operational and technical support, branch systems and equipment including ATMs and printers, and confidential records under bank standards. I was recognised for Exceptional Contributions and given a support-staff award three consecutive quarters. It's also where I built the lunch pre-order tool, unprompted.";
   if (has("intern", "larvation", "experience", "worked", "career"))
     return "I was a Web Development Intern at Larvation Web LLC (remote, 2026) — building full-stack features and RESTful APIs in Node.js + TypeScript on the Nuxt stack, in agile reviews with senior engineers.";
   if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
@@ -668,7 +704,7 @@ export default function App() {
             </div>
             <div className="stat">
               <div className="n">
-                5<span className="u">+</span>
+                10<span className="u">+</span>
               </div>
               <div className="l">Certifications</div>
             </div>
@@ -958,8 +994,8 @@ export default function App() {
             </span>
             <h2 className="display">Experience &amp; education</h2>
             <p className="lead">
-              Where the engineering has been put to work, and where the fundamentals were built
-              — databases, secure coding, and full-stack systems.
+              Three years inside a commercial bank alongside full-stack engineering — and where the
+              fundamentals were built: databases, secure coding, and systems that have to stay up.
             </p>
           </div>
           <div className="log-grid">
@@ -967,6 +1003,38 @@ export default function App() {
               <h3 className="mono">
                 <span className="tick">▹</span>EXPERIENCE
               </h3>
+              <div className="panel entry">
+                <div className="when mono">MAY 2023 — PRESENT · MANDEVILLE, JA</div>
+                <div className="role display">Operation Support Officer</div>
+                <div className="org mono">Bank of Nova Scotia (Scotiabank)</div>
+                <ul>
+                  <li>
+                    Deliver day-to-day operational and technical support to branch staff,
+                    resolving issues and restoring service under time-sensitive service
+                    standards.
+                  </li>
+                  <li>
+                    Support and maintain branch systems, peripherals and connected equipment
+                    including ATMs and printers, alongside inventory, filing and documentation
+                    processes.
+                  </li>
+                  <li>
+                    Identified a daily branch process still being run on paper and built an
+                    internal application to replace it — standardising how information was
+                    captured, preventing duplicate submissions and generating automated
+                    summaries for management. The initiative was my own.
+                  </li>
+                  <li>
+                    Handle confidential customer records daily under strict bank confidentiality
+                    standards, and coordinate across departments until an issue is properly
+                    closed.
+                  </li>
+                  <li>
+                    Recognised for Exceptional Contributions and awarded 'Most Support Staff'
+                    across three consecutive quarters, out of the full branch support team.
+                  </li>
+                </ul>
+              </div>
               <div className="panel entry">
                 <div className="when mono">MAR 2026 — MAY 2026 · REMOTE</div>
                 <div className="role display">Web Development Intern</div>
@@ -1021,11 +1089,16 @@ export default function App() {
                   Verified credentials
                 </div>
                 <div className="edu-meta" style={{ marginTop: "14px" }}>
+                  <span>CompTIA Security+ 701 · '25</span>
                   <span>Security Pro · TestOut '24</span>
                   <span>Intro to Cyber Security · Cisco '25</span>
                   <span>Networking Basics · Cisco '25</span>
-                  <span>Front End Dev · Simplilearn '24</span>
+                  <span>CompTIA A+ Core 1 · Exam Prep Complete</span>
                   <span>CCNA · In Progress</span>
+                  <span>Front End Dev · Simplilearn '24</span>
+                  <span>Intro to Data Science · Simplilearn '24</span>
+                  <span>Node.js Master Class · '26</span>
+                  <span>Power BI Data Analyst · In Progress</span>
                 </div>
               </div>
             </div>
