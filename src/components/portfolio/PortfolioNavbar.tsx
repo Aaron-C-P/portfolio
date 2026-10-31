@@ -21,7 +21,7 @@ const resumeLink = profile.resumeAvailable
   : { href: profile.resumeRequest, label: "Request Resume", external: false };
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+  `px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
     isActive
       ? "text-portfolio-accent bg-portfolio-accent/10"
       : "text-slate-500 hover:text-portfolio-text hover:bg-portfolio-card"
@@ -57,10 +57,10 @@ export const PortfolioNavbar = () => {
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-portfolio-accent">
             <img src={profilePhoto} alt="" className="w-full h-full object-cover object-top" />
           </div>
-          <span className="hidden sm:block font-bold">Aaron Prince</span>
+          <span className="hidden sm:block font-bold whitespace-nowrap">Aaron Prince</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
               {item.label}
@@ -71,7 +71,7 @@ export const PortfolioNavbar = () => {
         <a
           href={resumeLink.href}
           {...(resumeLink.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="hidden md:block"
+          className="hidden lg:block"
         >
           <Button
             variant="outline"
@@ -86,14 +86,14 @@ export const PortfolioNavbar = () => {
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
-          className="md:hidden p-2 rounded-lg hover:bg-portfolio-card transition-colors"
+          className="lg:hidden p-2 rounded-lg hover:bg-portfolio-card transition-colors"
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-portfolio-border">
+        <div className="lg:hidden bg-white border-b border-portfolio-border">
           <div className="px-6 py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
