@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Download } from "lucide-react";
+import { competencies } from "@/data/skills";
 import { brand, courses, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
@@ -12,13 +13,6 @@ const skills: [string, string[]][] = [
   ["Tools", ["Git and GitHub", "Postman", "Figma", "UML", "Vercel"]],
 ];
 
-const competencies = [
-  "Data Analytics", "Reporting and Management Information", "Microsoft Access", "Business Intelligence", "KPI Dashboards", "Data Visualization",
-  "Reporting Automation", "SQL", "PostgreSQL", "MySQL", "SQL Server", "Python", "Data Processing", "Database Design", "Data Modelling",
-  "Data Governance", "Data Quality and Validation", "Audit Trails and Traceability", "Duplicate Detection", "Data Security and Access Control",
-  "Process Improvement", "Cross-Functional Collaboration", "Requirements Gathering", "Technical Documentation", "Banking Operations",
-  "Regulatory Confidentiality Standards",
-];
 
 const certs = [
   "Microsoft Power BI Data Analyst (in progress)",

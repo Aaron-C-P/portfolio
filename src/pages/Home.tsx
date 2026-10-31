@@ -70,6 +70,11 @@ const Home = () => {
         </div>
         <div className="mx-auto max-w-6xl px-5 pb-20 pt-12 md:pt-24">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-medium text-emerald-300">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
+              Open to work: data, software and IT roles
+            </span>
+            <br />
             <Note className="text-3xl">Hi, I'm Aaron.</Note>
             <h1 className="mt-2 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
               I turn real problems into <Underlined>working software</Underlined>.
@@ -132,8 +137,8 @@ const Home = () => {
             <Link to="/resume" className="btn-primary">
               Request my résumé
             </Link>
-            <Link to="/about" className="btn-ghost">
-              Full skills and coursework
+            <Link to="/skills" className="btn-ghost">
+              Search my skills, with proof
             </Link>
             <a href={brand.linkedin} target="_blank" rel="noopener noreferrer" className="btn-ghost">
               LinkedIn
