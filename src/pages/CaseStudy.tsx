@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, ExternalLink, Github, Lightbulb } from "lucide-react";
+import { ProjectTour } from "@/components/studio/ProjectTour";
 import { findProject, projects, services } from "@/data/studio";
 import {
   BrowserFrame,
@@ -69,6 +70,10 @@ const CaseStudy = () => {
       </header>
 
       <div className="mt-12">
+        <ProjectTour project={project} />
+      </div>
+
+      <div className="mt-8">
         {project.image ? <BrowserFrame src={project.image} alt={project.imageAlt ?? project.name} url={project.live} /> : <MediaNeeded name={project.name} />}
       </div>
 

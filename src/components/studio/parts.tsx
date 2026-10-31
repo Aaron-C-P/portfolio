@@ -36,7 +36,7 @@ export const Underlined = ({ children }: { children: ReactNode }) => (
       <motion.path
         d="M3 9 C 40 2, 90 12, 130 6 S 185 4, 197 8"
         fill="none"
-        stroke="#feeeaf"
+        stroke="currentColor"
         strokeWidth="3"
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
@@ -155,7 +155,7 @@ export const FlowDiagram = () => {
             </motion.div>
             {i < nodes.length - 1 && (
               <svg aria-hidden="true" className="absolute -right-3 top-1/2 hidden h-4 w-6 -translate-y-1/2 md:block" viewBox="0 0 24 16">
-                <path d="M0 8h20m-5-5 5 5-5 5" fill="none" stroke="#9a78f5" strokeWidth="2" strokeDasharray="4 4" style={{ animation: "flow 1s linear infinite" }} />
+                <path d="M0 8h20m-5-5 5 5-5 5" fill="none" stroke="rgb(var(--c-violet-light))" strokeWidth="2" strokeDasharray="4 4" style={{ animation: "flow 1s linear infinite" }} />
               </svg>
             )}
           </li>

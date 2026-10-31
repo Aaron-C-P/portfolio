@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Compass, Store, Code2, BarChart3 } from "lucide-react";
-import { brand, profilePhoto, projects, principles } from "@/data/studio";
+import heroPhoto from "@/assets/portfolio/aaron-hero.png";
+import { useState } from "react";
+import { ProjectTour } from "@/components/studio/ProjectTour";
+import { brand, projects, principles } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
 const proof = [
@@ -18,6 +21,28 @@ const paths = [
   { to: "/work/errands", Icon: BarChart3, who: "Care about data?", text: "How a delivery service models orders, trips and prices.", cta: "Explore the data" },
 ];
 
+const Tours = () => {
+  const list = projects.filter((p) => p.image).slice(0, 5);
+  const [i, setI] = useState(0);
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label="Choose a project tour">
+        {list.map((p, k) => (
+          <button
+            key={p.slug}
+            onClick={() => setI(k)}
+            aria-pressed={i === k}
+            className={`rounded-full border px-4 py-2 text-sm transition ${i === k ? "border-violet bg-violet text-white" : "border-line text-soft hover:text-fg"}`}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+      <ProjectTour project={list[i]} autoPlay={false} />
+    </div>
+  );
+};
+
 const Home = () => {
   usePageTitle();
   const featured = projects.filter((p) => p.featured).slice(0, 3);
@@ -26,7 +51,19 @@ const Home = () => {
     <>
       <section className="relative isolate overflow-hidden pt-28">
         <div className="absolute inset-0 -z-10">
-          <img src={profilePhoto} alt="" className="h-full w-full object-cover object-top opacity-60 md:ml-auto md:w-3/5" />
+          <motion.div
+            aria-hidden="true"
+            className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/30 blur-3xl"
+            style={{ animation: "drift 14s ease-in-out infinite" }}
+          />
+          <motion.img
+            src={heroPhoto}
+            alt="Aaron Prince"
+            className="h-full w-full object-cover object-[60%_25%] opacity-70 md:ml-auto md:w-3/5"
+            initial={{ opacity: 0, scale: 1.2 }}
+            animate={{ opacity: 0.7, scale: [1.08, 1.16, 1.08] }}
+            transition={{ opacity: { duration: 1.2 }, scale: { duration: 22, repeat: Infinity, ease: "easeInOut" } }}
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-transparent md:via-ink/60" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/50" />
         </div>
@@ -62,6 +99,11 @@ const Home = () => {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-5 pt-24">
+        <SectionHead eyebrow="Watch" title="Ten seconds per project." intro="Pick one. Each tour runs for ten seconds." />
+        <Tours />
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-24">
