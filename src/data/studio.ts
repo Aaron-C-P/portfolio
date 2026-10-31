@@ -760,15 +760,6 @@ export const feed: FeedPost[] = [
     imageAlt: "",
     href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/",
   },
-  {
-    id: "repost-lagrange",
-    date: "About three months before October 2026",
-    source: "Reposted",
-    text: "Reposted a post by Daniel Zaldaña on Lagrange multipliers: a model can recommend thousands of actions, but real decisions also depend on cost and capacity.",
-    image: null,
-    imageAlt: "",
-    note: "Someone else's post, shared because the idea (best outcome under a real-world limit) matches how I like to think.",
-  },
 ];
 
 export interface Course {

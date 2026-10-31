@@ -4,15 +4,6 @@
 
 @layer base {
   :root {
-    --c-ink: 11 11 12;
-    --c-panel: 20 20 22;
-    --c-raise: 31 31 35;
-    --c-fg: 236 236 240;
-    --c-soft: 164 164 174;
-    --c-cream: 254 238 175;
-    --c-violet-light: 154 120 245;
-    --c-line: 255 255 255;
-    --c-tint: 255 255 255;
     --background: 240 5% 4%;
     --foreground: 252 30% 92%;
     --card: 240 5% 8%;
@@ -35,7 +26,7 @@
     --radius: 0.75rem;
   }
 
-  :root.light {
+  :root {
     --c-ink: 250 248 255;
     --c-panel: 255 255 255;
     --c-raise: 240 236 252;
@@ -108,19 +99,19 @@
 }
 
 /* Light theme: white tints become dark tints, and pale status colours darken. */
-:root.light .glass,
-:root.light .btn-ghost,
-:root.light [class*="bg-white/"] {
+:root .glass,
+:root .btn-ghost,
+:root [class*="bg-white/"] {
   background-color: rgb(var(--c-tint) / 0.05);
 }
-:root.light .glass { background-color: rgb(255 255 255 / 0.7); }
-:root.light .text-emerald-300 { color: #047857; }
-:root.light .text-sky-300 { color: #0369a1; }
-:root.light .text-amber-200,
-:root.light .text-amber-100 { color: #92400e; }
-:root.light .text-pink-200 { color: #be185d; }
-:root.light .text-red-400\/80 { color: #b91c1c; }
-:root.light ::selection { background: rgba(118, 71, 235, 0.25); }
+:root .glass { background-color: rgb(255 255 255 / 0.7); }
+:root .text-emerald-300 { color: #047857; }
+:root .text-sky-300 { color: #0369a1; }
+:root .text-amber-200,
+:root .text-amber-100 { color: #92400e; }
+:root .text-pink-200 { color: #be185d; }
+:root .text-red-400\/80 { color: #b91c1c; }
+:root ::selection { background: rgba(118, 71, 235, 0.25); }
 body, header, section, .glass { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
 
 @keyframes drift {

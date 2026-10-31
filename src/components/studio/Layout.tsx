@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { Menu, X, Github, Linkedin, Mail, Moon, Sun } from "lucide-react";
+import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
 import { brand } from "@/data/studio";
 
 const nav = [
@@ -27,25 +27,6 @@ export const Wordmark = () => (
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${isActive ? "text-cream" : "text-soft hover:text-fg"}`;
-
-const ThemeToggle = () => {
-  const [light, setLight] = useState(() => document.documentElement.classList.contains("light"));
-  const flip = () => {
-    const next = !light;
-    setLight(next);
-    document.documentElement.classList.toggle("light", next);
-    try {
-      localStorage.setItem("theme", next ? "light" : "dark");
-    } catch {
-      /* private mode: the choice just will not persist */
-    }
-  };
-  return (
-    <button onClick={flip} aria-label={light ? "Switch to dark mode" : "Switch to light mode"} className="rounded-full border border-line p-2 text-soft transition hover:text-fg">
-      {light ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-    </button>
-  );
-};
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -76,7 +57,6 @@ const Header = () => {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Link to="/contact" className="btn-primary hidden lg:inline-flex">
             Start a conversation
           </Link>
