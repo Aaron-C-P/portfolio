@@ -5,7 +5,7 @@ import { ArrowRight, ChevronRight, Github, Linkedin, Mail, Phone, Code, Database
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/portfolio/ProjectCard";
 import { profile, projects } from "@/data/site";
-import profilePhoto from "@/assets/portfolio/profile-photo.png";
+import profilePhoto from "@/assets/portfolio/profile-photo.jpg";
 
 const socials = [
   { href: profile.github, label: "GitHub", Icon: Github, external: true },
@@ -44,7 +44,7 @@ const Home = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="inline-block px-4 py-2 mb-6 text-sm font-medium bg-portfolio-accent/10 text-portfolio-accent rounded-full"
               >
-                BSc Computer Science, Northern Caribbean University
+                BSc Computer Science Graduate, Northern Caribbean University
               </motion.span>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -161,6 +161,9 @@ const Home = () => {
             </Button>
             <Button asChild variant="outline" className="rounded-xl px-6 py-5">
               <Link to="/journey">My Journey</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-xl px-6 py-5">
+              <Link to="/ask">Ask my AI</Link>
             </Button>
           </div>
         </div>

@@ -66,7 +66,7 @@ export const PortfolioAbout = () => {
             </h3>
             <div className="space-y-4 text-portfolio-muted text-lg leading-relaxed">
               <p>
-                I have finished my courses at Northern Caribbean University and will graduate in August 2026. My passion lies in building innovative
+                I'm a Computer Science graduate of Northern Caribbean University (class of 2026). My passion lies in building innovative
                 software solutions, exploring the intersection of AI, full-stack development, and cybersecurity.
               </p>
               <p>
@@ -88,8 +88,7 @@ export const PortfolioAbout = () => {
               <div>
                 <p className="font-semibold text-portfolio-text">Northern Caribbean University</p>
                 <p className="text-portfolio-accent">Bachelor of Science in Computer Science</p>
-                <p className="text-portfolio-muted text-sm mt-1">Expected Graduation: August 2026</p>
-                <p className="text-portfolio-muted text-sm">Coursework Completed</p>
+                <p className="text-portfolio-muted text-sm mt-1">Graduated 2026</p>
               </div>
             </div>
 

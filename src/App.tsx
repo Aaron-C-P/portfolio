@@ -10,6 +10,8 @@ import Journey from "@/pages/Journey";
 import Services from "@/pages/Services";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Ask from "@/pages/Ask";
+import Writing from "@/pages/Writing";
 
 const NotFound = () => (
   <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 pt-24">
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/journey" element={<Journey />} />
           <Route path="/services" element={<Services />} />
           <Route path="/about" element={<About />} />
+          <Route path="/writing" element={<Writing />} />
+          <Route path="/ask" element={<Ask />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

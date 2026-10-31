@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { GraduationCap, Rocket, Award } from "lucide-react";
+import { GraduationCap, Rocket, Award, Briefcase } from "lucide-react";
 import { PageHeader } from "@/components/portfolio/PageHeader";
 import { journey, type JourneyItem } from "@/data/site";
 
@@ -7,6 +7,7 @@ const icons: Record<JourneyItem["kind"], typeof Rocket> = {
   education: GraduationCap,
   project: Rocket,
   certification: Award,
+  work: Briefcase,
 };
 
 const Journey = () => (

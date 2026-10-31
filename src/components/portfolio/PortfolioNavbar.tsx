@@ -3,16 +3,22 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { profile } from "@/data/site";
-import profilePhoto from "@/assets/portfolio/profile-photo.png";
+import profilePhoto from "@/assets/portfolio/profile-photo.jpg";
 
 const navItems = [
   { to: "/", label: "Home", end: true },
   { to: "/projects", label: "Projects" },
   { to: "/journey", label: "Journey" },
   { to: "/services", label: "Services" },
+  { to: "/writing", label: "Writing" },
+  { to: "/ask", label: "Ask AI" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
+
+const resumeLink = profile.resumeAvailable
+  ? { href: profile.resume, label: "Resume", external: true }
+  : { href: profile.resumeRequest, label: "Request Resume", external: false };
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -62,13 +68,17 @@ export const PortfolioNavbar = () => {
           ))}
         </div>
 
-        <a href={profile.resume} target="_blank" rel="noopener noreferrer" className="hidden md:block">
+        <a
+          href={resumeLink.href}
+          {...(resumeLink.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          className="hidden md:block"
+        >
           <Button
             variant="outline"
             className="border-portfolio-accent text-portfolio-accent hover:bg-portfolio-accent hover:text-white rounded-lg"
           >
             <Download className="h-4 w-4 mr-2" />
-            Resume
+            {resumeLink.label}
           </Button>
         </a>
 
@@ -90,8 +100,12 @@ export const PortfolioNavbar = () => {
                 {item.label}
               </NavLink>
             ))}
-            <a href={profile.resume} target="_blank" rel="noopener noreferrer" className={linkClass({ isActive: false })}>
-              Resume
+            <a
+              href={resumeLink.href}
+              {...(resumeLink.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className={linkClass({ isActive: false })}
+            >
+              {resumeLink.label}
             </a>
           </div>
         </div>
