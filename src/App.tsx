@@ -151,6 +151,22 @@ const secondaryProjects = [
   },
   {
     ref: "REF_008",
+    title: "Vectra",
+    sub: "AI Job-Search Agent",
+    points: [
+      "Built an AI agent to automate the repetitive half of a job search",
+      "Parses role requirements and matches them against a structured profile",
+      "Tailors application material per posting instead of sending one generic CV",
+      "Personal tool, built to solve a problem I was living with daily",
+    ],
+    impact: "Turned a full-time manual process into an assisted one",
+    desc: "An AI agent built to automate the repetitive parts of job searching — parsing role requirements, matching them against a structured profile, and tailoring application material per posting.",
+    tags: ["AI Agents", "Python", "Automation"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_009",
     title: "Orbita Commerce",
     sub: "Relational E-Commerce",
     desc: "Full-stack storefront with secure checkout, role-based access control, and stored procedures for order processing — prepared statements against SQL injection (OWASP) and composite indexing for performance.",
@@ -159,7 +175,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_009",
+    ref: "REF_010",
     title: "Vault Guardian",
     sub: "Encrypted Password Manager",
     desc: "A secure tool for password storage and generation using industry-standard encryption practices to keep user credentials safe at rest and in transit.",
@@ -168,7 +184,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_010",
+    ref: "REF_011",
     title: "Hurricane Watch JA",
     sub: "Real-Time Weather Monitoring",
     desc: "A live hurricane and weather monitoring app for Jamaica with real-time camera feeds and storm updates during severe-weather events.",
@@ -177,7 +193,7 @@ const secondaryProjects = [
     icon: "external" as const,
   },
   {
-    ref: "REF_011",
+    ref: "REF_012",
     title: "R Code Data Lab",
     sub: "QR Data Platform",
     desc: "A platform exploring QR-code data storage, chunking for larger files, and session authentication — built with a technical, cybersecurity-focused aesthetic. Generator, size analyzer, and chunking demos.",
@@ -186,7 +202,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_012",
+    ref: "REF_013",
     title: "Smart Baby Bed Set",
     sub: "IoT Safety & Accessibility",
     desc: "A human-centered smart bed designed to minimize SIDS risk and support caregivers with disabilities — automated temperature regulation, gentle rocking, and multimodal (tactile / visual / audio) alerts. Spans software engineering, networking, databases, QA, and HCI.",
@@ -195,7 +211,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_013",
+    ref: "REF_014",
     title: "More on GitHub",
     sub: "Full Repository Archive",
     desc: "Explore the complete archive of repositories, experiments, and works in progress — including coursework and ongoing builds.",
@@ -265,6 +281,12 @@ const writingItems = [
   },
   {
     no: "005",
+    title: "Our Perspective Determines the Path Forward",
+    meta: "Jamaica Observer · Op-Ed · 2026",
+    href: "https://www.jamaicaobserver.com/",
+  },
+  {
+    no: "006",
     title: "Enhancing Education Without Replacing Traditional Methods",
     meta: "Jamaica Observer · Op-Ed · 2024",
     href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/",
@@ -278,11 +300,13 @@ const recognition = [
   { no: "R/04", txt: "Sagicor Scholarship Interview Candidate", sub: "Shortlisted" },
   { no: "R/05", txt: "Leadership Recognition", sub: "Service" },
   { no: "R/06", txt: "Published in national press & academia", sub: "Writing" },
+  { no: "R/07", txt: "JTDA Youth Mingle — Jamaica tech community", sub: "Community" },
 ];
 
 const suggestedQuestions = [
   "What do you build?",
   "Tell me about the cake platform",
+  "What is Vectra?",
   "Tell me about EGZIT",
   "What's Jamoment?",
   "Your tech stack?",
@@ -318,6 +342,10 @@ function localReply(raw: string): string {
     return "The Personal Finance Wallet is a Python and SQLite system \u2014 income, expenses, transfers, refunds, merchants and categories, with budgeting, spending alerts, projected month-end expenditure, and summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection and audit logging keep the data traceable.";
   if (has("filetrack", "file track", "custody", "audit"))
     return "FileTrack Pro tracks physical records \u2014 every movement time-stamped against holder, location and a mandatory reason code, batch IDs for bulk moves, an onboarding path for legacy files with no code, and corrections tagged distinctly so an amendment can never be mistaken for an original entry.";
+  if (has("vectra", "agent", "job search"))
+    return "Vectra is an AI agent I built to automate the repetitive half of job searching \u2014 parsing role requirements, matching them against a structured profile, and tailoring application material per posting rather than firing out one generic CV. I built it because I was living the problem.";
+  if (has("ccna", "cisco", "network cert"))
+    return "I've completed CCNA: Introduction to Networks with Cisco Networking Academy, alongside Cisco Networking Basics and Introduction to Cyber Security. The full CCNA is in progress.";
   if (has("orbita"))
     return "Orbita Commerce is a full-stack storefront — secure checkout, role-based access control, and stored procedures, with prepared statements against SQL injection. PHP + MySQL.";
   if (has("vault"))
@@ -729,7 +757,7 @@ export default function App() {
             </div>
             <div className="stat">
               <div className="n">
-                5<span className="u">×</span>
+                6<span className="u">×</span>
               </div>
               <div className="l">Published works</div>
             </div>
@@ -1095,6 +1123,7 @@ export default function App() {
                   <span>Intro to Cyber Security · Cisco '25</span>
                   <span>Networking Basics · Cisco '25</span>
                   <span>CompTIA A+ Core 1 · Exam Prep Complete</span>
+                  <span>CCNA: Intro to Networks · Cisco '26</span>
                   <span>CCNA · In Progress</span>
                   <span>Front End Dev · Simplilearn '24</span>
                   <span>Intro to Data Science · Simplilearn '24</span>
