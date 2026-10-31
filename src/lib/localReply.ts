@@ -3,58 +3,48 @@
 export function localReply(raw: string): string {
   const t = raw.toLowerCase();
   const has = (...ks: string[]) => ks.some((k) => t.includes(k));
-  if (has("hello", "hi ", "hey", " yo", "gwaan", "good morning", "good day", "greet"))
-    return "Hey! Good to meet you. Ask me about my projects, my stack, or how to get in touch.";
-  if (has("egzit"))
-    return "EGZIT is my full-stack moving-logistics marketplace â€” AI-assisted inventory, QR tracking, real-time WebSockets, geospatial routing, and Stripe checkout. Built with React, TypeScript, PostgreSQL and Supabase.";
-  if (has("bns", "scotia", "lunch"))
-    return "BNS Lunch Pre-Order is a live internal tool I built for Bank of Nova Scotia staff in Mandeville â€” a clean UI over a Google Sheets backend with duplicate-submission control so each order lands exactly once.";
-  if (has("preq", "taj", "queue", "tax admin"))
-    return "SoftQ / TAJ Pre-Queue is a real-time scheduling system for Tax Administration Jamaica. The key piece is concurrency-safe booking â€” no double-booking â€” which cuts in-person wait times.";
-  if (has("jamoment"))
-    return 'Jamoment is my own venture: a marketplace for authentic Jamaican experiences with verified local hosts and an AI "Dream Engine" for curation â€” built so tourism money stays local. Real places, real people, real moments.';
-  if (has("cake", "bakery", "christmas", "concurrency", "lock", "race"))
-    return "The Christmas Cake Order Platform is a live client system. Under real simultaneous load some customers hit a system-busy error \u2014 one global lock that every request, including reads, queued behind. I reproduced it in a discrete-event simulation first, then moved reads out of the lock and added a last-good fallback, jittered-backoff retries and idempotency keys. In simulation a 40-customer burst went from 9 failures to zero. 406 automated tests pass.";
-  if (has("wallet", "finance", "budget", "spending"))
-    return "The Personal Finance Wallet is a Python and SQLite system \u2014 income, expenses, transfers, refunds, merchants and categories, with budgeting, spending alerts, projected month-end expenditure, and summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection and audit logging keep the data traceable.";
-  if (has("filetrack", "file track", "custody", "audit"))
-    return "FileTrack Pro tracks physical records \u2014 every movement time-stamped against holder, location and a mandatory reason code, batch IDs for bulk moves, an onboarding path for legacy files with no code, and corrections tagged distinctly so an amendment can never be mistaken for an original entry.";
-  if (has("dashboard", "narrat", "kpi", "report"))
-    return "I built a reporting layer that writes itself. KPIs recalculate live \u2014 orders, open, fulfilled, money received, outstanding \u2014 and then it writes a plain-English summary of what the numbers mean: best seller, busiest day, delivery versus collection split, and a sell-out forecast from the current run rate. An attention panel raises only what needs a decision that day. No manual reporting step.";
-  if (has("errand", "grocery", "price history", "shopping", "delivery", "pickup"))
-    return "Errands is a pickup and delivery service for Mandeville \u2014 pharmacy, food and grocery runs brought to your door. Behind it is a relational data model of products, categories, price history, locations, customers, trips and orders, so price movement across stores is visible rather than guessed.";
-  if (has("vectra", "agent", "job search"))
-    return "Vectra is an AI agent I built to automate the repetitive half of job searching \u2014 parsing role requirements, matching them against a structured profile, and tailoring application material per posting rather than firing out one generic CV. I built it because I was living the problem.";
-  if (has("ccna", "cisco", "network cert"))
-    return "I've completed CCNA: Introduction to Networks with Cisco Networking Academy, alongside Cisco Networking Basics and Introduction to Cyber Security. The full CCNA is in progress.";
-  if (has("orbita"))
-    return "Orbita Commerce is a full-stack storefront â€” secure checkout, role-based access control, and stored procedures, with prepared statements against SQL injection. PHP + MySQL.";
-  if (has("vault"))
-    return "Vault Guardian is an encrypted password manager â€” secure storage and generation using industry-standard encryption, keeping credentials safe at rest and in transit.";
-  if (has("hurricane", "weather", "storm"))
-    return "Hurricane Watch JA is a real-time weather-monitoring app for Jamaica with live camera feeds and storm updates during severe weather.";
-  if (has("hire", "available", "reach", "contact", "email", "work with", "collab", "resume", "cv", "open to"))
-    return "I'm open to full-stack / web-developer roles, remote-friendly. The best way to reach me is aaron7prince@gmail.com, or the contact form lower down. My rÃ©sumÃ© is being updated right now â€” email me and I'll send the latest copy.";
-  if (has("stack", "tech", "language", "framework", "tool", "skill"))
-    return "Front end: React, Next.js, TypeScript, Tailwind, Redux. Back end: Node, Python, REST + GraphQL. Data: PostgreSQL, MySQL, Mongo, Supabase. Cloud/DevOps: Docker, Kubernetes, AWS. And AI: LangGraph + RAG. Security is my throughline.";
-  if (has("security", "secure", "owasp", "rbac", "hack", "vuln"))
-    return "Security is my engineering bias â€” secure coding, OWASP / SQL-injection prevention, RBAC, and data integrity from the first commit, not bolted on later.";
-  if (has("langgraph", "rag", "llm", "claude", " ai", "ai ", "agent", "model"))
-    return "On the AI side I work with LangGraph and RAG pipelines, and I use Claude Code in my workflow â€” always human-validated. This chat is a small example of that.";
-  if (has("intern", "larvation", "experience", "worked", "career"))
-    return "I was a Web Development Intern at Larvation Web LLC (remote, 2026) â€” building full-stack features and RESTful APIs in Node.js + TypeScript on the Nuxt stack, in agile reviews with senior engineers.";
-  if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
-    return "I'm a BSc Computer Science graduate from Northern Caribbean University â€” Class of 2026, Top Student in Software Engineering, GPA 3.5 and Honor Roll.";
-  if (has("write", "writing", "book", "article", "gleaner", "observer", "author", "publish"))
-    return 'I write too â€” a self-published book, "Gentle Architect: The Lonely Build," an academic paper on GenAI, and op-eds and features in the Jamaica Gleaner and Observer.';
-  if (has("where", "location", "jamaica", "based", "live", "from"))
-    return "I'm based in Mandeville, Manchester, Jamaica â€” and happy to work remote.";
-  if (has("who are you", "yourself", "about you", "your name"))
-    return "I'm Aaron Prince \u2014 a Computer Science graduate from Jamaica who builds systems that replace manual work. Paper tallies, hand-compiled reports, spreadsheets nobody trusts: I find them and automate them, with validation and audit trails built in. Ask me about my work or how to hire me.";
-  if (has("philosophy", "motto", "principle", "believe"))
-    return "Two things. Most things aren't hard, only unfamiliar \u2014 so I keep building until they're familiar. And the real defect is almost never where it shows: a report nobody trusts is usually a capture problem, not a reporting problem. Fix it where the data enters.";
-  if (has("project", "build", "portfolio", "made"))
-    return "I've shipped a bunch â€” EGZIT (AI logistics marketplace), the BNS staff tool, TAJ Pre-Queue, plus my own venture Jamoment, and smaller builds like Vault Guardian and Hurricane Watch JA. Want detail on any one?";
-  return "Good question. I'm a small offline version of Aaron's AI right now, so for anything specific the surest bet is to email aaron7prince@gmail.com. You can also ask me about his projects, stack, or background.";
-}
 
+  if (has("hello", "hi ", "hey", " yo", "gwaan", "good morning", "good day", "greet"))
+    return "Hey! Good to meet you. Ask me what I do, my skills, my projects, or how to get my résumé.";
+  if (has("what do you do", "what you do", "what does aaron do", "do you do"))
+    return "I build practical technology for real businesses: ordering systems, reporting dashboards and data tools, and I make the data behind them accurate and traceable. I am a 2026 Computer Science graduate looking for data and reporting analytics, software development, or IT and networking roles.";
+  if (has("hire", "available", "reach", "contact", "email", "work with", "collab", "open to", "looking for", "job", "role"))
+    return "I am open to data and reporting analytics, software development, and IT or networking roles, remote or in Jamaica. Email aaron7prince@gmail.com or use the contact form, and you can request my résumé from the Request my résumé page.";
+  if (has("resume", "résumé", "cv"))
+    return "My résumé has my contact details, so I send it directly. Use the Request my résumé page on this site or email aaron7prince@gmail.com and I will reply with the latest copy.";
+  if (has("stack", "tech", "language", "framework", "tool", "skill", "sql", "python", "power bi", "excel", "access"))
+    return "Core toolkit: SQL (PostgreSQL, MySQL, SQL Server), Python for data processing and automation, dashboard and KPI design, database and schema design, data validation and audit logging, Microsoft Access, and Git, documentation and testing. Power BI is in progress. On the web side: React, TypeScript and Node.js.";
+  if (has("cake", "chef hudson", "concurrency", "simulation", "idempotency"))
+    return "Chef Hudson's Christmas Cakes is a live ordering platform for a baker. Customers were getting \"system busy\" errors because every request queued behind one lock. I reproduced it in a simulation first, then moved reads out of the lock and added retries with jittered backoff and idempotency keys. In simulation a 40-customer burst went from 9 errors to 0. Those are simulation figures, not live measurements.";
+  if (has("errand"))
+    return "Errands is a live pickup and delivery service for Mandeville, with request flows for orders, trips and prices.";
+  if (has("egzit"))
+    return "EGZIT is my moving-logistics marketplace: inventory with QR labels, a movers marketplace and tracking, on React, TypeScript, PostgreSQL and Supabase, with a 14-table schema and row-level security.";
+  if (has("becoming"))
+    return "Becoming is a working prototype that builds a private map of what a person wants from their own answers. Every item must quote their words, and it keeps competing explanations open instead of guessing a motive.";
+  if (has("qr", "filepro", "filetrack"))
+    return "My QR Data Lab is an experiment on using a QR code as a small key to larger backend logic, with a simulation of printing and photographing QR sheets (simulated, not real camera data). FileTrack Pro is a tamper-evident record-tracking design with overdue-exception reporting.";
+  if (has("bns", "scotia", "lunch"))
+    return "BNS Lunch Pre-Order is a live tool for Bank of Nova Scotia staff in Mandeville: a clean ordering page over a Google Sheet with duplicate-submission control.";
+  if (has("wallet", "finance", "dashboard", "kpi", "analytics"))
+    return "Personal Finance Wallet (Python, SQLite) tracks income, expenses, transfers and refunds with duplicate detection and audit logging. My Sales Performance Dashboard is a KPI and seasonality dashboard on illustrative data, built to practise reporting.";
+  if (has("intern", "larvation", "experience", "worked", "career"))
+    return "I was a Web Development Intern at Larvation Web LLC (remote, March to June 2026): SQL queries and schema changes on a production PostgreSQL database, data-processing routines and third-party API integrations, delivered with Git, code review, CI/CD and documentation.";
+  if (has("certif", "security+", "ccna", "comptia", "cisco", "course"))
+    return "CompTIA Security+ 701 (Infosec, 2025), Cisco Networking Academy CCNA: Introduction to Networks (2026), Introduction to Data Science (Simplilearn, 2024) and a Node.js Master Class (2026). In progress: Microsoft Power BI Data Analyst and the full CCNA.";
+  if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
+    return "B.Sc. in Computer Science from Northern Caribbean University, 2026. GPA 3.5, Honor Roll, Top Student in Software Engineering, and a Leadership Recognition Award.";
+  if (has("security", "secure", "owasp", "rbac", "audit", "traceab"))
+    return "Traceable by design is my habit: validation at the point of capture, audit logging, duplicate detection and access control from the start rather than bolted on later.";
+  if (has("write", "writing", "book", "article", "gleaner", "observer", "author", "publish"))
+    return "I write too: a self-published book, Gentle Architect: The Lonely Build, and pieces in the Jamaica Gleaner and Jamaica Observer. See the Writing page.";
+  if (has("where", "location", "jamaica", "based", "live", "from"))
+    return "I am based in Mandeville, Manchester, Jamaica, and happy to work remotely.";
+  if (has("who are you", "yourself", "about you", "your name"))
+    return "I am Aaron Prince, a Computer Science graduate from Jamaica. I find manual, untrusted processes (paper tallies, hand-compiled reports, messy spreadsheets) and replace them with systems that validate data where it enters and keep a trail.";
+  if (has("philosophy", "motto", "principle", "believe"))
+    return "Most things are not hard, only unfamiliar, so I keep building until they are familiar. And the real defect is rarely where it shows: I reproduce a failure before I fix it.";
+  if (has("project", "build", "portfolio", "made", "work"))
+    return "My work includes the cake ordering platform, Errands, EGZIT, Becoming, a QR experiment, a finance wallet, FileTrack Pro and a KPI dashboard. Each project page says whether it is deployed, a prototype or an experiment. Ask about any of them.";
+  return "Good question. I am a small offline version of Aaron's AI, so for anything specific email aaron7prince@gmail.com. You can ask me what I do, my skills, projects, certifications or how to get my résumé.";
+}

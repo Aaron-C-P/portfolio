@@ -102,6 +102,46 @@ const Home = () => {
         </dl>
       </section>
 
+      <section id="hiring" aria-labelledby="hiring-title" className="mx-auto max-w-6xl px-5 pt-24">
+        <Reveal className="rounded-3xl border border-line bg-panel p-6 md:p-10">
+          <Note>For hiring teams</Note>
+          <h2 id="hiring-title" className="h-section mt-1">
+            What I do, in one place.
+          </h2>
+          <p className="mt-4 max-w-3xl text-lg text-soft">
+            I am a 2026 Computer Science graduate (Northern Caribbean University, GPA 3.5) who builds ordering systems, reporting dashboards and data tools, and
+            makes the data behind them accurate and traceable. Open to data and reporting analytics, software development, and IT or networking roles, including remote.
+          </p>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {[
+              { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
+              { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner and Jamaica Observer", "Volunteer workshop facilitator, SBA"] },
+              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
+            ].map((c) => (
+              <div key={c.h}>
+                <h3 className="font-hand text-2xl text-violet-light">{c.h}</h3>
+                <ul className="mt-2 space-y-1.5 text-sm text-soft">
+                  {c.items.map((i) => (
+                    <li key={i}>{i}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to="/resume" className="btn-primary">
+              Request my résumé
+            </Link>
+            <Link to="/about" className="btn-ghost">
+              Full skills and coursework
+            </Link>
+            <a href={brand.linkedin} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              LinkedIn
+            </a>
+          </div>
+        </Reveal>
+      </section>
+
       <section className="mx-auto max-w-4xl px-5 pt-24">
         <SectionHead eyebrow="Watch" title="Ten seconds per project." intro="Pick one. Each tour runs for ten seconds." />
         <Tours />
