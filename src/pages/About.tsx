@@ -4,13 +4,29 @@ import { brand, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
 const skills: [string, string[]][] = [
+  ["Core toolkit", ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Microsoft Power BI (in progress)", "Dashboard and KPI design", "Database and schema design", "Data validation and audit logging", "Microsoft Access", "Git, documentation and testing"]],
+  ["Business strengths", ["Reporting automation", "Data quality and integrity", "Data governance by design", "Cross-department collaboration", "Process improvement and initiative", "Clear communication to non-technical staff", "Confidential data handling"]],
   ["Languages", ["TypeScript", "JavaScript", "Python", "Java", "C++", "PHP", "SQL"]],
   ["Front end", ["React", "Tailwind CSS", "HTML and CSS", "Responsive design"]],
   ["Back end and data", ["Node.js", "PostgreSQL", "MySQL", "MongoDB", "Supabase", "Google Apps Script"]],
   ["Tools", ["Git and GitHub", "Postman", "Figma", "UML", "Vercel"]],
 ];
 
+const competencies = [
+  "Data Analytics", "Reporting and Management Information", "Microsoft Access", "Business Intelligence", "KPI Dashboards", "Data Visualization",
+  "Reporting Automation", "SQL", "PostgreSQL", "MySQL", "SQL Server", "Python", "Data Processing", "Database Design", "Data Modelling",
+  "Data Governance", "Data Quality and Validation", "Audit Trails and Traceability", "Duplicate Detection", "Data Security and Access Control",
+  "Process Improvement", "Cross-Functional Collaboration", "Requirements Gathering", "Technical Documentation", "Banking Operations",
+  "Regulatory Confidentiality Standards",
+];
+
 const certs = [
+  "Microsoft Power BI Data Analyst (in progress)",
+  "Introduction to Data Science, Simplilearn (2024)",
+  "CompTIA Security+ 701, Infosec (2025)",
+  "CompTIA A+ Core 1: exam prep complete (2026)",
+  "Cisco CCNA (in progress)",
+  "Node.js Master Class (2026)",
   "Google Cybersecurity Professional (in progress)",
   "Microsoft Azure Database Administrator (in progress)",
   "Cisco Introduction to Cybersecurity (2025)",
@@ -52,7 +68,7 @@ const About = () => {
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <img src={profilePhoto} alt="Aaron Prince" className="aspect-[3/4] w-full rounded-[2rem] border border-line object-cover object-top" />
+          <img src={profilePhoto} alt="Aaron Prince" className="aspect-[3/4] w-full rounded-[2rem] border border-line object-cover object-[56%_30%]" />
         </Reveal>
       </div>
 
@@ -76,6 +92,16 @@ const About = () => {
             </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mt-16">
+        <Reveal>
+          <h2 className="text-2xl font-bold">Core competencies</h2>
+          <p className="mt-4 text-soft">{competencies.join("  ·  ")}</p>
+          <p className="mt-6 text-soft">
+            <span className="font-semibold text-fg">Education:</span> Bachelor of Science in Computer Science, Northern Caribbean University, Jamaica. GPA 3.5.
+          </p>
+        </Reveal>
       </section>
 
       <section className="mt-20 grid gap-10 md:grid-cols-2">

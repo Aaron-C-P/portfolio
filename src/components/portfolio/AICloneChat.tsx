@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { localReply } from "@/lib/localReply";
-import profilePhoto from "@/assets/portfolio/profile-photo.jpg";
+import profilePhoto from "@/assets/portfolio/aaron-hero.png";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -22,7 +22,7 @@ const greeting: Msg = {
 };
 
 const Avatar = () => (
-  <img src={profilePhoto} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover object-top" />
+  <img src={profilePhoto} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover object-[55%_22%]" />
 );
 
 export const AICloneChat = () => {

@@ -1,4 +1,6 @@
-import profilePhoto from "@/assets/portfolio/profile-photo.jpg";
+import profilePhoto from "@/assets/portfolio/aaron-hero.png";
+import feedGraduation from "@/assets/portfolio/feed-graduation.webp";
+import feedEvent from "@/assets/portfolio/feed-itda-event.png";
 import cakeHome from "@/assets/work/cake-home.jpg";
 import errandsHome from "@/assets/work/errands-home.jpg";
 import egzitMockup from "@/assets/portfolio/egzit-mockup.png";
@@ -548,7 +550,7 @@ export const recognition = [
   "Top Student, Software Engineering",
   "GPA 3.5 and Honor Roll standing",
   "Sagicor Scholarship interview candidate",
-  "Leadership recognition",
+  "Leadership Recognition Award",
   "JTDA Youth Mingle, Jamaica tech community",
 ];
 
@@ -640,4 +642,38 @@ export const principles = [
   { title: "Understand the problem first", text: "Most defects are not where they show. I ask what is really going wrong before I touch the code." },
   { title: "Reproduce it, then fix it", text: "If I cannot make a failure happen on purpose, I do not know that I fixed it. The cake platform is the proof." },
   { title: "Learn by building", text: "Most things are not hard, only unfamiliar. I keep building until they become familiar." },
+];
+
+export interface FeedPost {
+  id: string;
+  date: string;
+  source: string;
+  text: string;
+  image: string;
+  imageAlt: string;
+  /** Honest note about what the image is. */
+  note?: string;
+  href?: string;
+}
+
+/** Posts from my own LinkedIn activity, reproduced here. */
+export const feed: FeedPost[] = [
+  {
+    id: "graduation",
+    date: "October 2026",
+    source: "LinkedIn",
+    text: "Grinding in silence, letting the results speak. B.Sc. in Computer Science from NCU. AMEN!",
+    image: feedGraduation,
+    imageAlt: "Graduate in cap and gown looking at a framed degree in a modern corridor, with a Milestone caption",
+    note: "The graphic is an illustration made for the post, not a photograph of the certificate.",
+    href: brand.linkedin,
+  },
+  {
+    id: "youth-mingle",
+    date: "Date to be confirmed",
+    source: "Community",
+    text: "Group photo from a JTDA-branded youth gathering in Jamaica's tech community.",
+    image: feedEvent,
+    imageAlt: "Collage of a group photo and speakers at an event with JTDA banners",
+  },
 ];

@@ -1,3 +1,4 @@
+import Feed from "@/pages/Feed";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/studio/Layout";
 import { usePageTitle } from "@/components/studio/parts";
@@ -35,6 +36,7 @@ const App = () => (
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About />} />
         <Route path="/writing" element={<Writing />} />
+        <Route path="/feed" element={<Feed />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/ask" element={<Ask />} />
         <Route path="*" element={<NotFound />} />
