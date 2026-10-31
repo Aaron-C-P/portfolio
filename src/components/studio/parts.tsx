@@ -175,6 +175,7 @@ export const SimComparison = () => {
     { label: "Customers who hit an error", before: 9, after: 0, max: 40 },
     { label: "Customers who did not get through", before: 1, after: 0, max: 40 },
     { label: "Orders completed", before: null, after: 40, max: 40 },
+    { label: "90-customer burst beyond capacity: customers who hit an error", before: 32, after: 1, max: 90 },
   ];
   return (
     <figure className="rounded-3xl border border-line bg-panel p-6 md:p-8">

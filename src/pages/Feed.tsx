@@ -11,7 +11,7 @@ const Feed = () => {
         {feed.map((p, i) => (
           <Reveal key={p.id} delay={Math.min(i * 0.05, 0.15)}>
             <article className="overflow-hidden rounded-3xl border border-line bg-panel">
-              <img src={p.image} alt={p.imageAlt} className="w-full" loading="lazy" />
+              {p.image && <img src={p.image} alt={p.imageAlt} className="w-full" loading="lazy" />}
               <div className="p-6">
                 <p className="font-mono text-xs text-soft">
                   {p.source} · {p.date}

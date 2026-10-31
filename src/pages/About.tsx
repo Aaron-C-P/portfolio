@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Download } from "lucide-react";
-import { brand, profilePhoto, recognition } from "@/data/studio";
+import { brand, courses, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
 const skills: [string, string[]][] = [
@@ -25,7 +25,8 @@ const certs = [
   "Introduction to Data Science, Simplilearn (2024)",
   "CompTIA Security+ 701, Infosec (2025)",
   "CompTIA A+ Core 1: exam prep complete (2026)",
-  "Cisco CCNA (in progress)",
+  "Cisco Networking Academy: CCNA Introduction to Networks (2026)",
+  "Cisco CCNA certification (in progress)",
   "Node.js Master Class (2026)",
   "Google Cybersecurity Professional (in progress)",
   "Microsoft Azure Database Administrator (in progress)",
@@ -58,13 +59,15 @@ const About = () => {
             <Link to="/journey" className="btn-primary">
               Read my journey
             </Link>
-            <a
-              href={brand.resumeAvailable ? brand.resume : brand.resumeRequest}
-              {...(brand.resumeAvailable ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="btn-ghost"
-            >
-              <Download className="h-4 w-4" /> {brand.resumeAvailable ? "Download résumé" : "Request my résumé"}
-            </a>
+            {brand.resumeAvailable ? (
+              <a href={brand.resume} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                <Download className="h-4 w-4" /> Download résumé
+              </a>
+            ) : (
+              <Link to="/resume" className="btn-ghost">
+                <Download className="h-4 w-4" /> Request my résumé
+              </Link>
+            )}
           </div>
         </Reveal>
         <Reveal delay={0.1}>
@@ -99,9 +102,32 @@ const About = () => {
           <h2 className="text-2xl font-bold">Core competencies</h2>
           <p className="mt-4 text-soft">{competencies.join("  ·  ")}</p>
           <p className="mt-6 text-soft">
+            <span className="font-semibold text-cream">Validated at capture · Automate the manual · Traceable by design.</span>{" "}
             <span className="font-semibold text-fg">Education:</span> Bachelor of Science in Computer Science, Northern Caribbean University, Jamaica. GPA 3.5.
           </p>
         </Reveal>
+      </section>
+
+      <section className="mt-20">
+        <Reveal>
+          <h2 className="h-section">Coursework, and why it matters</h2>
+          <p className="mt-3 max-w-2xl text-soft">
+            Selected from the Northern Caribbean University recommended sequence for the B.Sc. in Computer Science, with where each subject shows up in my work.
+          </p>
+        </Reveal>
+        <div className="mt-8 grid gap-3 md:grid-cols-2">
+          {courses.map((c, i) => (
+            <Reveal key={c.code} delay={Math.min(i * 0.02, 0.15)}>
+              <div className="h-full rounded-2xl border border-line bg-panel p-5">
+                <p className="font-mono text-xs text-soft">
+                  {c.code} · Year {c.year}
+                </p>
+                <h3 className="mt-1 font-semibold">{c.name}</h3>
+                <p className="mt-1 text-sm text-soft">{c.relevance}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       <section className="mt-20 grid gap-10 md:grid-cols-2">

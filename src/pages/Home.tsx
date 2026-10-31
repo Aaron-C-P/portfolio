@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { ArrowRight, Compass, Store, Code2, BarChart3 } from "lucide-react";
 import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
+import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
 import { brand, projects, principles } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
 const proof = [
   { value: "2", label: "live business applications" },
-  { value: "500", label: "automated tests on the cake platform" },
+  { value: "400+", label: "automated tests on the cake platform" },
   { value: "5", label: "pieces in national newspapers" },
   { value: "2026", label: "Computer Science graduate" },
 ];
@@ -122,6 +123,15 @@ const Home = () => {
             All work, with its status <ArrowRight className="h-4 w-4" />
           </Link>
         </Reveal>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 pb-24">
+        <SectionHead
+          eyebrow="The notebook"
+          title="How I study, drawn out."
+          intro="Concepts from my own projects and learning, sketched the way I work through them. Simulation figures are labelled as simulation; the dashboard data is illustrative."
+        />
+        <NotesBoard />
       </section>
 
       <section className="border-y border-line bg-panel">

@@ -78,17 +78,18 @@ export const projects: Project[] = [
     role: "Designed, built, tested and deployed the whole system: the customer site, the baker's dashboard, the Google Apps Script backend and the test suite.",
     tech: ["React", "TypeScript", "MUI", "Vite", "Google Apps Script", "Google Sheets", "Vercel"],
     verified: [
-      "Live site at cake-sale-christmas.vercel.app with customer ordering and order lookup",
+      "Customer ordering and order lookup, used by a real baker (no public link is shown here)",
       "Google Sheet backend with Orders, Dashboard and Pivots; no customer account and no online payment",
       "Bank-transfer flow where the baker verifies payment before confirming",
       "Public repository with architecture, deployment and security documentation",
-      "Automated test suite covering order rules, a backend simulation and analytics (500 tests per my own post; the repo README still says 340+)",
+      "Automated test suite covering order rules, a backend simulation and analytics (406 tests per my résumé)",
+      "Simulated results: a 40-customer burst went from 9 failures to 0, and a 90-customer burst beyond capacity from 32 failures to 1, with nothing lost, duplicated or oversold. Modelled latency, not live measurement",
     ],
     story:
       "The interesting part is not the cakes. It is that I refused to patch the symptom: I made the failure happen on purpose, in a simulation, before changing production code.",
     image: cakeHome,
     imageAlt: "Chef Hudson's Christmas Cakes home page",
-    live: "https://cake-sale-christmas.vercel.app/",
+    live: null,
     repo: "https://github.com/Aaron-C-P/Cake-Sale",
     featured: true,
     services: ["ordering-systems", "web-development", "reporting-dashboards", "workflow-automation"],
@@ -225,6 +226,67 @@ export const projects: Project[] = [
     repo: null,
     featured: false,
     services: ["custom-applications"],
+  },
+  {
+    slug: "sales-analytics-dashboard",
+    name: "Sales Performance Analytics Dashboard",
+    kind: "KPI reporting practice",
+    status: "Working prototype",
+    oneLiner: "An interactive KPI dashboard on a 90-day dataset, built to practise executive-style reporting.",
+    purpose: "Practise turning raw sales rows into the handful of numbers a manager actually reads.",
+    problem: "Raw sales data does not tell anyone whether the business is growing, when it is busy or which segment matters.",
+    solution:
+      "KPI tiles for revenue, units, average order value and period-over-period growth; a revenue trend with a seven-day moving average; a day-of-week seasonality view; segment breakdowns; and filters that recompute every visual live.",
+    role: "Designed and built it.",
+    tech: ["KPI design", "Trend and seasonality analysis", "Interactive filters"],
+    verified: ["The data is illustrative and clearly labelled as such, so none of these figures describe a real business"],
+    conceptual: ["Power BI is a skill I am still completing; this dashboard is not claimed as a Power BI deliverable"],
+    story: "Practice with a purpose: I wanted to feel what it takes to keep every chart consistent when one filter changes.",
+    image: null,
+    live: null,
+    repo: null,
+    featured: false,
+    services: ["data-analysis", "reporting-dashboards"],
+  },
+  {
+    slug: "personal-finance-wallet",
+    name: "Personal Finance Management Wallet",
+    kind: "Financial data management",
+    status: "Working prototype",
+    oneLiner: "A Python and SQLite wallet that tracks money and refuses to double-count it.",
+    purpose: "Track income, expenses, transfers and refunds across merchants and categories with balances you can trust.",
+    problem: "Personal finance records drift: duplicates, missing history and budgets that only tell you after the money is gone.",
+    solution:
+      "Transaction records with balances, monthly budgeting with spending alerts and projected month-end spend, and summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection, audit logging and historical record preservation protect the data, with automated tests guarding existing behaviour during updates.",
+    role: "Designed, built and tested it.",
+    tech: ["Python", "SQLite", "Automated testing"],
+    verified: ["Built as a personal project; no public link or repository is shown here"],
+    story: "The audit log came first. Every change had to be traceable before it was allowed to be convenient.",
+    image: null,
+    live: null,
+    repo: null,
+    featured: false,
+    services: ["database-design", "workflow-automation", "data-analysis"],
+  },
+  {
+    slug: "filetrack-pro",
+    name: "FileTrack Pro",
+    kind: "Data governance and audit trail",
+    status: "Working prototype",
+    oneLiner: "Records that cannot quietly change, and a dashboard that reports what is overdue.",
+    purpose: "Show exactly who held a file, where, and why, at every step.",
+    problem: "When a record moves between people, a lost or altered entry is hard to spot and harder to explain.",
+    solution:
+      "Every movement is time-stamped against holder, location and a mandatory reason code. Batch identifiers cover bulk operations, corrections are tagged so an amendment can never be mistaken for an original entry, and automated overdue detection reports exceptions through a management dashboard.",
+    role: "Designed and built it.",
+    tech: ["Audit logging", "Data validation", "Exception reporting"],
+    verified: ["Described from my own résumé; no public link or repository is shown here"],
+    story: "Traceable by design is the idea I keep coming back to: build the record so the question can always be answered.",
+    image: null,
+    live: null,
+    repo: null,
+    featured: false,
+    services: ["database-design", "reporting-dashboards", "workflow-automation"],
   },
   {
     slug: "bns-lunch-pre-order",
@@ -453,15 +515,15 @@ export const milestones: Milestone[] = [
   },
   {
     id: "internship",
-    date: "March to May 2026",
+    date: "March to June 2026",
     dated: true,
-    title: "Web Development Intern, Larvation Web LLC",
+    title: "Web Development Intern, Larvation Web LLC (remote)",
     chapter: "Real businesses",
     summary: "Remote full-stack work in a team.",
     explored: "Working inside agile code review with senior engineers.",
     problem: "Delivering features that meet shared standards.",
-    built: "Full-stack features and RESTful APIs in Node.js and TypeScript on the Nuxt stack, validated with Postman.",
-    tech: ["Node.js", "TypeScript", "Nuxt", "Git", "Postman"],
+    built: "Full-stack features and RESTful APIs in Node.js and TypeScript on the Nuxt stack, validated with Postman. Wrote, tested and optimised SQL queries and schema changes against a production PostgreSQL database (joins, aggregations, indexing), built data-processing routines and third-party API integrations that validate returned data before it reaches downstream features, and delivered through an Agile cycle with Git, peer code review, CI/CD pipelines and technical documentation.",
+    tech: ["Node.js", "TypeScript", "Nuxt", "PostgreSQL", "Git", "Postman", "CI/CD"],
     outcome: "Professional experience of reviews, standards and shipping.",
   },
   {
@@ -538,10 +600,11 @@ export const milestones: Milestone[] = [
 export const press = [
   { no: "001", title: "Gentle Architect: The Lonely Build", meta: "Self-published book · 2026", href: "https://www.amazon.com/s?k=Gentle+Architect+The+Lonely+Build" },
   { no: "002", title: "Caricature Art Popularity Across Jamaica", meta: "Jamaica Gleaner · Growth & Jobs · February 2026", href: "https://jamaica-gleaner.com/article/news/20260210/growth-jobs-caricature-art-popularity-across-jamaica" },
-  { no: "003", title: "GenAI, Future Role & Professionalization of Foreign Language Teachers", meta: "Co-author · academic · in progress", href: null as string | null },
+  { no: "003", title: "GenAI, Future Role & Professionalization of Foreign Language Teachers", meta: "Co-author, Madden et al. (2025) · survey data, statistical analysis, written reporting", href: null as string | null },
   { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos" },
   { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward" },
   { no: "006", title: "Starting from Scratch", meta: "Jamaica Observer · September 2026", href: "https://www.jamaicaobserver.com/2026/09/02/starting-from-scratch/" },
+  { no: "008", title: "Our Perspective Determines the Path Forward", meta: "Jamaica Observer · July 2026", href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/" },
   { no: "007", title: "Enhancing Education Without Replacing Traditional Methods", meta: "Jamaica Observer · May 2024", href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/" },
 ];
 
@@ -551,6 +614,7 @@ export const recognition = [
   "GPA 3.5 and Honor Roll standing",
   "Sagicor Scholarship interview candidate",
   "Leadership Recognition Award",
+  "Volunteer workshop facilitator, SBA",
   "JTDA Youth Mingle, Jamaica tech community",
 ];
 
@@ -649,7 +713,7 @@ export interface FeedPost {
   date: string;
   source: string;
   text: string;
-  image: string;
+  image: string | null;
   imageAlt: string;
   /** Honest note about what the image is. */
   note?: string;
@@ -670,10 +734,70 @@ export const feed: FeedPost[] = [
   },
   {
     id: "youth-mingle",
-    date: "Date to be confirmed",
-    source: "Community",
-    text: "Group photo from a JTDA-branded youth gathering in Jamaica's tech community.",
+    date: "Early October 2026",
+    source: "LinkedIn",
+    text: "Sometimes the best part of an experience is the people and conversations along the way. The JTDA Youth Mingle was a good experience: new people, meaningful conversations, and a reminder that growth is bigger than what happens in the classroom.",
+    href: brand.linkedin,
     image: feedEvent,
     imageAlt: "Collage of a group photo and speakers at an event with JTDA banners",
   },
+  {
+    id: "ccna",
+    date: "Mid-October 2026",
+    source: "LinkedIn",
+    text: "New certification: CCNA: Introduction to Networks from Cisco Networking Academy.",
+    image: null,
+    imageAlt: "",
+    note: "The full CCNA certification is still in progress.",
+    href: brand.linkedin,
+  },
+  {
+    id: "perspective",
+    date: "July 2026",
+    source: "LinkedIn and Jamaica Observer",
+    text: "Our Perspective Determines the Path Forward. How perspective shapes decisions, why resilience is recalibration rather than giving up, and how challenges become growth.",
+    image: null,
+    imageAlt: "",
+    href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/",
+  },
+  {
+    id: "repost-lagrange",
+    date: "About three months before October 2026",
+    source: "Reposted",
+    text: "Reposted a post by Daniel Zaldaña on Lagrange multipliers: a model can recommend thousands of actions, but real decisions also depend on cost and capacity.",
+    image: null,
+    imageAlt: "",
+    note: "Someone else's post, shared because the idea (best outcome under a real-world limit) matches how I like to think.",
+  },
+];
+
+export interface Course {
+  code: string;
+  name: string;
+  year: 1 | 2 | 3 | 4;
+  /** Where the subject shows up in the work. */
+  relevance: string;
+}
+
+/** From the NCU recommended sequence for the B.Sc. in Computer Science, selected for relevance. */
+export const courses: Course[] = [
+  { code: "CPTR113", name: "Intro to Programming", year: 1, relevance: "The base for every project: reading, writing and reasoning about code." },
+  { code: "CPTR151 / 242", name: "Programming I and II", year: 1, relevance: "Structured, testable code, the habit behind the cake platform's test suite." },
+  { code: "MATH171", name: "Calculus I", year: 2, relevance: "Rates of change and optimisation, the idea behind Lagrange multipliers." },
+  { code: "CPTR204", name: "Website Design and Implementation", year: 2, relevance: "Responsive front ends such as Errands and BNS Lunch Pre-Order." },
+  { code: "CPTR213", name: "Fundamentals of Databases", year: 2, relevance: "Schemas, keys and queries: EGZIT's 14-table model, the wallet's SQLite store." },
+  { code: "CPTR236", name: "Secure Software Engineering", year: 2, relevance: "Validation, access control and audit logging: traceable by design." },
+  { code: "CPTR252", name: "Data Structures and Algorithms", year: 2, relevance: "Choosing structures that stay fast, and knowing why." },
+  { code: "CPTR282", name: "Computer Organization and Architecture", year: 2, relevance: "What the machine does under the code I write." },
+  { code: "CPTR311", name: "Discrete Structures in Computer Science", year: 3, relevance: "Logic and counting behind validation rules and the simulation models." },
+  { code: "CPTR313", name: "Fundamentals of Security Techniques", year: 3, relevance: "Foundations for Security+ study and data-protection decisions." },
+  { code: "CPTR355", name: "Algorithm Analysis and Design", year: 3, relevance: "Reasoning about cost and growth before a system is under load." },
+  { code: "CPTR365", name: "Artificial Intelligence", year: 3, relevance: "Background for AI-assisted tools such as Vectra and Becoming." },
+  { code: "CPTR375", name: "Operating Systems", year: 3, relevance: "Locks, queues and contention: the vocabulary of the cake platform bottleneck." },
+  { code: "CPTR380", name: "Data Telecommunications", year: 3, relevance: "Networking foundations, practised in Cisco Packet Tracer for CCNA." },
+  { code: "MATH205", name: "Probability Theory and Statistics with Applications", year: 3, relevance: "The base for analytics, KPI interpretation and simulation." },
+  { code: "CPTR415", name: "Human-Computer Interaction", year: 4, relevance: "Designing flows people can follow without explanation." },
+  { code: "CPTR450", name: "Database Systems", year: 4, relevance: "Transactions, concurrency and integrity: idempotency keys and duplicate detection." },
+  { code: "CPTR490", name: "Advanced Project", year: 4, relevance: "End-to-end delivery of a larger system." },
+  { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
 ];

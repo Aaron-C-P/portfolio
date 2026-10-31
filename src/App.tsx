@@ -1,3 +1,4 @@
+import Resume from "@/pages/Resume";
 import Feed from "@/pages/Feed";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/studio/Layout";
@@ -37,6 +38,7 @@ const App = () => (
         <Route path="/about" element={<About />} />
         <Route path="/writing" element={<Writing />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/resume" element={<Resume />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/ask" element={<Ask />} />
         <Route path="*" element={<NotFound />} />
