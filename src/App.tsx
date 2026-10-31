@@ -106,6 +106,13 @@ const secondaryProjects = [
     title: "Christmas Cake Order Platform",
     sub: "Live Client System · Concurrency",
     desc: "A seasonal ordering platform for a local bakery. Under simultaneous real-world load some customers were turned away with a system-busy error. I traced it to a single global lock that every request queued behind — including reads — reproduced the failure in a discrete-event simulation running the real client and server code, then moved reads and the slow dashboard refresh out of the lock and added a last-good stock fallback, retries with jittered backoff, and idempotency keys so a retried order can never be placed twice. In simulation a 40-customer burst went from 9 failures to zero. 406 automated tests pass. (Figures from simulation with modelled latency, not live measurement.)",
+    points: [
+      "Traced a live \u201csystem busy\u201d failure to a single global lock every request queued behind, including reads",
+      "Reproduced the fault in a discrete-event simulation before changing a line of production code",
+      "Moved reads out of the lock; added last-good fallback, jittered-backoff retries and idempotency keys",
+      "Closed a second defect where the duplicate guard only caught identical items",
+    ],
+    impact: "40-customer burst: 9 failures \u2192 0 in simulation \u00b7 406 tests pass",
     tags: ["React", "TypeScript", "Concurrency", "Load Simulation"],
     href: null,
     icon: "none" as const,
@@ -115,6 +122,13 @@ const secondaryProjects = [
     title: "Personal Finance Wallet",
     sub: "Financial Data Management",
     desc: "Extended a digital wallet with full personal finance management — income, expenses, transfers, refunds, merchants and spending categories, with balance and transaction records. Monthly budgeting with spending alerts, budget utilisation tracking and projected month-end expenditure, plus summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection, audit logging and historical record preservation keep the data accurate and traceable, with automated tests protecting existing behaviour during updates.",
+    points: [
+      "Income, expense, transfer and refund tracking across merchants and spending categories",
+      "Monthly budgeting with spending alerts, utilisation tracking and projected month-end spend",
+      "Summaries across monthly, three-month, twelve-month and all-time periods",
+      "Transaction validation, duplicate detection and audit logging keep records accurate and traceable",
+    ],
+    impact: "Automated tests protect existing behaviour on every change",
     tags: ["Python", "SQLite", "Automated Testing"],
     href: null,
     icon: "none" as const,
@@ -124,6 +138,13 @@ const secondaryProjects = [
     title: "FileTrack Pro",
     sub: "Records Custody & Audit Trail",
     desc: "A records-custody system where every movement is time-stamped against holder, location and a mandatory reason code. Bulk movements carry a shared batch identifier, legacy records with no code follow a defined onboarding path, and manager corrections are tagged distinctly so an amendment can never be mistaken for an original entry. Automated overdue detection reports exceptions against ageing thresholds through a management dashboard.",
+    points: [
+      "Every movement time-stamped against holder, location and a mandatory reason code",
+      "Shared batch identifiers for bulk movements; defined onboarding path for legacy records",
+      "Corrections tagged distinctly \u2014 an amendment can never be mistaken for an original entry",
+      "Automated overdue detection reports exceptions against ageing thresholds",
+    ],
+    impact: "Management dashboard showing what is outstanding, and with whom",
     tags: ["Audit Trail", "Data Governance", "Dashboard"],
     href: null,
     icon: "none" as const,
@@ -311,8 +332,6 @@ function localReply(raw: string): string {
     return "Security is my engineering bias — secure coding, OWASP / SQL-injection prevention, RBAC, and data integrity from the first commit, not bolted on later.";
   if (has("langgraph", "rag", "llm", "claude", " ai", "ai ", "agent", "model"))
     return "On the AI side I work with LangGraph and RAG pipelines, and I use Claude Code in my workflow — always human-validated. This chat is a small example of that.";
-  if (has("scotiabank", "bank of nova", "bns job", "operation support", "day job", "current job"))
-    return "I've been an Operation Support Officer at Bank of Nova Scotia in Mandeville since May 2023 \u2014 day-to-day operational and technical support, branch systems and equipment including ATMs and printers, and confidential records under bank standards. I was recognised for Exceptional Contributions and given a support-staff award three consecutive quarters. It's also where I built the lunch pre-order tool, unprompted.";
   if (has("intern", "larvation", "experience", "worked", "career"))
     return "I was a Web Development Intern at Larvation Web LLC (remote, 2026) — building full-stack features and RESTful APIs in Node.js + TypeScript on the Nuxt stack, in agile reviews with senior engineers.";
   if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
@@ -952,7 +971,21 @@ export default function App() {
                   </div>
                   <h4 className="display">{p.title}</h4>
                   <div className="csub">{p.sub}</div>
-                  <p>{p.desc}</p>
+                  {"points" in p && Array.isArray((p as { points?: string[] }).points) ? (
+                    <ul className="cpoints">
+                      {(p as { points: string[] }).points.map((pt) => (
+                        <li key={pt}>{pt}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>{p.desc}</p>
+                  )}
+                  {"impact" in p && (
+                    <div className="cimpact mono">
+                      <span>IMPACT</span>
+                      {(p as { impact: string }).impact}
+                    </div>
+                  )}
                   <div className="ctags">
                     {p.tags.map((t) => (
                       <span key={t}>{t}</span>
@@ -994,8 +1027,8 @@ export default function App() {
             </span>
             <h2 className="display">Experience &amp; education</h2>
             <p className="lead">
-              Three years inside a commercial bank alongside full-stack engineering — and where the
-              fundamentals were built: databases, secure coding, and systems that have to stay up.
+              Where the engineering has been put to work, and where the fundamentals were built
+              — databases, secure coding, and full-stack systems.
             </p>
           </div>
           <div className="log-grid">
@@ -1003,38 +1036,6 @@ export default function App() {
               <h3 className="mono">
                 <span className="tick">▹</span>EXPERIENCE
               </h3>
-              <div className="panel entry">
-                <div className="when mono">MAY 2023 — PRESENT · MANDEVILLE, JA</div>
-                <div className="role display">Operation Support Officer</div>
-                <div className="org mono">Bank of Nova Scotia (Scotiabank)</div>
-                <ul>
-                  <li>
-                    Deliver day-to-day operational and technical support to branch staff,
-                    resolving issues and restoring service under time-sensitive service
-                    standards.
-                  </li>
-                  <li>
-                    Support and maintain branch systems, peripherals and connected equipment
-                    including ATMs and printers, alongside inventory, filing and documentation
-                    processes.
-                  </li>
-                  <li>
-                    Identified a daily branch process still being run on paper and built an
-                    internal application to replace it — standardising how information was
-                    captured, preventing duplicate submissions and generating automated
-                    summaries for management. The initiative was my own.
-                  </li>
-                  <li>
-                    Handle confidential customer records daily under strict bank confidentiality
-                    standards, and coordinate across departments until an issue is properly
-                    closed.
-                  </li>
-                  <li>
-                    Recognised for Exceptional Contributions and awarded 'Most Support Staff'
-                    across three consecutive quarters, out of the full branch support team.
-                  </li>
-                </ul>
-              </div>
               <div className="panel entry">
                 <div className="when mono">MAR 2026 — MAY 2026 · REMOTE</div>
                 <div className="role display">Web Development Intern</div>
