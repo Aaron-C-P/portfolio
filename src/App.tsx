@@ -151,6 +151,38 @@ const secondaryProjects = [
   },
   {
     ref: "REF_008",
+    title: "Auto-Narrating Order Dashboard",
+    sub: "Reporting That Writes Itself",
+    points: [
+      "KPI row recalculates live: orders, open, fulfilled, money received, outstanding, cancellation rate",
+      "Writes its own narrative in plain English \u2014 best seller, busiest day, delivery vs collection split",
+      "Forecasts sell-out from the current run rate, and surfaces dietary requirements per order",
+      "An attention panel raises only what actually needs a decision today",
+    ],
+    impact: "Rewrites itself on every order change \u2014 no manual reporting step",
+    desc: "A reporting layer over a live order system that recalculates KPIs, writes its own plain-English summary of what the numbers mean, forecasts sell-out from the current run rate, and flags only what needs attention.",
+    tags: ["Apps Script", "Reporting Automation", "KPI Design"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_009",
+    title: "Errands",
+    sub: "Relational Price & Shopping Platform",
+    points: [
+      "Normalised data model: products, categories, price history, locations, customers, trips and orders",
+      "Tracks the same product across stores over time, so price movement is visible rather than guessed",
+      "Dedicated analysis layer sits on top of the raw tables instead of inside them",
+      "A narrative sheet turns the analysis into findings a non-technical reader can act on",
+    ],
+    impact: "Turns scattered shopping data into price intelligence",
+    desc: "A relational data platform for tracking grocery prices and shopping trips — products, categories, price history, locations, customers, trips and orders, with a separate analysis layer and a plain-English narrative output.",
+    tags: ["Data Modelling", "Price History", "Analytics"],
+    href: null,
+    icon: "none" as const,
+  },
+  {
+    ref: "REF_010",
     title: "Vectra",
     sub: "AI Job-Search Agent",
     points: [
@@ -166,7 +198,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_009",
+    ref: "REF_011",
     title: "Orbita Commerce",
     sub: "Relational E-Commerce",
     desc: "Full-stack storefront with secure checkout, role-based access control, and stored procedures for order processing — prepared statements against SQL injection (OWASP) and composite indexing for performance.",
@@ -175,7 +207,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_010",
+    ref: "REF_012",
     title: "Vault Guardian",
     sub: "Encrypted Password Manager",
     desc: "A secure tool for password storage and generation using industry-standard encryption practices to keep user credentials safe at rest and in transit.",
@@ -184,7 +216,7 @@ const secondaryProjects = [
     icon: "github" as const,
   },
   {
-    ref: "REF_011",
+    ref: "REF_013",
     title: "Hurricane Watch JA",
     sub: "Real-Time Weather Monitoring",
     desc: "A live hurricane and weather monitoring app for Jamaica with real-time camera feeds and storm updates during severe-weather events.",
@@ -193,7 +225,7 @@ const secondaryProjects = [
     icon: "external" as const,
   },
   {
-    ref: "REF_012",
+    ref: "REF_014",
     title: "R Code Data Lab",
     sub: "QR Data Platform",
     desc: "A platform exploring QR-code data storage, chunking for larger files, and session authentication — built with a technical, cybersecurity-focused aesthetic. Generator, size analyzer, and chunking demos.",
@@ -202,7 +234,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_013",
+    ref: "REF_015",
     title: "Smart Baby Bed Set",
     sub: "IoT Safety & Accessibility",
     desc: "A human-centered smart bed designed to minimize SIDS risk and support caregivers with disabilities — automated temperature regulation, gentle rocking, and multimodal (tactile / visual / audio) alerts. Spans software engineering, networking, databases, QA, and HCI.",
@@ -211,7 +243,7 @@ const secondaryProjects = [
     icon: "none" as const,
   },
   {
-    ref: "REF_014",
+    ref: "REF_016",
     title: "More on GitHub",
     sub: "Full Repository Archive",
     desc: "Explore the complete archive of repositories, experiments, and works in progress — including coursework and ongoing builds.",
@@ -307,6 +339,7 @@ const suggestedQuestions = [
   "What do you build?",
   "Tell me about the cake platform",
   "What is Vectra?",
+  "Show me a dashboard you built",
   "Tell me about EGZIT",
   "What's Jamoment?",
   "Your tech stack?",
@@ -342,6 +375,10 @@ function localReply(raw: string): string {
     return "The Personal Finance Wallet is a Python and SQLite system \u2014 income, expenses, transfers, refunds, merchants and categories, with budgeting, spending alerts, projected month-end expenditure, and summaries across monthly, three-month, twelve-month and all-time periods. Transaction validation, duplicate detection and audit logging keep the data traceable.";
   if (has("filetrack", "file track", "custody", "audit"))
     return "FileTrack Pro tracks physical records \u2014 every movement time-stamped against holder, location and a mandatory reason code, batch IDs for bulk moves, an onboarding path for legacy files with no code, and corrections tagged distinctly so an amendment can never be mistaken for an original entry.";
+  if (has("dashboard", "narrat", "kpi", "report"))
+    return "I built a reporting layer that writes itself. KPIs recalculate live \u2014 orders, open, fulfilled, money received, outstanding \u2014 and then it writes a plain-English summary of what the numbers mean: best seller, busiest day, delivery versus collection split, and a sell-out forecast from the current run rate. An attention panel raises only what needs a decision that day. No manual reporting step.";
+  if (has("errand", "grocery", "price history", "shopping"))
+    return "Errands is a relational platform for grocery price tracking \u2014 products, categories, price history, locations, customers, trips and orders, properly normalised. It tracks the same product across stores over time so price movement is visible rather than guessed, with a separate analysis layer and a narrative sheet that turns findings into something a non-technical reader can act on.";
   if (has("vectra", "agent", "job search"))
     return "Vectra is an AI agent I built to automate the repetitive half of job searching \u2014 parsing role requirements, matching them against a structured profile, and tailoring application material per posting rather than firing out one generic CV. I built it because I was living the problem.";
   if (has("ccna", "cisco", "network cert"))
@@ -369,9 +406,9 @@ function localReply(raw: string): string {
   if (has("where", "location", "jamaica", "based", "live", "from"))
     return "I'm based in Mandeville, Manchester, Jamaica — and happy to work remote.";
   if (has("who are you", "yourself", "about you", "your name"))
-    return "I'm Aaron Prince — a full-stack developer and CS graduate from Jamaica with a security-first streak. Ask me about my work or how to hire me.";
+    return "I'm Aaron Prince \u2014 a Computer Science graduate from Jamaica who builds systems that replace manual work. Paper tallies, hand-compiled reports, spreadsheets nobody trusts: I find them and automate them, with validation and audit trails built in. Ask me about my work or how to hire me.";
   if (has("philosophy", "motto", "principle", "believe"))
-    return "I believe most things aren't truly hard — only unfamiliar. So I keep building until they're familiar. And I build like someone's already trying to break it.";
+    return "Two things. Most things aren't hard, only unfamiliar \u2014 so I keep building until they're familiar. And the real defect is almost never where it shows: a report nobody trusts is usually a capture problem, not a reporting problem. Fix it where the data enters.";
   if (has("project", "build", "portfolio", "made"))
     return "I've shipped a bunch — EGZIT (AI logistics marketplace), the BNS staff tool, TAJ Pre-Queue, plus my own venture Jamoment, and smaller builds like Vault Guardian and Hurricane Watch JA. Want detail on any one?";
   return "Good question. I'm a small offline version of Aaron's AI right now, so for anything specific the surest bet is to email aaron7prince@gmail.com. You can also ask me about his projects, stack, or background.";
@@ -669,15 +706,29 @@ export default function App() {
             </h1>
             <div className="idx mono">BSc COMPUTER SCIENCE · CLASS OF 2026</div>
             <p className="tagline">
-              I design, build, and ship secure full-stack web applications — from responsive
-              React front ends to scalable Node.js &amp; Python APIs.
+              I find the work people are still doing by hand — and make it disappear.
             </p>
             <p className="sub">
-              Computer Science graduate with a security-conscious engineering bias: secure
-              coding, RBAC, and OWASP-aware design baked in from the first commit. I turn real
-              problems — civic queues, moving logistics, tourism — into software people actually
-              use.
+              Computer Science graduate who builds secure, full-stack systems that replace manual
+              processes: paper tallies, hand-compiled reports, queues, spreadsheets nobody trusts.
+              React and TypeScript on the front, Node.js and Python behind it, with validation,
+              audit trails and OWASP-aware design built in at the point of capture rather than
+              bolted on afterwards. Real systems, used by real people.
             </p>
+            <ul className="hero-proof">
+              <li>
+                <b>Diagnosed a live production failure</b> under real customer load — reproduced
+                it in simulation before touching production code. 9 failed orders → 0.
+              </li>
+              <li>
+                <b>Built reporting that writes itself</b> — KPIs recalculate live, then the system
+                explains what the numbers mean in plain English.
+              </li>
+              <li>
+                <b>Replaced a paper process, unprompted</b> — structured capture, duplicate
+                controls and automated summaries, deployed and supported in daily use.
+              </li>
+            </ul>
             <div className="hero-cta">
               <a href="#work" className="btn btn-amber">
                 VIEW WORK →
@@ -741,7 +792,7 @@ export default function App() {
           <div className="wrap stats-inner">
             <div className="stat">
               <div className="n">
-                9<span className="u">+</span>
+                13<span className="u">+</span>
               </div>
               <div className="l">Shipped builds</div>
             </div>
