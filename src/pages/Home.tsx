@@ -5,13 +5,14 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
-import { brand, projects, principles } from "@/data/studio";
+import { brand, projects, principles, schoolQuals, findProject } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
 const proof = [
   { value: "2", label: "live business applications" },
   { value: "400+", label: "automated tests on the cake platform" },
   { value: "5", label: "pieces in national newspapers" },
+  { value: "6 + 2", label: "CSEC subjects and NVQ qualifications" },
   { value: "2026", label: "Computer Science graduate" },
 ];
 
@@ -60,23 +61,15 @@ const Home = () => {
           <motion.img
             src={heroPhoto}
             alt="Aaron Prince"
-            className="hidden h-full w-full object-cover object-[60%_25%] opacity-70 md:ml-auto md:block md:w-3/5"
+            className="h-[62vh] w-full object-cover object-[64%_20%] md:h-full md:ml-auto md:w-3/5 md:object-[60%_25%] md:opacity-70"
             initial={{ opacity: 0, scale: 1.2 }}
             animate={{ opacity: 0.7, scale: [1.08, 1.16, 1.08] }}
             transition={{ opacity: { duration: 1.2 }, scale: { duration: 22, repeat: Infinity, ease: "easeInOut" } }}
           />
           <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/85 to-transparent md:block md:via-ink/60" />
-          <div className="absolute inset-0 hidden bg-gradient-to-t from-ink via-transparent to-ink/50 md:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink from-45% via-transparent to-ink/20 md:from-0% md:to-ink/50" />
         </div>
-        <div className="mx-auto max-w-6xl px-5 pb-10 pt-2 md:pb-20 md:pt-24">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="relative mx-auto mb-6 aspect-[4/3] w-full max-w-sm overflow-hidden rounded-3xl border border-line shadow-xl md:hidden"
-          >
-            <img src={heroPhoto} alt="Aaron Prince" className="h-full w-full object-cover object-[55%_20%]" />
-          </motion.div>
+        <div className="mx-auto max-w-6xl px-5 pb-14 pt-[44vh] md:pb-20 md:pt-24">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
             <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-4 py-1.5 text-sm font-medium text-emerald-300">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
@@ -104,9 +97,9 @@ const Home = () => {
       </section>
 
       <section aria-label="At a glance" className="mx-auto -mt-2 max-w-6xl px-5">
-        <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {proof.map((p) => (
-            <div key={p.label} className="glass rounded-2xl p-5">
+            <div key={p.label} className="glass rounded-2xl p-5 last:col-span-2 md:last:col-span-1">
               <dt className="sr-only">{p.label}</dt>
               <dd className="text-4xl font-extrabold text-cream">{p.value}</dd>
               <p className="mt-1 text-sm text-soft">{p.label}</p>
@@ -129,7 +122,7 @@ const Home = () => {
             {[
               { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
               { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner and Jamaica Observer", "Volunteer workshop facilitator, SBA"] },
-              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
+              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "6 CSEC subjects and 2 NVQ qualifications", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
             ].map((c) => (
               <div key={c.h}>
                 <h3 className="font-hand text-2xl text-violet-light">{c.h}</h3>
@@ -176,6 +169,34 @@ const Home = () => {
             All work, with its status <ArrowRight className="h-4 w-4" />
           </Link>
         </Reveal>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 pb-24" aria-labelledby="eng-title">
+        <SectionHead
+          eyebrow="Engineering and maths"
+          title="I design on paper before anything is built."
+          intro="A poultry house designed in 3D, dimensioned, costed in plywood and tested against a heat wave and a cold front. Concept stage: nothing here is built or measured on a farm."
+        />
+        <div className="grid gap-5 md:grid-cols-2">
+          {(findProject("egg-farm-design")?.gallery ?? []).filter((_, i) => i !== 1).map((g) => (
+            <Reveal key={g.src}>
+              <figure className="h-full overflow-hidden rounded-2xl border border-line bg-white">
+                <img src={g.src} alt={g.alt} loading="lazy" className="w-full" />
+                <figcaption className="border-t border-line bg-panel p-4 text-sm text-soft">{g.caption}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+        <div id="eng-title" className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <ul className="flex flex-wrap gap-2 text-sm text-soft">
+            {["Dimensioning and cut lists", "Thermal simulation", "Sizing from stated rules", "Calculus and constraints", ...schoolQuals.map((q) => `${q.value} ${q.label}`)].map((t) => (
+              <li key={t} className="rounded-full border border-line px-3 py-1">{t}</li>
+            ))}
+          </ul>
+          <Link to="/work/egg-farm-design" className="inline-flex items-center gap-2 font-semibold text-cream hover:underline">
+            See the full design <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pb-24">

@@ -109,6 +109,20 @@ const CaseStudy = () => {
           </Block>
         )}
 
+        {project.special === "engineering" && project.gallery && (
+          <Block title="The drawings and the numbers">
+            <p>Concept and screening work. It shows how I size, dimension and test a design before spending money on it.</p>
+            <div className="grid gap-5">
+              {project.gallery.map((g) => (
+                <figure key={g.src} className="overflow-hidden rounded-2xl border border-line bg-white">
+                  <img src={g.src} alt={g.alt} loading="lazy" className="w-full" />
+                  <figcaption className="border-t border-line bg-panel p-4 text-sm text-soft">{g.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </Block>
+        )}
+
         {project.special === "qr-flow" && (
           <Block title="How the idea works">
             <p>A QR code can only hold so much. Treat it as a key rather than a container, and a few characters can open up a whole workflow.</p>

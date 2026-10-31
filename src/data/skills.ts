@@ -51,7 +51,7 @@ export const roles: { key: RoleKey; title: string; pitch: string; bringMeIn: str
 
 export interface Skill {
   name: string;
-  group: "Data" | "Build" | "Practice" | "Network and security";
+  group: "Data" | "Build" | "Practice" | "Network and security" | "Engineering and maths";
   level: Level;
   roles: RoleKey[];
   /** One line saying where it shows up. */
@@ -196,6 +196,33 @@ export const skills: Skill[] = [
     proof: "Replaced message-based order taking with a validated ordering flow for a bank team and a baker.",
     links: [{ label: "BNS Lunch Pre-Order", to: "/work/bns-lunch-pre-order" }],
     keywords: ["process", "workflow", "automation", "requirements gathering", "collaboration"],
+  },
+  {
+    name: "Engineering design and dimensioning",
+    group: "Engineering and maths",
+    level: "Built",
+    roles: ["developer", "it"],
+    proof: "A poultry house modelled in 3D, with a dimensioned nest-bank sheet, a cut list (79.4 sq ft, 3 plywood sheets with 20% waste) and failure modes designed out. Concept stage, not built.",
+    links: [{ label: "Egg farm design", to: "/work/egg-farm-design" }],
+    keywords: ["engineering", "cad", "3d model", "drawings", "technical drawing", "specification", "design", "construction"],
+  },
+  {
+    name: "Mathematics, modelling and simulation",
+    group: "Engineering and maths",
+    level: "Built",
+    roles: ["analyst", "developer"],
+    proof: "Sizing from stated rules, nine-day temperature simulations for a cold front and a heat wave, and a discrete-event load simulation. Calculus and Lagrange constraints are sketched in my notebook.",
+    links: [{ label: "Egg farm design", to: "/work/egg-farm-design" }, { label: "Cake simulation", to: "/work/chef-hudsons-christmas-cakes" }],
+    keywords: ["maths", "math", "mathematics", "calculus", "statistics", "modelling", "modeling", "simulation", "optimisation", "optimization", "physics"],
+  },
+  {
+    name: "School and vocational qualifications",
+    group: "Engineering and maths",
+    level: "Coursework and labs",
+    roles: ["it", "developer", "analyst"],
+    proof: "6 CSEC subjects and 2 NVQ qualifications. Ask me for the subjects and levels.",
+    links: [{ label: "Credentials", to: "/about" }],
+    keywords: ["csec", "nvq", "nvq-j", "vocational", "electrical", "caribbean examinations council"],
   },
   {
     name: "Networking (CCNA path, Packet Tracer)",

@@ -6,6 +6,9 @@ import errandsHome from "@/assets/work/errands-home.jpg";
 import egzitMockup from "@/assets/portfolio/egzit-mockup.png";
 import bnsPreorder from "@/assets/portfolio/bns-preorder.png";
 import preqApp from "@/assets/portfolio/preq-app.png";
+import eggFarm3d from "@/assets/portfolio/egg-farm-3d.png";
+import eggFarmSheet from "@/assets/portfolio/egg-farm-sheet.png";
+import eggFarmThermal from "@/assets/portfolio/egg-farm-thermal.png";
 
 export { profilePhoto };
 
@@ -35,6 +38,7 @@ export type Status =
   | "Experiment"
   | "Academic project"
   | "In progress"
+  | "Concept design"
   | "Details being added";
 
 export interface Project {
@@ -60,7 +64,8 @@ export interface Project {
   featured: boolean;
   /** Related service slugs, used to connect sections. */
   services: string[];
-  special?: "simulation" | "qr-flow" | "schema";
+  special?: "simulation" | "qr-flow" | "schema" | "engineering";
+  gallery?: { src: string; alt: string; caption: string }[];
 }
 
 export const projects: Project[] = [
@@ -306,6 +311,37 @@ export const projects: Project[] = [
     repo: null,
     featured: false,
     services: ["ordering-systems", "workflow-automation"],
+  },
+  {
+    slug: "egg-farm-design",
+    name: "Egg Farm Engineering Design",
+    kind: "Structural, environmental and sizing design",
+    status: "Concept design",
+    oneLiner: "A poultry house designed on paper first: 3D model, engineering sheet with a parts list, and a heat simulation comparing two designs.",
+    purpose: "Work out how to house 50 laying hens in Manchester, Jamaica, and compare an all-mesh house with a curtained house with a white roof before anything is built.",
+    problem: "Hens lose lay above about 30 °C and need fresh air without draughts or rain. A wrong choice is expensive to undo once built.",
+    solution:
+      "I modelled two designs in 3D, wrote the nest-box sheet with dimensions, a cut list and the failure modes to design out, and simulated nine days of weather for a cold front and a heat wave to see what the hens would feel in each design. Design B adds curtains with a 6 in open gap at the top for fresh air, and a white roof.",
+    role: "Designed the models, drawings, calculations and simulation.",
+    tech: ["3D modelling", "Engineering drawing", "Dimensioning and cut lists", "Thermal simulation", "Python plotting"],
+    verified: [
+      "Sizing worked from stated rules: 1 nest hole per 4 hens, so 16 holes for 50 hens",
+      "Nest bank sheet totals 79.4 sq ft of plywood, 3 sheets including 20% waste",
+      "Marked on the drawings as concept and screening only: not for construction, an engineer must verify first",
+    ],
+    conceptual: ["Nothing here has been built or measured on a real farm; the temperature curves are a simulation"],
+    image: eggFarm3d,
+    imageAlt: "3D concept model of the egg farm house with curtains closed",
+    live: null,
+    repo: null,
+    featured: false,
+    services: [],
+    special: "engineering",
+    gallery: [
+      { src: eggFarm3d, alt: "3D model of Design B with curtains closed", caption: "Design B in 3D: curtains closed for night, rain and storm, with a 6 in gap left open at the top." },
+      { src: eggFarmSheet, alt: "Engineering sheet E-01 for the nest box bank", caption: "Sheet E-01: front elevation, section, cut list and specification for an 8-hole, 2-tier nest bank." },
+      { src: eggFarmThermal, alt: "Temperature simulation for a cold front and a heat wave", caption: "Simulation: what the hens feel in each design during a cold front and a heat wave, against the 18 to 25 °C comfort zone." },
+    ],
   },
   {
     slug: "softq-preq",
@@ -791,4 +827,10 @@ export const courses: Course[] = [
   { code: "CPTR450", name: "Database Systems", year: 4, relevance: "Transactions, concurrency and integrity: idempotency keys and duplicate detection." },
   { code: "CPTR490", name: "Advanced Project", year: 4, relevance: "End-to-end delivery of a larger system." },
   { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
+];
+
+/** School and vocational qualifications. Subjects are added only once confirmed. */
+export const schoolQuals = [
+  { value: "6", label: "CSEC subjects", note: "Caribbean Secondary Education Certificate" },
+  { value: "2", label: "NVQ qualifications", note: "National Vocational Qualifications" },
 ];

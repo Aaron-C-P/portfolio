@@ -57,6 +57,7 @@ const statusStyle: Record<Status, string> = {
   Experiment: "border-amber-300/40 text-amber-200",
   "Academic project": "border-violet-light/50 text-violet-light",
   "In progress": "border-pink-300/40 text-pink-200",
+  "Concept design": "border-teal-400/40 text-teal-300",
   "Details being added": "border-line text-soft",
 };
 
