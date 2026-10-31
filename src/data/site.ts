@@ -353,12 +353,18 @@ export const writing: WritingItem[] = [
   },
   {
     no: "005",
-    title: "Our Perspective Determines the Path Forward",
-    meta: "Jamaica Observer · Op-Ed · 2026",
-    href: "https://www.jamaicaobserver.com/",
+    title: "Life Is Hard, but Perspective Will Determine the Path Forward",
+    meta: "Jamaica Gleaner · Letter · 2026",
+    href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward",
   },
   {
     no: "006",
+    title: "Starting from Scratch",
+    meta: "Jamaica Observer · Op-Ed · 2026",
+    href: "https://www.jamaicaobserver.com/2026/09/02/starting-from-scratch/",
+  },
+  {
+    no: "007",
     title: "Enhancing Education Without Replacing Traditional Methods",
     meta: "Jamaica Observer · Op-Ed · 2024",
     href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/",
