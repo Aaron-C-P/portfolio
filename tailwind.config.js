@@ -48,7 +48,7 @@ export default {
           accent: "#3b82f6", // blue-500
           "accent-fg": "#ffffff",
           secondary: "#6366f1", // indigo-500
-          muted: "#64748b", // slate-500 (readable on white)
+          muted: "#94a3b8", // slate-400
         }
       },
       borderRadius: {

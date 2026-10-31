@@ -1,59 +1,118 @@
-# Aaron Prince: Portfolio
+# Aaron Prince — Portfolio
 
-Personal portfolio for Aaron Prince, full-stack web developer and Computer Science graduate (Northern Caribbean University, 2026), based in Mandeville, Jamaica.
+A personal portfolio site for Aaron Prince — full-stack web developer & Computer Science
+graduate. Clean, light "engineering build-log" design with an interactive **AI clone** that
+visitors can chat with.
 
-Built with **Vite + React + TypeScript + Tailwind**, **react-router**, a Formspree contact form, and a small **Vercel serverless function** that powers the AI chat through the Anthropic API.
+Built with **Vite + React + TypeScript + Tailwind**, a Formspree contact form, and a small
+**Vercel serverless function** that powers the AI chat via the Anthropic API.
 
-## Run locally
+---
+
+## Quick start (local)
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # type-checks (tsc) then builds to /dist
+npm run dev
 ```
 
-`npm run dev` serves the front end only. `/api/chat` is not served by Vite, so the AI chat automatically falls back to a built-in offline responder (`src/lib/localReply.ts`). To test the live AI locally, run `vercel dev` with `ANTHROPIC_API_KEY` set.
+Then open the URL Vite prints (usually http://localhost:5173).
 
-## Pages
+> **Note:** `npm run dev` only runs the front end. The AI chat's serverless function
+> (`/api/chat`) is **not** served by Vite, so during local dev the chat automatically falls
+> back to a built-in offline responder. To test the *live* AI locally, run `vercel dev`
+> (requires the Vercel CLI) with your API key set — see below.
 
-| Route | Page |
-|---|---|
-| `/` | Home |
-| `/projects`, `/projects/:slug` | Project list and detail pages |
-| `/journey` | Timeline of education, work, certifications and projects |
-| `/services` | What I can build for clients |
-| `/writing` | Book, press features, academic work and recognition |
-| `/ask` | AI clone chat |
-| `/about`, `/contact` | Background and skills; contact form |
+### Build for production
 
-All projects, timeline entries, writing items, services and profile details live in `src/data/site.ts`. Edit that file to update the site.
+```bash
+npm run build      # type-checks (tsc) then builds to /dist
+npm run preview     # preview the production build locally
+```
+
+---
 
 ## Deploying to Vercel
 
-1. Import the GitHub repo in Vercel. It detects Vite (build `npm run build`, output `dist`) and deploys `/api` as serverless functions.
-2. `vercel.json` rewrites every path except `/api/*` to `index.html` so deep links such as `/projects/errands` work.
-3. Add the AI environment variable (below), then redeploy.
+1. Push this repo to GitHub.
+2. In Vercel, **Import** the GitHub repo. Vercel auto-detects Vite (build `npm run build`,
+   output `dist`) and deploys the `/api` folder as serverless functions automatically.
+3. Add the environment variable for the AI chat (next section), then deploy.
 
-## AI chat
+Every push to `main` redeploys automatically.
 
-The chat calls `/api/chat` (`api/chat.js`). If `ANTHROPIC_API_KEY` is missing or the call fails, the front end silently uses the offline responder, so the chat never breaks.
+---
 
-In Vercel, go to **Project > Settings > Environment Variables** and add:
+## 🔑 Enabling the AI clone (one-time setup)
 
-| Name | Value | Environments |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | your key from console.anthropic.com | Production (add Preview to test on PR deployments) |
+The chat works out of the box using an **offline responder** (canned answers in Aaron's
+voice). To upgrade it to a **live, conversational AI** powered by Claude:
 
-Then redeploy. The key stays server-side and is never sent to the browser. In `api/chat.js` you can change `MODEL`, `max_tokens` and the `SYSTEM_PROMPT` (Aaron's bio, projects and voice).
+1. Get an Anthropic API key from <https://console.anthropic.com>.
+2. In Vercel → **Project → Settings → Environment Variables**, add:
 
-## Resume
+   | Name                | Value             |
+   | ------------------- | ----------------- |
+   | `ANTHROPIC_API_KEY` | `sk-ant-...`      |
 
-The navbar shows **Request Resume**, which opens a pre-written email, while the resume is being updated. To restore the download link, set `resumeAvailable: true` and point `resume` at the current file in `src/data/site.ts`.
+3. **Redeploy** (Deployments → ⋯ → Redeploy, or push a commit).
+
+That's it. The front end calls `/api/chat`; if the key is present it returns live AI
+responses, and if anything is missing it silently falls back to the offline responder so the
+chat is **never broken**.
+
+### Tuning the AI
+
+Open [`api/chat.js`](api/chat.js):
+
+- **Model** — `MODEL` defaults to `claude-haiku-4-5-20251001` (fast + low cost, great for a
+  portfolio). For richer, longer answers swap it to `claude-sonnet-4-6`.
+- **Personality** — the `SYSTEM_PROMPT` is where Aaron's bio, projects, stack, and voice are
+  defined. Edit it to change how the clone talks or to add new facts.
+- **Length / cost** — `max_tokens` (default `400`) caps reply length.
+
+> 💡 The API key lives only in the serverless function (server-side) and is never exposed to
+> the browser.
+
+---
+
+## Light / dark mode
+
+The site ships with both **light and dark themes** and a toggle in the header (sun/moon). The
+choice is saved in `localStorage`, and on first visit it follows the visitor's OS preference
+(`prefers-color-scheme`). An inline script in `index.html` applies the theme before paint, so
+there's no flash of the wrong mode. Theme colors are driven by CSS variables in
+`src/index.css` (`:root` for light, `[data-theme="dark"]` for dark).
 
 ## Contact form
 
-Uses Formspree (form ID `mnjqgkgz`, set in `src/components/portfolio/PortfolioContact.tsx`). Submissions are emailed to the address configured on that form.
+The contact form uses **Formspree** (form ID `mnjqgkgz`). Submissions are emailed to the
+address configured on that Formspree form. To use a different form, replace the ID in
+`src/App.tsx` (`useForm("mnjqgkgz")`).
+
+---
+
+## Project structure
+
+```
+api/
+  chat.js                  # Vercel serverless function — AI clone (Anthropic API)
+src/
+  App.tsx                  # entire site (sections, data, AI chat component)
+  index.css                # design system + all component styles (light theme)
+  main.tsx                 # React entry
+  assets/portfolio/        # images (profile, project mockups)
+index.html                 # fonts + root
+```
+
+All content (projects, stack, writing, experience, links) lives in data arrays near the top
+of `src/App.tsx` — edit there to update the site.
+
+---
 
 ## Tech
 
-React, TypeScript, Vite, Tailwind CSS, react-router, framer-motion, Formspree, Vercel Functions, Anthropic API.
+React · TypeScript · Vite · Tailwind CSS · Formspree · Vercel Functions · Anthropic API
+Fonts: Space Grotesk · JetBrains Mono · Inter.
+
+© Aaron Prince. Designed & built in Jamaica.

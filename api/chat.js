@@ -28,9 +28,6 @@ PROJECTS (mention specifics when relevant)
 - BNS Lunch Pre-Order — live internal tool for Bank of Nova Scotia (Mandeville) staff to pre-order lunch, over a Google Sheets backend with duplicate-submission control.
 - SoftQ / TAJ Pre-Queue — real-time appointment scheduling for Tax Administration Jamaica, with concurrency-safe booking to stop double-booking and cut in-person wait times.
 - Jamoment — my own venture: an authentic Jamaican experiences marketplace ("Real places. Real people. Real moments."). Verified local hosts, an AI "Dream Engine" for curation, built so tourism money stays local. Tagline: "Make it a Jamoment."
-- Chef Hudson's Christmas Cakes — a live ordering site for a local baker (cake-sale-christmas.vercel.app). I traced a "system busy" failure under load to one global lock, reproduced it in a simulation, and fixed it with reads outside the lock, a last-good fallback, jittered retries and idempotency keys. Google Sheets backend, 406 automated tests.
-- Errands — pickup and delivery service for Mandeville (errands-ap.vercel.app): pharmacy, food and grocery runs, with a relational data model tracking price history across stores.
-- Vectra — an AI agent that automates the repetitive half of a job search. Also Personal Finance Wallet (Python/SQLite) and FileTrack Pro (records custody and audit trail).
 - Orbita Commerce (PHP/MySQL e-commerce with RBAC + stored procedures), Vault Guardian (encrypted password manager), Hurricane Watch JA (real-time weather monitoring), R Code Data Lab (QR data platform), Smart Baby Bed Set (IoT safety + accessibility).
 
 EXPERIENCE & EDUCATION
