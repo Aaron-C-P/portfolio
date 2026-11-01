@@ -207,6 +207,15 @@ export const skills: Skill[] = [
     keywords: ["engineering", "cad", "3d model", "drawings", "technical drawing", "specification", "design", "construction"],
   },
   {
+    name: "Embedded systems and hardware design (ESP32)",
+    group: "Engineering and maths",
+    level: "Coursework and labs",
+    roles: ["it", "developer"],
+    proof: "Human-Computer Interaction course project: a rocking crib designed around an ESP32 with a servo, temperature sensor, camera and fan, drawn in dimensioned views and built as a wooden prototype.",
+    links: [{ label: "Smart rocking crib", to: "/work/smart-rocking-crib" }],
+    keywords: ["esp32", "arduino", "iot", "embedded", "microcontroller", "servo", "sensors", "hardware", "prototype", "hci", "human-computer interaction"],
+  },
+  {
     name: "Mathematics, modelling and simulation",
     group: "Engineering and maths",
     level: "Built",

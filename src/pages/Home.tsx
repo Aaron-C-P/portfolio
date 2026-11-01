@@ -230,13 +230,13 @@ const Home = () => {
         <SectionHead
           eyebrow="Engineering and maths"
           title="I design on paper before anything is built."
-          intro="A poultry house designed in 3D, dimensioned, costed in plywood and tested against a heat wave and a cold front. Concept stage: nothing here is built or measured on a farm."
+          intro="A poultry house designed in 3D and tested against a heat wave (concept stage, not built), and a rocking crib designed around an ESP32 and built as a wooden prototype."
         />
         <div className="grid gap-5 md:grid-cols-2">
-          {(findProject("egg-farm-design")?.gallery ?? []).filter((_, i) => i !== 1).map((g) => (
+          {[...(findProject("egg-farm-design")?.gallery ?? []).filter((_, i) => i !== 1), ...(findProject("smart-rocking-crib")?.gallery ?? []).slice(0, 2)].map((g) => (
             <Reveal key={g.src}>
               <figure className="h-full overflow-hidden rounded-2xl border border-line bg-white">
-                <img src={g.src} alt={g.alt} loading="lazy" className="w-full" />
+                <img src={g.src} alt={g.alt} loading="lazy" className={g.crop ? "aspect-[1.88] w-full object-cover" : "w-full"} />
                 <figcaption className="border-t border-line bg-panel p-4 text-sm text-soft">{g.caption}</figcaption>
               </figure>
             </Reveal>
@@ -248,9 +248,14 @@ const Home = () => {
               <li key={t} className="rounded-full border border-line px-3 py-1">{t}</li>
             ))}
           </ul>
-          <Link to="/work/egg-farm-design" className="inline-flex items-center gap-2 font-semibold text-cream hover:underline">
-            See the full design <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex flex-col gap-2">
+            <Link to="/work/smart-rocking-crib" className="inline-flex items-center gap-2 font-semibold text-cream hover:underline">
+              The rocking crib <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/work/egg-farm-design" className="inline-flex items-center gap-2 font-semibold text-cream hover:underline">
+              The egg farm design <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

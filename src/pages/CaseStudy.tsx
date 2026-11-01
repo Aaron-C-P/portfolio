@@ -110,12 +110,12 @@ const CaseStudy = () => {
         )}
 
         {project.gallery && (
-          <Block title={project.slug === "egg-farm-design" ? "The drawings and the numbers" : "Inside the prototype"}>
-            <p>{project.slug === "egg-farm-design" ? "Concept and screening work. It shows how I size, dimension and test a design before spending money on it." : "Screens captured from the running prototype."}</p>
+          <Block title={project.slug === "egg-farm-design" ? "The drawings and the numbers" : project.slug === "smart-rocking-crib" ? "Design, engineering and tech" : "Inside the prototype"}>
+            <p>{project.slug === "egg-farm-design" ? "Concept and screening work. It shows how I size, dimension and test a design before spending money on it." : project.slug === "smart-rocking-crib" ? "From drawings to a physical build: the mechanism, the embedded system and the frame." : "Screens captured from the running prototype."}</p>
             <div className="grid gap-5">
               {project.gallery.map((g) => (
                 <figure key={g.src} className="overflow-hidden rounded-2xl border border-line bg-white">
-                  <img src={g.src} alt={g.alt} loading="lazy" className="w-full" />
+                  <img src={g.src} alt={g.alt} loading="lazy" className={g.crop ? "aspect-[1.88] w-full object-cover" : "w-full"} />
                   <figcaption className="border-t border-line bg-panel p-4 text-sm text-soft">{g.caption}</figcaption>
                 </figure>
               ))}

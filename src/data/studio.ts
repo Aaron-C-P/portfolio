@@ -16,6 +16,10 @@ import shotFrustration from "@/assets/articles/lines-of-frustration.jpg";
 import shotLifeHard from "@/assets/articles/life-is-hard.jpg";
 import becomingQuestion from "@/assets/work/becoming-question.jpg";
 import becomingMap from "@/assets/work/becoming-map.jpg";
+import cribPrototype from "@/assets/crib/crib-prototype.jpg";
+import cribViews from "@/assets/crib/crib-views.jpg";
+import cribComponents from "@/assets/crib/crib-components.jpg";
+import cribSheet from "@/assets/crib/crib-design-sheet.jpg";
 import eggFarm3d from "@/assets/portfolio/egg-farm-3d.png";
 import eggFarmSheet from "@/assets/portfolio/egg-farm-sheet.png";
 import eggFarmThermal from "@/assets/portfolio/egg-farm-thermal.png";
@@ -75,7 +79,7 @@ export interface Project {
   /** Related service slugs, used to connect sections. */
   services: string[];
   special?: "simulation" | "qr-flow" | "schema" | "engineering";
-  gallery?: { src: string; alt: string; caption: string }[];
+  gallery?: { src: string; alt: string; caption: string; crop?: boolean }[];
 }
 
 export const projects: Project[] = [
@@ -356,6 +360,42 @@ export const projects: Project[] = [
       { src: eggFarm3d, alt: "3D model of Design B with curtains closed", caption: "Design B in 3D: curtains closed for night, rain and storm, with a 6 in gap left open at the top." },
       { src: eggFarmSheet, alt: "Engineering sheet E-01 for the nest box bank", caption: "Sheet E-01: front elevation, section, cut list and specification for an 8-hole, 2-tier nest bank." },
       { src: eggFarmThermal, alt: "Temperature simulation for a cold front and a heat wave", caption: "Simulation: what the hens feel in each design during a cold front and a heat wave, against the 18 to 25 °C comfort zone." },
+    ],
+  },
+  {
+    slug: "smart-rocking-crib",
+    name: "Smart Rocking Baby Crib",
+    kind: "Embedded systems, design and engineering",
+    status: "Academic project",
+    oneLiner: "A hanging cradle that rocks itself, designed around an ESP32 with sensing, cooling and a camera, and built as a painted-wood prototype.",
+    purpose: "Explore how a small embedded system could take over a repetitive, tiring job (gentle rocking) while keeping the person in the loop with clear status and monitoring.",
+    problem: "Rocking a cradle by hand is constant work, and a caregiver also wants to know the room is comfortable without hovering. The brief for this Human-Computer Interaction project was to make that interaction simple and trustworthy.",
+    solution:
+      "I designed the cradle as a pivoting box hung from two posts on a base platform, so a small servo can rock it with a lever arm. An ESP32 microcontroller is the brain: a rocking servo, a DHT temperature and humidity sensor, a camera, a status LED and a DC cooling fan, powered over USB or a DC jack. I drew it as multi-view dimensioned drawings, an exploded component diagram and a part-by-part design sheet, then built the wooden frame and cradle as a physical prototype.",
+    role: "Designed the mechanism and drawings, planned the electronics and built the wooden prototype.",
+    tech: ["ESP32", "DHT temperature and humidity sensor", "Servo motor control", "5V DC fan", "Camera module", "Status LED", "Dimensioned technical drawing", "Woodworking"],
+    verified: [
+      "A physical painted-wood prototype exists: two posts, a base platform and a hanging cradle (photographed with a teddy bear as a stand-in)",
+      "Design package: four-view dimensioned drawings, a labelled component diagram and a part-by-part dimension sheet",
+      "Built as a Human-Computer Interaction course project",
+    ],
+    conceptual: [
+      "The drawings are concept illustrations: some labels and dimensions on them are approximate, so read them as design intent, not a build specification",
+      "The sensing, camera and fan control are part of the design; this page does not claim they were tested end to end",
+      "A prototype for learning. It is not a certified infant product and is not offered for use with a real baby",
+    ],
+    story: "The interesting engineering was the mechanism: turning a small servo's short swing into a smooth, slow rock of a hanging load, and deciding where the electronics sit so the cradle stays simple and safe to look at.",
+    image: cribPrototype,
+    imageAlt: "Painted blue wooden rocking cradle prototype holding a teddy bear, with electronics on the floor beside it",
+    live: null,
+    repo: null,
+    featured: false,
+    services: ["custom-applications"],
+    gallery: [
+      { src: cribPrototype, alt: "The built wooden cradle prototype with a teddy bear", caption: "The built prototype: painted wood posts, base platform and a hanging cradle, with the electronics on the bench beside it.", crop: true },
+      { src: cribComponents, alt: "Component diagram of the smart rocking crib", caption: "Embedded system layout: ESP32 controller, rocking servo, temperature sensor, camera, status LED, DC fan and a USB or DC power input." },
+      { src: cribViews, alt: "Four-view drawings of the cradle with 10 inch dimensions", caption: "Front, side, top and base views with the 10 inch envelope, rocker lever and sensor positions." },
+      { src: cribSheet, alt: "Dimensioned design sheet for the cradle frame and box", caption: "Part-by-part design sheet: posts, base and the hanging box, with the materials called out (painted wood)." },
     ],
   },
   {
