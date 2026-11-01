@@ -639,6 +639,7 @@ export const press = [
   { no: "003", title: "GenAI, Future Role & Professionalization of Foreign Language Teachers", meta: "Co-author, Madden et al. (2025) · survey data, statistical analysis, written reporting", href: null as string | null },
   { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos" },
   { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward" },
+  { no: "009", title: "In Defence of the 9-5", meta: "Jamaica Observer · Columns · September 2026", href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/" },
   { no: "006", title: "Starting from Scratch", meta: "Jamaica Observer · September 2026", href: "https://www.jamaicaobserver.com/2026/09/02/starting-from-scratch/" },
   { no: "008", title: "Our Perspective Determines the Path Forward", meta: "Jamaica Observer · July 2026", href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/" },
   { no: "007", title: "Enhancing Education Without Replacing Traditional Methods", meta: "Jamaica Observer · May 2024", href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/" },
@@ -786,6 +787,15 @@ export const feed: FeedPost[] = [
     imageAlt: "",
     note: "The full CCNA certification is still in progress.",
     href: brand.linkedin,
+  },
+  {
+    id: "defence-9-5",
+    date: "14 September 2026",
+    source: "Jamaica Observer, Columns",
+    text: "In Defence of the 9-5. A column on why a salaried job is too often read online as a lack of ambition, why entrepreneurship is not automatically freedom, and why stability, income and dignity can be the base for saving, studying or building something on the side. Success has many definitions, and the right path is one you choose on purpose.",
+    image: null,
+    imageAlt: "",
+    href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/",
   },
   {
     id: "perspective",

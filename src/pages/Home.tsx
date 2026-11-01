@@ -90,7 +90,13 @@ const Home = () => {
                 Start a conversation
               </Link>
             </div>
-            <p className="mt-6 font-hand text-2xl text-cream/90">{brand.tagline}</p>
+            <p className="mt-6 text-base font-medium text-soft">
+              Hiring or got a project? Email me:{" "}
+              <a href={`mailto:${brand.email}`} className="font-semibold text-violet-light underline underline-offset-4 hover:text-fg">
+                {brand.email}
+              </a>
+            </p>
+            <p className="mt-3 font-hand text-2xl text-cream/90">{brand.tagline}</p>
           </motion.div>
         </div>
       </section>
