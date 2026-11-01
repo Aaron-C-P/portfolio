@@ -4,6 +4,7 @@ import { competencies } from "@/data/skills";
 import { brand, courses, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 import { Specialization } from "@/components/studio/Specialization";
+import { FrontCover } from "@/components/studio/BookCover";
 
 const skills: [string, string[]][] = [
   ["Core toolkit", ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Microsoft Power BI (in progress)", "Dashboard and KPI design", "Database and schema design", "Data validation and audit logging", "Microsoft Access", "Git, documentation and testing"]],
@@ -51,6 +52,13 @@ const About = () => {
               learned that the real defect is rarely where it shows, so I reproduce a failure before I fix it.
             </p>
             <p>I also write. I have been published in the Jamaica Gleaner and the Jamaica Observer, co-authored a peer-reviewed paper in an international journal (Castledown), and I have a self-published book.</p>
+            <Link to="/writing" className="inline-flex items-center gap-4 rounded-2xl border border-line bg-panel p-3 pr-5 transition hover:border-violet-light/60">
+              <FrontCover className="w-16 shrink-0" />
+              <span>
+                <span className="block text-base font-semibold">Gentle Architect: The Lonely Build</span>
+                <span className="block text-sm text-soft">My self-published book. See the cover.</span>
+              </span>
+            </Link>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to="/journey" className="btn-primary">
