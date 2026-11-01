@@ -371,17 +371,17 @@ export const projects: Project[] = [
     purpose: "Explore how a small embedded system could take over a repetitive, tiring job (gentle rocking) while keeping the person in the loop with clear status and monitoring.",
     problem: "Rocking a cradle by hand is constant work, and a caregiver also wants to know the room is comfortable without hovering. The brief for this Human-Computer Interaction project was to make that interaction simple and trustworthy.",
     solution:
-      "I designed the cradle as a pivoting box hung from two posts on a base platform, so a small servo can rock it with a lever arm. An ESP32 microcontroller is the brain: a rocking servo, a DHT temperature and humidity sensor, a camera, a status LED and a DC cooling fan, powered over USB or a DC jack. I drew it as multi-view dimensioned drawings, an exploded component diagram and a part-by-part design sheet, then built the wooden frame and cradle as a physical prototype.",
+      "I designed the cradle as a pivoting box hung from two posts on a base platform, so a small servo can rock it with a lever arm. An ESP32 microcontroller is the brain: a rocking servo, a DHT temperature and humidity sensor, a camera, a status LED and a DC cooling fan, powered over USB or a DC jack. I drew it as multi-view dimensioned drawings, an exploded component diagram and a part-by-part design sheet, then built the wooden frame and cradle as a physical prototype where the servo, sensor, fan and camera all run.",
     role: "Designed the mechanism and drawings, planned the electronics and built the wooden prototype.",
     tech: ["ESP32", "DHT temperature and humidity sensor", "Servo motor control", "5V DC fan", "Camera module", "Status LED", "Dimensioned technical drawing", "Woodworking"],
     verified: [
       "A physical painted-wood prototype exists: two posts, a base platform and a hanging cradle (photographed with a teddy bear as a stand-in)",
       "Design package: four-view dimensioned drawings, a labelled component diagram and a part-by-part dimension sheet",
+      "Confirmed working on the real build: the servo rocks the cradle, the temperature sensor reads, the fan runs and the camera works",
       "Built as a Human-Computer Interaction course project",
     ],
     conceptual: [
       "The drawings are concept illustrations: some labels and dimensions on them are approximate, so read them as design intent, not a build specification",
-      "The sensing, camera and fan control are part of the design; this page does not claim they were tested end to end",
       "A prototype for learning. It is not a certified infant product and is not offered for use with a real baby",
     ],
     story: "The interesting engineering was the mechanism: turning a small servo's short swing into a smooth, slow rock of a hanging load, and deciding where the electronics sit so the cradle stays simple and safe to look at.",

@@ -21,7 +21,7 @@ export function localReply(raw: string): string {
   if (has("egzit"))
     return "EGZIT is my moving-logistics marketplace: inventory with QR labels, a movers marketplace and tracking, on React, TypeScript, PostgreSQL and Supabase, with a 14-table schema and row-level security.";
   if (has("crib", "cradle", "esp32", "baby", "embedded", "hardware"))
-    return "The Smart Rocking Baby Crib is a Human-Computer Interaction course project: a hanging cradle designed around an ESP32 with a rocking servo, temperature sensor, camera, status LED and cooling fan, drawn in dimensioned views and built as a painted-wood prototype. It is a learning prototype, not a certified infant product.";
+    return "The Smart Rocking Baby Crib is a Human-Computer Interaction course project: a hanging cradle designed around an ESP32 with a rocking servo, temperature sensor, camera, status LED and cooling fan, drawn in dimensioned views and built as a painted-wood prototype where the servo, sensor, fan and camera all work. It is a learning prototype, not a certified infant product.";
   if (has("becoming"))
     return "Becoming is a working prototype that builds a private map of what a person wants from their own answers. Every item must quote their words, and it keeps competing explanations open instead of guessing a motive.";
   if (has("qr", "filepro", "filetrack"))

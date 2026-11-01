@@ -211,7 +211,7 @@ export const skills: Skill[] = [
     group: "Engineering and maths",
     level: "Coursework and labs",
     roles: ["it", "developer"],
-    proof: "Human-Computer Interaction course project: a rocking crib designed around an ESP32 with a servo, temperature sensor, camera and fan, drawn in dimensioned views and built as a wooden prototype.",
+    proof: "Human-Computer Interaction course project: a rocking crib designed around an ESP32 with a servo, temperature sensor, camera and fan, drawn in dimensioned views and built as a wooden prototype whose servo, sensor, fan and camera all run.",
     links: [{ label: "Smart rocking crib", to: "/work/smart-rocking-crib" }],
     keywords: ["esp32", "arduino", "iot", "embedded", "microcontroller", "servo", "sensors", "hardware", "prototype", "hci", "human-computer interaction"],
   },
