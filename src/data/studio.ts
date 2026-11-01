@@ -14,6 +14,8 @@ import shotEducation from "@/assets/articles/enhancing-education.jpg";
 import shotCaricature from "@/assets/articles/caricature-art.jpg";
 import shotFrustration from "@/assets/articles/lines-of-frustration.jpg";
 import shotLifeHard from "@/assets/articles/life-is-hard.jpg";
+import becomingQuestion from "@/assets/work/becoming-question.jpg";
+import becomingMap from "@/assets/work/becoming-map.jpg";
 import eggFarm3d from "@/assets/portfolio/egg-farm-3d.png";
 import eggFarmSheet from "@/assets/portfolio/egg-farm-sheet.png";
 import eggFarmThermal from "@/assets/portfolio/egg-farm-thermal.png";
@@ -227,16 +229,21 @@ export const projects: Project[] = [
       "Every item on the map must quote the person's own answer, and the quote is checked against what they typed",
       "Answers and map are private to the account; sharing is opt-in, item by item",
       "Editing or deleting an answer removes its effects and recalculates the map",
-      "Built as a private prototype, not a public product: no public link yet",
+      "Running as a prototype at becoming-xi.vercel.app, in guided mode with AI interpretation switched off on that server",
     ],
     conceptual: [
       "Suggested connections between two people's shared items exist in the prototype but are not tested with real users",
       "Not a therapy, diagnosis or personality-scoring tool, and it does not claim to be",
     ],
     story: "The interesting part was evidence: each answer shifts support between explanations, and the app shows its reasoning instead of announcing a conclusion.",
-    image: null,
-    live: null,
+    image: becomingQuestion,
+    imageAlt: "Becoming on a phone: the next question, asked one at a time",
+    live: "https://becoming-xi.vercel.app",
     repo: null,
+    gallery: [
+      { src: becomingQuestion, alt: "Becoming: the next question and answer box", caption: "One question at a time, in the person's own words. Captured from the running prototype on a phone." },
+      { src: becomingMap, alt: "Becoming: the understanding map with its colour legend", caption: "The understanding map: every point traces back to an answer, and the legend shows dreams, values, challenges, strengths, goals and next steps." },
+    ],
     featured: false,
     services: ["custom-applications"],
   },

@@ -109,9 +109,9 @@ const CaseStudy = () => {
           </Block>
         )}
 
-        {project.special === "engineering" && project.gallery && (
-          <Block title="The drawings and the numbers">
-            <p>Concept and screening work. It shows how I size, dimension and test a design before spending money on it.</p>
+        {project.gallery && (
+          <Block title={project.slug === "egg-farm-design" ? "The drawings and the numbers" : "Inside the prototype"}>
+            <p>{project.slug === "egg-farm-design" ? "Concept and screening work. It shows how I size, dimension and test a design before spending money on it." : "Screens captured from the running prototype."}</p>
             <div className="grid gap-5">
               {project.gallery.map((g) => (
                 <figure key={g.src} className="overflow-hidden rounded-2xl border border-line bg-white">
