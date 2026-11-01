@@ -118,3 +118,20 @@ body, header, section, .glass { transition: background-color 0.3s, color 0.3s, b
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(4%, -3%, 0) scale(1.15); }
 }
+
+@keyframes drift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.1); }
+  50% { transform: translate3d(-6%, 5%, 0) scale(0.92); }
+}
+@keyframes rise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translate3d(var(--dx, 20px), -70vh, 0); opacity: 0; }
+}
+@keyframes sweep {
+  0% { transform: translateX(-60%) skewX(-18deg); }
+  100% { transform: translateX(260%) skewX(-18deg); }
+}
+@keyframes gridpan {
+  to { background-position: 44px 44px; }
+}

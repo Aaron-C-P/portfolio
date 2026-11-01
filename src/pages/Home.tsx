@@ -102,11 +102,31 @@ const Home = () => {
     <>
       <section className="relative isolate overflow-hidden pt-28">
         <div className="absolute inset-0 -z-10">
-          <motion.div
-            aria-hidden="true"
-            className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/30 blur-3xl"
-            style={{ animation: "drift 14s ease-in-out infinite" }}
-          />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-[0.18]"
+              style={{
+                backgroundImage: "radial-gradient(rgb(var(--c-violet, 118 71 235)) 1px, transparent 1.5px)",
+                backgroundSize: "44px 44px",
+                animation: "gridpan 8s linear infinite",
+              }}
+            />
+            <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/35 blur-3xl" style={{ animation: "drift 14s ease-in-out infinite" }} />
+            <div className="absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-amber-400/25 blur-3xl" style={{ animation: "drift2 18s ease-in-out infinite" }} />
+            <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" style={{ animation: "drift 22s ease-in-out infinite reverse" }} />
+            <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/25 to-transparent" style={{ animation: "sweep 9s ease-in-out infinite" }} />
+            {[6, 14, 23, 31, 42, 53, 61, 72, 83, 92].map((x, i) => (
+              <span
+                key={x}
+                className="absolute bottom-0 h-1.5 w-1.5 rounded-full bg-violet-light"
+                style={{
+                  left: `${x}%`,
+                  ["--dx" as string]: `${i % 2 ? 28 : -28}px`,
+                  animation: `rise ${9 + (i % 5) * 2}s linear ${i * 0.9}s infinite`,
+                }}
+              />
+            ))}
+          </div>
           <motion.img
             src={heroPhoto}
             alt="Aaron Prince"
