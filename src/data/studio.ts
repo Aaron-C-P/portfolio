@@ -856,11 +856,11 @@ export const courses: Course[] = [
   { code: "CPTR450", name: "Database Systems", year: 4, relevance: "Transactions, concurrency and integrity: idempotency keys and duplicate detection." },
   { code: "CPTR490", name: "Advanced Project", year: 4, relevance: "End-to-end delivery of a larger system." },
   { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
-  { code: "Upper level", name: "Cloud Computing", relevance: "How applications run on shared infrastructure: the thinking behind hosting my apps on Vercel and Supabase." },
-  { code: "Upper level", name: "IT Project Management", relevance: "Scoping, milestones and delivery: how I plan builds for clients such as the baker and the bank team." },
-  { code: "Upper level", name: "Network Implementation", relevance: "Designing, configuring and troubleshooting networks, practised in Cisco Packet Tracer on the CCNA path." },
-  { code: "Upper level", name: "Systems Administration", relevance: "Running and maintaining servers and user access: the operations side of keeping a live system healthy." },
-  { code: "Upper level", name: "Data Security", relevance: "Protecting data at rest and in use: validation, access control and audit logging in my builds." },
-  { code: "Upper level", name: "Advanced Application Electives", relevance: "Deeper application development: the foundation for the systems I ship and for larger project work." },
+  { code: "Elective", name: "Cloud Computing", relevance: "How applications run on shared infrastructure: the thinking behind hosting my apps on Vercel and Supabase." },
+  { code: "Elective", name: "IT Project Management", relevance: "Scoping, milestones and delivery: how I plan builds for clients such as the baker and the bank team." },
+  { code: "Elective", name: "Network Implementation", relevance: "Designing, configuring and troubleshooting networks, practised in Cisco Packet Tracer on the CCNA path." },
+  { code: "Elective", name: "Systems Administration", relevance: "Running and maintaining servers and user access: the operations side of keeping a live system healthy." },
+  { code: "Elective", name: "Data Security", relevance: "Protecting data at rest and in use: validation, access control and audit logging in my builds." },
+  { code: "Elective", name: "Advanced Application Development", relevance: "Deeper application development: the foundation for the systems I ship and for larger project work." },
 ];
 
