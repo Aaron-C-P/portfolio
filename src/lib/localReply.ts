@@ -33,7 +33,7 @@ export function localReply(raw: string): string {
   if (has("intern", "larvation", "experience", "worked", "career"))
     return "I was a Web Development Intern at Larvation Web LLC (remote, March to June 2026): SQL queries and schema changes on a production PostgreSQL database, data-processing routines and third-party API integrations, delivered with Git, code review, CI/CD and documentation.";
   if (has("certif", "security+", "ccna", "comptia", "cisco", "course"))
-    return "CompTIA Security+ 701 (Infosec, 2025), Cisco Networking Academy CCNA: Introduction to Networks (2026), Introduction to Data Science (Simplilearn, 2024) and a Node.js Master Class (2026). In progress: Microsoft Power BI Data Analyst and the full CCNA.";
+    return "CompTIA Security+ 701 (Infosec, 2025), Cisco Networking Academy CCNA: Introduction to Networks (2026), Introduction to Data Science (Simplilearn, 2024) and a Node.js Master Class (2026). In progress: Introduction to Power BI on DataCamp (Data Analyst in Power BI track), Microsoft Power BI Data Analyst and the full CCNA.";
   if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
     return "B.Sc. in Computer Science from Northern Caribbean University, 2026. GPA 3.5, Honor Roll, Top Student in Software Engineering, and a Leadership Recognition Award.";
   if (has("security", "secure", "owasp", "rbac", "audit", "traceab"))

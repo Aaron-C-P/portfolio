@@ -139,7 +139,7 @@ export const skills: Skill[] = [
     group: "Data",
     level: "In progress",
     roles: ["analyst"],
-    proof: "Working toward the Microsoft Power BI Data Analyst certification. Not claimed as a delivered skill yet.",
+    proof: "Studying now: Introduction to Power BI on DataCamp (the Data Analyst in Power BI track), working toward the Microsoft Power BI Data Analyst certification. Not claimed as a delivered skill yet.",
     links: [{ label: "Credentials", to: "/about" }],
     keywords: ["power bi", "microsoft power bi", "pl-300", "dax"],
   },

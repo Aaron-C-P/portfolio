@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Compass, Store, Code2, BarChart3 } from "lucide-react";
+import { ArrowRight, Briefcase, Check, Compass, Store, Code2, BarChart3, GraduationCap, Wrench } from "lucide-react";
 import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
@@ -16,6 +16,53 @@ const proof = [
   { value: "400+", label: "automated tests on the cake platform", to: "/work/chef-hudsons-christmas-cakes", hint: "Read the cake platform case study" },
   { value: String(publishedPieces), label: "pieces in national newspapers and international peer-reviewed journals", to: "/writing", hint: "Read the published pieces" },
   { value: "2026", label: "Computer Science graduate", to: "/about", hint: "See my degree and coursework" },
+];
+
+const hiringCards = [
+  {
+    h: "Skills",
+    Icon: Wrench,
+    card: "border-violet/50 bg-violet/5",
+    tile: "bg-violet text-white",
+    check: "text-violet-light",
+    items: [
+      { t: "SQL: PostgreSQL, MySQL, SQL Server", hot: "Core" },
+      { t: "Python for data processing and automation" },
+      { t: "Dashboards and KPI design" },
+      { t: "Database and schema design" },
+      { t: "Data validation and audit logging" },
+      { t: "React, TypeScript, Node.js" },
+      { t: "Git, documentation and testing" },
+    ],
+  },
+  {
+    h: "Experience",
+    Icon: Briefcase,
+    card: "border-amber-500/60 bg-amber-300/10",
+    tile: "bg-amber-600 text-white",
+    check: "text-amber-600",
+    items: [
+      { t: "Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", hot: "Intern" },
+      { t: "Live systems for a baker and a delivery service", hot: "Live" },
+      { t: "Published in the Jamaica Gleaner, the Jamaica Observer and an international peer-reviewed journal (Castledown)", hot: "Published" },
+      { t: "Volunteer workshop facilitator, SBA" },
+    ],
+  },
+  {
+    h: "Credentials",
+    Icon: GraduationCap,
+    card: "border-emerald-500/60 bg-emerald-400/10",
+    tile: "bg-emerald-600 text-white",
+    check: "text-emerald-600",
+    items: [
+      { t: "B.Sc. Computer Science, NCU (2026)", hot: "GPA 3.5" },
+      { t: "Honor Roll, Top Student in Software Engineering", hot: "Top" },
+      { t: "8 CSEC subjects, 9 CAPE units and 2 NVQ qualifications" },
+      { t: "CompTIA Security+ 701 (Infosec, 2025)", hot: "Certified" },
+      { t: "CCNA: Introduction to Networks (2026)", hot: "Certified" },
+      { t: "In progress: Power BI (DataCamp) and the full CCNA" },
+    ],
+  },
 ];
 
 const paths = [
@@ -139,22 +186,42 @@ const Home = () => {
             I am a 2026 Computer Science graduate (Northern Caribbean University, GPA 3.5) who builds ordering systems, reporting dashboards and data tools, and
             makes the data behind them accurate and traceable. Open to data and reporting analytics, software development, and IT or networking roles, including remote.
           </p>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {[
-              { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
-              { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner, the Jamaica Observer and an international peer-reviewed journal (Castledown)", "Volunteer workshop facilitator, SBA"] },
-              { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "8 CSEC subjects, 9 CAPE units and 2 NVQ qualifications", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
-            ].map((c) => (
-              <div key={c.h}>
-                <h3 className="font-hand text-2xl text-violet-light">{c.h}</h3>
-                <ul className="mt-2 space-y-1.5 text-sm text-soft">
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {hiringCards.map((c) => (
+              <div
+                key={c.h}
+                className={`group rounded-3xl border-2 p-5 transition duration-200 hover:-translate-y-1 hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${c.card}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${c.tile}`}>
+                    <c.Icon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <h3 className="text-2xl font-extrabold">{c.h}</h3>
+                </div>
+                <ul className="mt-4 space-y-2.5">
                   {c.items.map((i) => (
-                    <li key={i}>{i}</li>
+                    <li key={i.t} className="flex items-start gap-2 text-sm">
+                      <Check className={`mt-0.5 h-4 w-4 shrink-0 ${c.check}`} aria-hidden="true" />
+                      <span className={i.hot ? "font-semibold text-fg" : "text-soft"}>
+                        {i.t}
+                        {i.hot && <span className={`ml-2 inline-block rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${c.tile}`}>{i.hot}</span>}
+                      </span>
+                    </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-violet/50 bg-violet/5 p-4">
+            <span className="flex items-center gap-2 rounded-full bg-violet px-3 py-1 text-sm font-semibold text-white">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-white" aria-hidden="true" /> Learning now
+            </span>
+            <p className="text-sm text-soft">
+              <span className="font-semibold text-fg">Introduction to Power BI</span> on DataCamp, part of the Data Analyst in Power BI track, and the full Cisco CCNA.
+            </p>
+          </div>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/resume" className="btn-primary">
               Request my résumé
