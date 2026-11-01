@@ -102,31 +102,6 @@ const Home = () => {
     <>
       <section className="relative isolate overflow-hidden pt-28">
         <div className="absolute inset-0 -z-10">
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-[0.18]"
-              style={{
-                backgroundImage: "radial-gradient(rgb(var(--c-violet, 118 71 235)) 1px, transparent 1.5px)",
-                backgroundSize: "44px 44px",
-                animation: "gridpan 8s linear infinite",
-              }}
-            />
-            <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/35 blur-3xl" style={{ animation: "drift 14s ease-in-out infinite" }} />
-            <div className="absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-amber-400/25 blur-3xl" style={{ animation: "drift2 18s ease-in-out infinite" }} />
-            <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" style={{ animation: "drift 22s ease-in-out infinite reverse" }} />
-            <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/25 to-transparent" style={{ animation: "sweep 9s ease-in-out infinite" }} />
-            {[6, 14, 23, 31, 42, 53, 61, 72, 83, 92].map((x, i) => (
-              <span
-                key={x}
-                className="absolute bottom-0 h-1.5 w-1.5 rounded-full bg-violet-light"
-                style={{
-                  left: `${x}%`,
-                  ["--dx" as string]: `${i % 2 ? 28 : -28}px`,
-                  animation: `rise ${9 + (i % 5) * 2}s linear ${i * 0.9}s infinite`,
-                }}
-              />
-            ))}
-          </div>
           <motion.img
             src={heroPhoto}
             alt="Aaron Prince"
@@ -137,6 +112,31 @@ const Home = () => {
           />
           <div className="absolute inset-0 hidden bg-gradient-to-r from-ink via-ink/85 to-transparent md:block md:via-ink/60" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink from-45% via-transparent to-ink/20 md:from-0% md:to-ink/50" />
+          <div aria-hidden="true" className="live-bg pointer-events-none absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-30"
+              style={{
+                backgroundImage: "radial-gradient(rgb(var(--c-violet, 118 71 235)) 1px, transparent 1.5px)",
+                backgroundSize: "44px 44px",
+                animation: "gridpan 5s linear infinite",
+              }}
+            />
+            <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/35 blur-3xl" style={{ animation: "drift 9s ease-in-out infinite" }} />
+            <div className="absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-amber-400/25 blur-3xl" style={{ animation: "drift2 11s ease-in-out infinite" }} />
+            <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" style={{ animation: "drift 13s ease-in-out infinite reverse" }} />
+            <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/25 to-transparent" style={{ animation: "sweep 6s ease-in-out infinite" }} />
+            {[6, 14, 23, 31, 42, 53, 61, 72, 83, 92].map((x, i) => (
+              <span
+                key={x}
+                className="absolute bottom-0 h-2 w-2 rounded-full bg-violet-light"
+                style={{
+                  left: `${x}%`,
+                  ["--dx" as string]: `${i % 2 ? 28 : -28}px`,
+                  animation: `rise ${9 + (i % 5) * 2}s linear ${i * 0.9}s infinite`,
+                }}
+              />
+            ))}
+          </div>
         </div>
         <div className="mx-auto max-w-6xl px-5 pb-14 pt-[44vh] md:pb-20 md:pt-24">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
