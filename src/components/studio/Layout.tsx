@@ -11,6 +11,7 @@ const nav = [
   { to: "/skills", label: "Skills" },
   { to: "/services", label: "Services" },
   { to: "/writing", label: "Writing" },
+  { to: "/feed", label: "Feed" },
   { to: "/about", label: "About" },
 ];
 
@@ -27,7 +28,7 @@ export const Wordmark = () => (
 );
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${isActive ? "text-cream" : "text-soft hover:text-fg"}`;
+  `rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition ${isActive ? "text-cream" : "text-soft hover:text-fg"}`;
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -80,7 +81,7 @@ const Header = () => {
           >
             <Phone className="h-4 w-4 text-violet-light" aria-hidden="true" /> {brand.phone}
           </a>
-          <Link to="/contact" className="btn-primary hidden whitespace-nowrap lg:inline-flex">
+          <Link to="/contact" className="btn-primary hidden whitespace-nowrap xl:inline-flex">
             Start a conversation
           </Link>
           <button

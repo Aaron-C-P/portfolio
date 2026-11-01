@@ -775,6 +775,8 @@ export interface FeedPost {
   text: string;
   image: string | null;
   imageAlt: string;
+  /** Set on posts that are real achievements, so they are highlighted. */
+  achievement?: string;
   /** Honest note about what the image is. */
   note?: string;
   href?: string;
@@ -784,6 +786,7 @@ export interface FeedPost {
 export const feed: FeedPost[] = [
   {
     id: "graduation",
+    achievement: "B.Sc. in Computer Science, Northern Caribbean University (2026)",
     date: "October 2026",
     source: "LinkedIn",
     text: "Grinding in silence, letting the results speak. B.Sc. in Computer Science from NCU. AMEN!",
@@ -803,6 +806,7 @@ export const feed: FeedPost[] = [
   },
   {
     id: "ccna",
+    achievement: "Cisco CCNA: Introduction to Networks certification",
     date: "Mid-October 2026",
     source: "LinkedIn",
     text: "New certification: CCNA: Introduction to Networks from Cisco Networking Academy.",
@@ -813,6 +817,7 @@ export const feed: FeedPost[] = [
   },
   {
     id: "defence-9-5",
+    achievement: "Jamaica Observer column: In Defence of the 9-5",
     date: "14 September 2026",
     source: "Jamaica Observer, Columns",
     text: "In Defence of the 9-5. A column on why a salaried job is too often read online as a lack of ambition, why entrepreneurship is not automatically freedom, and why stability, income and dignity can be the base for saving, studying or building something on the side. Success has many definitions, and the right path is one you choose on purpose.",
@@ -823,6 +828,7 @@ export const feed: FeedPost[] = [
   },
   {
     id: "perspective",
+    achievement: "Jamaica Observer column: Our Perspective Determines the Path Forward",
     date: "July 2026",
     source: "LinkedIn and Jamaica Observer",
     text: "Our Perspective Determines the Path Forward. How perspective shapes decisions, why resilience is recalibration rather than giving up, and how challenges become growth.",
@@ -833,6 +839,7 @@ export const feed: FeedPost[] = [
   },
   {
     id: "journal-aile",
+    achievement: "Co-authored a peer-reviewed international journal paper",
     date: "18 June 2026",
     source: "Castledown, Artificial Intelligence in Language Education",
     text: "Co-authored a peer-reviewed journal paper with Oneil Madden, Jerónimo Paiva, Kevol Edwards and Jason-Lee Daley: a qualitative study of how 30 foreign language educators across 13 Caribbean countries see GenAI changing teaching, learning and assessment.",

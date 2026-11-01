@@ -6,7 +6,7 @@ import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
 import { Specialization } from "@/components/studio/Specialization";
-import { brand, projects, principles, findProject, press } from "@/data/studio";
+import { brand, projects, principles, findProject, press, feed } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
 const publishedPieces = press.filter((p) => /Gleaner|Observer|Castledown/.test(p.meta)).length;
@@ -172,6 +172,36 @@ const Home = () => {
       <div className="mx-auto max-w-6xl px-5 pt-14 md:pt-24">
         <Specialization id="home-specialization" />
       </div>
+
+      <section aria-labelledby="wins-title" className="mx-auto max-w-6xl px-5 pt-14 md:pt-24">
+        <Reveal className="rounded-3xl border border-violet/40 bg-panel p-6 md:p-10">
+          <Note>Achievements</Note>
+          <h2 id="wins-title" className="h-section mt-1">
+            Proof you can check.
+          </h2>
+          <ul className="mt-5 grid gap-3 md:grid-cols-2">
+            {feed
+              .filter((p) => p.achievement)
+              .map((p) => (
+                <li key={p.id}>
+                  <Link
+                    to={`/feed#${p.id}`}
+                    className="group flex h-full items-start justify-between gap-3 rounded-2xl border border-line bg-raise p-4 transition hover:-translate-y-0.5 hover:border-violet-light/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-light motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  >
+                    <span>
+                      <span className="block font-semibold">{p.achievement}</span>
+                      <span className="block text-sm text-soft">{p.date}</span>
+                    </span>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-violet-light transition group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+          </ul>
+          <Link to="/feed" className="btn-primary mt-6">
+            See the full feed <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Reveal>
+      </section>
 
       <section className="mx-auto max-w-4xl px-5 pt-14 md:pt-24">
         <SectionHead eyebrow="Watch" title="Ten seconds per project." intro="Pick one. Each tour runs for ten seconds." />
