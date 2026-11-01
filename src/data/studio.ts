@@ -651,9 +651,8 @@ export interface PressItem {
 }
 
 export const press: PressItem[] = [
-  { no: "001", title: "Gentle Architect: The Lonely Build", meta: "Self-published book · 2026", href: "https://www.amazon.com/s?k=Gentle+Architect+The+Lonely+Build" },
   { no: "002", title: "Caricature Art Popularity Across Jamaica", meta: "Jamaica Gleaner · Growth & Jobs · February 2026", href: "https://jamaica-gleaner.com/article/news/20260210/growth-jobs-caricature-art-popularity-across-jamaica", shot: shotCaricature },
-  { no: "003", title: "From Augmentation to Transformation: Foreign Language Teachers' Perceptions of GenAI's Role in Redefining Teaching, Learning, and Assessment", meta: "Peer-reviewed journal · Castledown, Artificial Intelligence in Language Education, vol. 2 (2026) · Co-author with Madden, Paiva, Edwards and Daley", href: "https://doi.org/10.29140/aile.2026.104107", shot: shotJournal },
+  { no: "003", title: "From Augmentation to Transformation: Foreign Language Teachers' Perceptions of GenAI's Role in Redefining Teaching, Learning, and Assessment", meta: "Peer-reviewed journal · Castledown, Artificial Intelligence in Language Education, vol. 2 (2026) · Authors: Oneil Madden, Jerónimo Paiva, Kevol Edwards, Jason-Lee Daley and Aaron Prince (Northern Caribbean University, Jamaica)", href: "https://doi.org/10.29140/aile.2026.104107", shot: shotJournal },
   { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos", shot: shotFrustration },
   { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward", shot: shotLifeHard },
   { no: "009", title: "In Defence of the 9-5", meta: "Jamaica Observer · Columns · September 2026", href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/", shot: shotDefence },
