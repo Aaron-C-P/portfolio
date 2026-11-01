@@ -22,7 +22,6 @@ The site reads this data from `src/data/studio.ts`. Edit that file to change con
 | SoftQ / PreQ | Working prototype | Public repo (README is the Vite template) | Needs a description of what was built and when it was used |
 | Orbita Commerce | Academic project | Public repo (empty README) | Screenshots |
 | Hurricane Watch Jamaica | Deployed application | Live site | Screenshots |
-| Smart Baby Bed Set | Academic project | Course description | Diagrams |
 | Jamoment | In progress | Your description | Everything visual |
 | Not yet on the site | | | Personal Finance Wallet, FileTrack Pro, Auto-Narrating Dashboard, R Code Data Lab, Vault Guardian (repo returns 404). Tell me which belong and where their material is |
 
