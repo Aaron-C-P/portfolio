@@ -5,6 +5,7 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
+import { Specialization } from "@/components/studio/Specialization";
 import { brand, projects, principles, findProject, press } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
@@ -163,6 +164,10 @@ const Home = () => {
           </div>
         </Reveal>
       </section>
+
+      <div className="mx-auto max-w-6xl px-5 pt-14 md:pt-24">
+        <Specialization id="home-specialization" />
+      </div>
 
       <section className="mx-auto max-w-4xl px-5 pt-14 md:pt-24">
         <SectionHead eyebrow="Watch" title="Ten seconds per project." intro="Pick one. Each tour runs for ten seconds." />

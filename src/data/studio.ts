@@ -856,11 +856,75 @@ export const courses: Course[] = [
   { code: "CPTR450", name: "Database Systems", year: 4, relevance: "Transactions, concurrency and integrity: idempotency keys and duplicate detection." },
   { code: "CPTR490", name: "Advanced Project", year: 4, relevance: "End-to-end delivery of a larger system." },
   { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
-  { code: "Elective", name: "Cloud Computing", relevance: "How applications run on shared infrastructure: the thinking behind hosting my apps on Vercel and Supabase." },
-  { code: "Elective", name: "IT Project Management", relevance: "Scoping, milestones and delivery: how I plan builds for clients such as the baker and the bank team." },
-  { code: "Elective", name: "Network Implementation", relevance: "Designing, configuring and troubleshooting networks, practised in Cisco Packet Tracer on the CCNA path." },
-  { code: "Elective", name: "Systems Administration", relevance: "Running and maintaining servers and user access: the operations side of keeping a live system healthy." },
-  { code: "Elective", name: "Data Security", relevance: "Protecting data at rest and in use: validation, access control and audit logging in my builds." },
-  { code: "Elective", name: "Advanced Application Development", relevance: "Deeper application development: the foundation for the systems I ship and for larger project work." },
 ];
 
+
+/** The six electives, grouped as one focus. Basis says honestly how each is backed up. */
+export const specialization = {
+  title: "Cloud, networks and secure systems",
+  pitch:
+    "Beyond the core Computer Science sequence, my electives point one way: how software is hosted, connected, administered and protected. It is the part of IT that keeps what I build running, and keeps the data safe.",
+  honesty: "Electives are coursework. Where I have applied one in a real build, the card says so and links to it; where I have not, it says that too.",
+  tracks: [
+    {
+      name: "Cloud Computing",
+      icon: "cloud" as const,
+      basis: "Applied in projects",
+      what: "How applications run on shared infrastructure rather than one machine.",
+      proof: "My apps are hosted on Vercel, with Supabase and Google Sheets as back ends.",
+      links: [
+        { label: "Cake platform", to: "/work/chef-hudsons-christmas-cakes" },
+        { label: "EGZIT", to: "/work/egzit" },
+      ],
+    },
+    {
+      name: "IT Project Management",
+      icon: "project" as const,
+      basis: "Applied in projects",
+      what: "Scoping, milestones and delivery: turning a request into a plan and then into something shipped.",
+      proof: "I scoped, built and delivered tools for a baker and for a bank team, and worked in Git with code review during my internship.",
+      links: [
+        { label: "BNS Lunch Pre-Order", to: "/work/bns-lunch-pre-order" },
+        { label: "Internship", to: "/journey" },
+      ],
+    },
+    {
+      name: "Network Implementation",
+      icon: "network" as const,
+      basis: "Coursework and labs",
+      what: "Designing, configuring and troubleshooting networks: subnets, routing and switching.",
+      proof: "Practised in Cisco Packet Tracer; CCNA Introduction to Networks is done and the full CCNA is in progress.",
+      links: [{ label: "Networking skill", to: "/skills" }],
+    },
+    {
+      name: "Systems Administration",
+      icon: "sysadmin" as const,
+      basis: "Coursework",
+      what: "Running and maintaining servers and user access: the operations side of keeping a system healthy.",
+      proof: "Studied as an elective, alongside operating-systems coursework. I do not claim a production sysadmin role.",
+      links: [{ label: "All skills", to: "/skills" }],
+    },
+    {
+      name: "Data Security",
+      icon: "security" as const,
+      basis: "Applied in projects",
+      what: "Protecting data at rest and in use: validation, access control and audit trails.",
+      proof: "Row-level security in EGZIT, and mandatory reason codes with audit logging in FileTrack Pro and the finance wallet.",
+      links: [
+        { label: "FileTrack Pro", to: "/work/filetrack-pro" },
+        { label: "Finance Wallet", to: "/work/personal-finance-wallet" },
+      ],
+    },
+    {
+      name: "Advanced Application Development",
+      icon: "apps" as const,
+      basis: "Applied in projects",
+      what: "Building larger, multi-part applications with a real database, roles and tests.",
+      proof: "A 14-table marketplace, a live delivery service and a 406-test ordering platform.",
+      links: [
+        { label: "EGZIT", to: "/work/egzit" },
+        { label: "Errands", to: "/work/errands" },
+      ],
+    },
+  ],
+};

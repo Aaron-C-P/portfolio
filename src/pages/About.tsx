@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import { competencies } from "@/data/skills";
 import { brand, courses, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
+import { Specialization } from "@/components/studio/Specialization";
 
 const skills: [string, string[]][] = [
   ["Core toolkit", ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Microsoft Power BI (in progress)", "Dashboard and KPI design", "Database and schema design", "Data validation and audit logging", "Microsoft Access", "Git, documentation and testing"]],
@@ -103,6 +104,10 @@ const About = () => {
           </p>
         </Reveal>
       </section>
+
+      <div className="mt-20">
+        <Specialization />
+      </div>
 
       <section className="mt-20">
         <Reveal>
