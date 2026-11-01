@@ -5,14 +5,16 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
-import { brand, projects, principles, findProject } from "@/data/studio";
+import { brand, projects, principles, findProject, press } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
+const newspaperPieces = press.filter((p) => /Gleaner|Observer/.test(p.meta)).length;
+
 const proof = [
-  { value: "2", label: "live business applications" },
-  { value: "400+", label: "automated tests on the cake platform" },
-  { value: "5", label: "pieces in national newspapers" },
-  { value: "2026", label: "Computer Science graduate" },
+  { value: "2", label: "live business applications", to: "/work", hint: "See the live applications" },
+  { value: "400+", label: "automated tests on the cake platform", to: "/work/chef-hudsons-christmas-cakes", hint: "Read the cake platform case study" },
+  { value: String(newspaperPieces), label: "pieces in national newspapers", to: "/writing", hint: "Read the published pieces" },
+  { value: "2026", label: "Computer Science graduate", to: "/about", hint: "See my degree and coursework" },
 ];
 
 const paths = [
@@ -104,10 +106,19 @@ const Home = () => {
       <section aria-label="At a glance" className="mx-auto -mt-2 max-w-6xl px-5">
         <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {proof.map((p) => (
-            <div key={p.label} className="glass rounded-2xl p-5">
-              <dt className="sr-only">{p.label}</dt>
-              <dd className="text-4xl font-extrabold text-cream">{p.value}</dd>
-              <p className="mt-1 text-sm text-soft">{p.label}</p>
+            <div key={p.label}>
+              <Link
+                to={p.to}
+                aria-label={`${p.value} ${p.label}. ${p.hint}`}
+                className="glass group relative flex h-full min-h-[8.5rem] flex-col rounded-2xl p-5 transition duration-200 hover:-translate-y-1 hover:border-violet-light/60 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-light active:translate-y-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              >
+                <dt className="sr-only">{p.label}</dt>
+                <dd className="text-4xl font-extrabold text-cream">{p.value}</dd>
+                <span className="mt-1 text-sm text-soft">{p.label}</span>
+                <span className="mt-auto flex items-center gap-1 pt-3 text-xs font-semibold text-violet-light">
+                  {p.hint} <ArrowRight className="h-3 w-3 transition group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+                </span>
+              </Link>
             </div>
           ))}
         </dl>
