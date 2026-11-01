@@ -94,9 +94,13 @@ const Home = () => {
               </Link>
             </div>
             <p className="mt-6 text-base font-medium text-soft">
-              Hiring or got a project? Email me:{" "}
+              Hiring or got a project? Email{" "}
               <a href={`mailto:${brand.email}`} className="font-semibold text-violet-light underline underline-offset-4 hover:text-fg">
                 {brand.email}
+              </a>{" "}
+              or call{" "}
+              <a href={brand.phoneHref} className="whitespace-nowrap font-semibold text-violet-light underline underline-offset-4 hover:text-fg">
+                {brand.phone}
               </a>
             </p>
             <p className="mt-3 font-hand text-2xl text-cream/90">{brand.tagline}</p>

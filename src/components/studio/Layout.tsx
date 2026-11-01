@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
+import { Menu, X, Github, Linkedin, Mail, Phone } from "lucide-react";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
 
@@ -46,7 +46,7 @@ const Header = () => {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition ${solid || open ? "border-b border-line bg-ink/85 backdrop-blur-xl" : "bg-transparent"}`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 min-[1700px]:max-w-[88rem]">
         <Link to="/" aria-label="Aaron Prince home">
           <Wordmark />
         </Link>
@@ -60,14 +60,27 @@ const Header = () => {
         <div className="flex items-center gap-2">
           <a
             href={`mailto:${brand.email}`}
-            className="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-soft transition hover:text-fg xl:inline-flex"
+            className="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-soft transition hover:text-fg min-[1700px]:inline-flex"
           >
             <Mail className="h-4 w-4 text-violet-light" aria-hidden="true" /> {brand.email}
           </a>
-          <a href={`mailto:${brand.email}`} aria-label={`Email ${brand.email}`} className="inline-flex rounded-lg p-2 text-violet-light xl:hidden">
+          <a href={`mailto:${brand.email}`} aria-label={`Email ${brand.email}`} className="inline-flex rounded-lg p-2 text-violet-light min-[1700px]:hidden">
             <Mail className="h-6 w-6" />
           </a>
-          <Link to="/contact" className="btn-primary hidden lg:inline-flex">
+          <a
+            href={brand.phoneHref}
+            aria-label={`Call ${brand.phone}`}
+            className="inline-flex rounded-lg p-2 text-violet-light min-[1700px]:hidden"
+          >
+            <Phone className="h-6 w-6" />
+          </a>
+          <a
+            href={brand.phoneHref}
+            className="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-soft transition hover:text-fg min-[1700px]:inline-flex"
+          >
+            <Phone className="h-4 w-4 text-violet-light" aria-hidden="true" /> {brand.phone}
+          </a>
+          <Link to="/contact" className="btn-primary hidden whitespace-nowrap lg:inline-flex">
             Start a conversation
           </Link>
           <button
