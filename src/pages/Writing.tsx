@@ -6,7 +6,7 @@ const Writing = () => {
   usePageTitle("Writing");
   return (
     <div className="mx-auto max-w-3xl px-5 pb-24 pt-32">
-      <SectionHead page eyebrow="Writing" title="Engineering is clearer when you can explain it." intro="A book, national newspaper pieces and academic work." />
+      <SectionHead page eyebrow="Writing" title="Engineering is clearer when you can explain it." intro="A book, national newspaper pieces and a peer-reviewed international journal paper." />
       <ul className="divide-y divide-line overflow-hidden rounded-3xl border border-line bg-panel">
         {press.map((w, i) => {
           const body = (

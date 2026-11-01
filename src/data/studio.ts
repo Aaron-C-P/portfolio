@@ -6,6 +6,7 @@ import errandsHome from "@/assets/work/errands-home.jpg";
 import egzitMockup from "@/assets/portfolio/egzit-mockup.png";
 import bnsPreorder from "@/assets/portfolio/bns-preorder.png";
 import preqApp from "@/assets/portfolio/preq-app.png";
+import shotJournal from "@/assets/articles/journal-aile.jpg";
 import shotDefence from "@/assets/articles/defence-9-5.jpg";
 import shotScratch from "@/assets/articles/starting-from-scratch.jpg";
 import shotPerspective from "@/assets/articles/perspective.jpg";
@@ -652,7 +653,7 @@ export interface PressItem {
 export const press: PressItem[] = [
   { no: "001", title: "Gentle Architect: The Lonely Build", meta: "Self-published book · 2026", href: "https://www.amazon.com/s?k=Gentle+Architect+The+Lonely+Build" },
   { no: "002", title: "Caricature Art Popularity Across Jamaica", meta: "Jamaica Gleaner · Growth & Jobs · February 2026", href: "https://jamaica-gleaner.com/article/news/20260210/growth-jobs-caricature-art-popularity-across-jamaica", shot: shotCaricature },
-  { no: "003", title: "GenAI, Future Role & Professionalization of Foreign Language Teachers", meta: "Co-author, Madden et al. (2025) · survey data, statistical analysis, written reporting", href: null as string | null },
+  { no: "003", title: "From Augmentation to Transformation: Foreign Language Teachers' Perceptions of GenAI's Role in Redefining Teaching, Learning, and Assessment", meta: "Peer-reviewed journal · Castledown, Artificial Intelligence in Language Education, vol. 2 (2026) · Co-author with Madden, Paiva, Edwards and Daley", href: "https://doi.org/10.29140/aile.2026.104107", shot: shotJournal },
   { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos", shot: shotFrustration },
   { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward", shot: shotLifeHard },
   { no: "009", title: "In Defence of the 9-5", meta: "Jamaica Observer · Columns · September 2026", href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/", shot: shotDefence },
@@ -823,6 +824,16 @@ export const feed: FeedPost[] = [
     imageAlt: "Screenshot of the Jamaica Observer column Our perspective determines the path forward",
     note: "Screenshot of the published column.",
     href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/",
+  },
+  {
+    id: "journal-aile",
+    date: "18 June 2026",
+    source: "Castledown, Artificial Intelligence in Language Education",
+    text: "Co-authored a peer-reviewed journal paper with Oneil Madden, Jerónimo Paiva, Kevol Edwards and Jason-Lee Daley: a qualitative study of how 30 foreign language educators across 13 Caribbean countries see GenAI changing teaching, learning and assessment.",
+    image: shotJournal,
+    imageAlt: "Screenshot of the Castledown journal page for From augmentation to transformation, listing the authors",
+    note: "Screenshot of the published, open-access article page.",
+    href: "https://doi.org/10.29140/aile.2026.104107",
   },
 ];
 

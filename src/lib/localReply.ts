@@ -37,7 +37,7 @@ export function localReply(raw: string): string {
   if (has("security", "secure", "owasp", "rbac", "audit", "traceab"))
     return "Traceable by design is my habit: validation at the point of capture, audit logging, duplicate detection and access control from the start rather than bolted on later.";
   if (has("write", "writing", "book", "article", "gleaner", "observer", "author", "publish"))
-    return "I write too: a self-published book, Gentle Architect: The Lonely Build, and pieces in the Jamaica Gleaner and Jamaica Observer. See the Writing page.";
+    return "I write too: a self-published book, Gentle Architect: The Lonely Build, pieces in the Jamaica Gleaner and Jamaica Observer, and a co-authored peer-reviewed paper in Castledown's Artificial Intelligence in Language Education (2026). See the Writing page.";
   if (has("where", "location", "jamaica", "based", "live", "from"))
     return "I am based in Mandeville, Manchester, Jamaica, and happy to work remotely.";
   if (has("who are you", "yourself", "about you", "your name"))

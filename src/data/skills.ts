@@ -184,7 +184,7 @@ export const skills: Skill[] = [
     group: "Practice",
     level: "Shipped",
     roles: ["analyst", "developer", "it"],
-    proof: "Published in the Jamaica Gleaner and Jamaica Observer, and a volunteer workshop facilitator.",
+    proof: "Published in the Jamaica Gleaner and Jamaica Observer, co-author of a peer-reviewed journal paper (Castledown), and a volunteer workshop facilitator.",
     links: [{ label: "Writing", to: "/writing" }],
     keywords: ["communication", "writing", "stakeholder", "presentation", "facilitation"],
   },

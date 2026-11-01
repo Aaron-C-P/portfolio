@@ -9,12 +9,12 @@ import { Specialization } from "@/components/studio/Specialization";
 import { brand, projects, principles, findProject, press } from "@/data/studio";
 import { Note, ProjectCard, Reveal, SectionHead, Underlined, usePageTitle } from "@/components/studio/parts";
 
-const newspaperPieces = press.filter((p) => /Gleaner|Observer/.test(p.meta)).length;
+const publishedPieces = press.filter((p) => /Gleaner|Observer|Castledown/.test(p.meta)).length;
 
 const proof = [
   { value: "2", label: "live business applications", to: "/work", hint: "See the live applications" },
   { value: "400+", label: "automated tests on the cake platform", to: "/work/chef-hudsons-christmas-cakes", hint: "Read the cake platform case study" },
-  { value: String(newspaperPieces), label: "pieces in national newspapers", to: "/writing", hint: "Read the published pieces" },
+  { value: String(publishedPieces), label: "pieces in national newspapers and international peer-reviewed journals", to: "/writing", hint: "Read the published pieces" },
   { value: "2026", label: "Computer Science graduate", to: "/about", hint: "See my degree and coursework" },
 ];
 
@@ -142,7 +142,7 @@ const Home = () => {
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {[
               { h: "Skills", items: ["SQL: PostgreSQL, MySQL, SQL Server", "Python for data processing and automation", "Dashboards and KPI design", "Database and schema design", "Data validation and audit logging", "React, TypeScript, Node.js", "Git, documentation and testing"] },
-              { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner and Jamaica Observer", "Volunteer workshop facilitator, SBA"] },
+              { h: "Experience", items: ["Web Development Intern, Larvation Web LLC (remote), Mar to Jun 2026", "Live systems for a baker and a delivery service", "Published in the Jamaica Gleaner, the Jamaica Observer and an international peer-reviewed journal (Castledown)", "Volunteer workshop facilitator, SBA"] },
               { h: "Credentials", items: ["B.Sc. Computer Science, NCU (2026)", "Honor Roll, Top Student in Software Engineering", "8 CSEC subjects, 9 CAPE units and 2 NVQ qualifications", "CompTIA Security+ 701 (Infosec, 2025)", "CCNA: Introduction to Networks (2026)", "Power BI Data Analyst and CCNA: in progress"] },
             ].map((c) => (
               <div key={c.h}>

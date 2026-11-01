@@ -50,7 +50,7 @@ const About = () => {
               I went from lab exercises to systems that real people use: a baker taking Christmas orders, a delivery service, a moving platform. Along the way I
               learned that the real defect is rarely where it shows, so I reproduce a failure before I fix it.
             </p>
-            <p>I also write. I have been published in the Jamaica Gleaner and the Jamaica Observer, and I have a self-published book.</p>
+            <p>I also write. I have been published in the Jamaica Gleaner and the Jamaica Observer, co-authored a peer-reviewed paper in an international journal (Castledown), and I have a self-published book.</p>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to="/journey" className="btn-primary">

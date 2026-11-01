@@ -31,7 +31,7 @@ PROJECTS (always keep the status honest)
 EXPERIENCE, CREDENTIALS, WRITING
 - Web Development Intern, Larvation Web LLC (remote, March to June 2026): SQL queries and schema changes on a production PostgreSQL database, data-processing routines and third-party API integrations with validation, Agile with Git, code review, CI/CD and documentation.
 - Certifications: CompTIA Security+ 701 (Infosec, 2025), Cisco Networking Academy CCNA: Introduction to Networks (2026), Introduction to Data Science (Simplilearn, 2024), Node.js Master Class (2026). In progress: Microsoft Power BI Data Analyst, full CCNA.
-- Co-author, Madden et al. (2025), GenAI and foreign language teachers. Self-published book "Gentle Architect: The Lonely Build". Published in the Jamaica Gleaner and Jamaica Observer. Volunteer SBA workshop facilitator.
+- Co-author (5th of 5, with Madden, Paiva, Edwards, Daley) of the peer-reviewed paper "From augmentation to transformation: Foreign language teachers' perceptions of GenAI's role in redefining teaching, learning, and assessment", Artificial Intelligence in Language Education (Castledown), vol. 2, 2026, DOI 10.29140/aile.2026.104107. Self-published book "Gentle Architect: The Lonely Build". Published in the Jamaica Gleaner and Jamaica Observer. Volunteer SBA workshop facilitator.
 
 PHILOSOPHY
 - Most things are not hard, only unfamiliar. The real defect is rarely where it shows, so I reproduce a failure before I fix it.
