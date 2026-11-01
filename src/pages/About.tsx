@@ -116,7 +116,7 @@ const About = () => {
             <Reveal key={c.code} delay={Math.min(i * 0.02, 0.15)}>
               <div className="h-full rounded-2xl border border-line bg-panel p-5">
                 <p className="font-mono text-xs text-soft">
-                  {c.code} · Year {c.year}
+                  {c.code}{c.year ? ` · Year ${c.year}` : ""}
                 </p>
                 <h3 className="mt-1 font-semibold">{c.name}</h3>
                 <p className="mt-1 text-sm text-soft">{c.relevance}</p>

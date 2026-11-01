@@ -10,12 +10,20 @@ const Writing = () => {
       <ul className="divide-y divide-line overflow-hidden rounded-3xl border border-line bg-panel">
         {press.map((w, i) => {
           const body = (
-            <div className="flex items-start gap-4 p-5 md:p-6">
+            <div className="flex flex-wrap items-start gap-4 p-5 sm:flex-nowrap md:p-6">
               <span className="pt-1 font-mono text-sm text-soft">{w.no}</span>
               <div className="flex-1">
                 <h2 className="text-lg font-semibold md:text-xl">{w.title}</h2>
                 <p className="mt-1 text-sm text-soft">{w.meta}</p>
               </div>
+              {w.shot && (
+                <img
+                  src={w.shot}
+                  alt={`Screenshot of the published article: ${w.title}`}
+                  loading="lazy"
+                  className="order-last aspect-[16/9] w-full shrink-0 rounded-lg border border-line object-cover object-top sm:order-none sm:aspect-auto sm:h-24 sm:w-36"
+                />
+              )}
               {w.href && <ArrowUpRight className="h-5 w-5 shrink-0 text-soft" />}
             </div>
           );

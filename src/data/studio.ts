@@ -6,6 +6,13 @@ import errandsHome from "@/assets/work/errands-home.jpg";
 import egzitMockup from "@/assets/portfolio/egzit-mockup.png";
 import bnsPreorder from "@/assets/portfolio/bns-preorder.png";
 import preqApp from "@/assets/portfolio/preq-app.png";
+import shotDefence from "@/assets/articles/defence-9-5.jpg";
+import shotScratch from "@/assets/articles/starting-from-scratch.jpg";
+import shotPerspective from "@/assets/articles/perspective.jpg";
+import shotEducation from "@/assets/articles/enhancing-education.jpg";
+import shotCaricature from "@/assets/articles/caricature-art.jpg";
+import shotFrustration from "@/assets/articles/lines-of-frustration.jpg";
+import shotLifeHard from "@/assets/articles/life-is-hard.jpg";
 import eggFarm3d from "@/assets/portfolio/egg-farm-3d.png";
 import eggFarmSheet from "@/assets/portfolio/egg-farm-sheet.png";
 import eggFarmThermal from "@/assets/portfolio/egg-farm-thermal.png";
@@ -633,16 +640,25 @@ export const milestones: Milestone[] = [
   },
 ];
 
-export const press = [
+export interface PressItem {
+  no: string;
+  title: string;
+  meta: string;
+  href: string | null;
+  /** Screenshot of the published page. */
+  shot?: string;
+}
+
+export const press: PressItem[] = [
   { no: "001", title: "Gentle Architect: The Lonely Build", meta: "Self-published book · 2026", href: "https://www.amazon.com/s?k=Gentle+Architect+The+Lonely+Build" },
-  { no: "002", title: "Caricature Art Popularity Across Jamaica", meta: "Jamaica Gleaner · Growth & Jobs · February 2026", href: "https://jamaica-gleaner.com/article/news/20260210/growth-jobs-caricature-art-popularity-across-jamaica" },
+  { no: "002", title: "Caricature Art Popularity Across Jamaica", meta: "Jamaica Gleaner · Growth & Jobs · February 2026", href: "https://jamaica-gleaner.com/article/news/20260210/growth-jobs-caricature-art-popularity-across-jamaica", shot: shotCaricature },
   { no: "003", title: "GenAI, Future Role & Professionalization of Foreign Language Teachers", meta: "Co-author, Madden et al. (2025) · survey data, statistical analysis, written reporting", href: null as string | null },
-  { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos" },
-  { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward" },
-  { no: "009", title: "In Defence of the 9-5", meta: "Jamaica Observer · Columns · September 2026", href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/" },
-  { no: "006", title: "Starting from Scratch", meta: "Jamaica Observer · September 2026", href: "https://www.jamaicaobserver.com/2026/09/02/starting-from-scratch/" },
-  { no: "008", title: "Our Perspective Determines the Path Forward", meta: "Jamaica Observer · July 2026", href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/" },
-  { no: "007", title: "Enhancing Education Without Replacing Traditional Methods", meta: "Jamaica Observer · May 2024", href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/" },
+  { no: "004", title: "Lines of Frustration: The Aftermath of Chaos", meta: "Jamaica Gleaner · Letter · 2025", href: "https://jamaica-gleaner.com/article/letters/20251115/lines-frustration-aftermath-chaos", shot: shotFrustration },
+  { no: "005", title: "Life Is Hard, but Perspective Will Determine the Path Forward", meta: "Jamaica Gleaner · Letter · July 2026", href: "https://jamaica-gleaner.com/article/letters/20260711/life-hard-perspective-will-determine-path-forward", shot: shotLifeHard },
+  { no: "009", title: "In Defence of the 9-5", meta: "Jamaica Observer · Columns · September 2026", href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/", shot: shotDefence },
+  { no: "006", title: "Starting from Scratch", meta: "Jamaica Observer · September 2026", href: "https://www.jamaicaobserver.com/2026/09/02/starting-from-scratch/", shot: shotScratch },
+  { no: "008", title: "Our Perspective Determines the Path Forward", meta: "Jamaica Observer · July 2026", href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/", shot: shotPerspective },
+  { no: "007", title: "Enhancing Education Without Replacing Traditional Methods", meta: "Jamaica Observer · May 2024", href: "https://www.jamaicaobserver.com/2024/05/30/enhancing-education-without-replacing-traditional-methods/", shot: shotEducation },
 ];
 
 export const recognition = [
@@ -793,8 +809,9 @@ export const feed: FeedPost[] = [
     date: "14 September 2026",
     source: "Jamaica Observer, Columns",
     text: "In Defence of the 9-5. A column on why a salaried job is too often read online as a lack of ambition, why entrepreneurship is not automatically freedom, and why stability, income and dignity can be the base for saving, studying or building something on the side. Success has many definitions, and the right path is one you choose on purpose.",
-    image: null,
-    imageAlt: "",
+    image: shotDefence,
+    imageAlt: "Screenshot of the Jamaica Observer column In defence of the 9-5, bylined Aaron Prince",
+    note: "Screenshot of the published column.",
     href: "https://www.jamaicaobserver.com/2026/09/14/defence-9-5/",
   },
   {
@@ -802,8 +819,9 @@ export const feed: FeedPost[] = [
     date: "July 2026",
     source: "LinkedIn and Jamaica Observer",
     text: "Our Perspective Determines the Path Forward. How perspective shapes decisions, why resilience is recalibration rather than giving up, and how challenges become growth.",
-    image: null,
-    imageAlt: "",
+    image: shotPerspective,
+    imageAlt: "Screenshot of the Jamaica Observer column Our perspective determines the path forward",
+    note: "Screenshot of the published column.",
     href: "https://www.jamaicaobserver.com/2026/07/13/perspective-determines-path-forward/",
   },
 ];
@@ -811,7 +829,8 @@ export const feed: FeedPost[] = [
 export interface Course {
   code: string;
   name: string;
-  year: 1 | 2 | 3 | 4;
+  /** Left out where the exact year is not confirmed. */
+  year?: 1 | 2 | 3 | 4;
   /** Where the subject shows up in the work. */
   relevance: string;
 }
@@ -837,5 +856,11 @@ export const courses: Course[] = [
   { code: "CPTR450", name: "Database Systems", year: 4, relevance: "Transactions, concurrency and integrity: idempotency keys and duplicate detection." },
   { code: "CPTR490", name: "Advanced Project", year: 4, relevance: "End-to-end delivery of a larger system." },
   { code: "MATH288", name: "Fundamentals of Linear Algebra with Applications", year: 4, relevance: "Vectors and matrices underpin robotics and machine learning, two interests of mine." },
+  { code: "Upper level", name: "Cloud Computing", relevance: "How applications run on shared infrastructure: the thinking behind hosting my apps on Vercel and Supabase." },
+  { code: "Upper level", name: "IT Project Management", relevance: "Scoping, milestones and delivery: how I plan builds for clients such as the baker and the bank team." },
+  { code: "Upper level", name: "Network Implementation", relevance: "Designing, configuring and troubleshooting networks, practised in Cisco Packet Tracer on the CCNA path." },
+  { code: "Upper level", name: "Systems Administration", relevance: "Running and maintaining servers and user access: the operations side of keeping a live system healthy." },
+  { code: "Upper level", name: "Data Security", relevance: "Protecting data at rest and in use: validation, access control and audit logging in my builds." },
+  { code: "Upper level", name: "Advanced Application Electives", relevance: "Deeper application development: the foundation for the systems I ship and for larger project work." },
 ];
 
