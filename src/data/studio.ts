@@ -13,6 +13,7 @@ import shotPerspective from "@/assets/articles/perspective.jpg";
 import shotEducation from "@/assets/articles/enhancing-education.jpg";
 import shotCaricature from "@/assets/articles/caricature-art.jpg";
 import shotFrustration from "@/assets/articles/lines-of-frustration.jpg";
+import certCptr235 from "@/assets/articles/cptr235-certificate.jpg";
 import shotLifeHard from "@/assets/articles/life-is-hard.jpg";
 import becomingQuestion from "@/assets/work/becoming-question.jpg";
 import becomingMap from "@/assets/work/becoming-map.jpg";
@@ -876,9 +877,9 @@ export const feed: FeedPost[] = [
     date: "27 September 2023",
     source: "Department of Computer and Information Sciences",
     text: "Certificate of achievement: named the most outstanding student in CPTR235 Software Engineering for the Spring semester of 2023, signed by the Department Chair and the Coordinator.",
-    image: null,
-    imageAlt: "",
-    note: "The certificate is available as a PDF.",
+    image: certCptr235,
+    imageAlt: "Certificate of achievement naming Aaron Prince the most outstanding student in CPTR235 Software Engineering, Spring 2023, signed by the Department Chair and the Coordinator",
+    note: "Capture of the certificate; the full PDF is linked below.",
     href: "/certificates/cptr235-most-outstanding-student.pdf",
   },
 ];
