@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Menu, X, Github, Linkedin, Mail, Phone } from "lucide-react";
+import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
 
@@ -17,9 +18,8 @@ const nav = [
 
 export const Wordmark = () => (
   <span className="flex items-center gap-3">
-    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet to-violet-light font-hand text-2xl font-bold leading-none text-white">
-      AP
-    </span>
+    <img src={avatar} alt="" className="h-10 w-10 shrink-0 rounded-xl object-cover" />
+
     <span className="leading-tight">
       <span className="block font-hand text-2xl font-bold">Aaron Prince</span>
       <span className="hidden text-[11px] uppercase tracking-widest text-soft sm:block">{brand.studio}</span>
