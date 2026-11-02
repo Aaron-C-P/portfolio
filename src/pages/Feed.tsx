@@ -75,7 +75,7 @@ const Feed = () => {
                 {p.note && <p className="mt-2 text-sm text-soft">{p.note}</p>}
                 {p.href && (
                   <a href={p.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-cream hover:underline">
-                    {p.href.includes("linkedin") ? "View on LinkedIn" : "Read the original"} <ArrowUpRight className="h-4 w-4" />
+                    {p.href.includes("linkedin") ? "View on LinkedIn" : p.href.endsWith(".pdf") ? "View the certificate" : "Read the original"} <ArrowUpRight className="h-4 w-4" />
                   </a>
                 )}
               </div>

@@ -55,7 +55,7 @@ const hiringCards = [
     tile: "bg-emerald-600 text-white",
     check: "text-emerald-600",
     items: [
-      { t: "B.Sc. Computer Science, NCU (2026)", hot: "GPA 3.5" },
+      { t: "B.Sc. Computer Science, NCU (2026)", hot: "Graduate" },
       { t: "Honor Roll, Top Student in Software Engineering", hot: "Top" },
       { t: "8 CSEC subjects, 9 CAPE units and 2 NVQ qualifications" },
       { t: "CompTIA Security+ 701 (Infosec, 2025)", hot: "Certified" },
@@ -203,7 +203,7 @@ const Home = () => {
             What I do, in one place.
           </h2>
           <p className="mt-4 max-w-3xl text-lg text-soft">
-            I am a 2026 Computer Science graduate (Northern Caribbean University, GPA 3.5) who builds ordering systems, reporting dashboards and data tools, and
+            I am a 2026 Computer Science graduate (Northern Caribbean University) who builds ordering systems, reporting dashboards and data tools, and
             makes the data behind them accurate and traceable. Open to data and reporting analytics, software development, and IT or networking roles, including remote.
           </p>
           <div className="mt-8 grid gap-5 md:grid-cols-3">

@@ -605,7 +605,7 @@ export const milestones: Milestone[] = [
     dated: true,
     title: "Graduating as Top Student in Software Engineering",
     chapter: "Foundations",
-    summary: "Class of 2026, GPA 3.5, consistent Honor Roll.",
+    summary: "Class of 2026, consistent Honor Roll.",
     explored: "Software engineering, secure systems, networking and database design.",
     problem: "Moving from student to practitioner.",
     built: "A degree and a body of deployed work.",
@@ -693,7 +693,7 @@ export const press: PressItem[] = [
 export const recognition = [
   "NCB Grant Awardee, 3 consecutive quarters",
   "Top Student, Software Engineering",
-  "GPA 3.5 and Honor Roll standing",
+  "Honor Roll standing",
   "Sagicor Scholarship interview candidate",
   "Leadership Recognition Award",
   "Volunteer workshop facilitator, SBA",
@@ -869,6 +869,17 @@ export const feed: FeedPost[] = [
     imageAlt: "Screenshot of the Castledown journal page for From augmentation to transformation, listing the authors",
     note: "Screenshot of the published, open-access article page.",
     href: "https://doi.org/10.29140/aile.2026.104107",
+  },
+  {
+    id: "cptr235",
+    achievement: "Most outstanding student, CPTR235 Software Engineering (Spring 2023)",
+    date: "27 September 2023",
+    source: "Department of Computer and Information Sciences",
+    text: "Certificate of achievement: named the most outstanding student in CPTR235 Software Engineering for the Spring semester of 2023, signed by the Department Chair and the Coordinator.",
+    image: null,
+    imageAlt: "",
+    note: "The certificate is available as a PDF.",
+    href: "/certificates/cptr235-most-outstanding-student.pdf",
   },
 ];
 

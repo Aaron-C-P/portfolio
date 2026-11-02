@@ -109,7 +109,7 @@ const About = () => {
           <p className="mt-4 text-soft">{competencies.join("  ·  ")}</p>
           <p className="mt-6 text-soft">
             <span className="font-semibold text-cream">Validated at capture · Automate the manual · Traceable by design.</span>{" "}
-            <span className="font-semibold text-fg">Education:</span> Bachelor of Science in Computer Science, Northern Caribbean University, Jamaica. GPA 3.5.
+            <span className="font-semibold text-fg">Education:</span> Bachelor of Science in Computer Science, Northern Caribbean University, Jamaica.
           </p>
         </Reveal>
       </section>

@@ -35,7 +35,7 @@ export function localReply(raw: string): string {
   if (has("certif", "security+", "ccna", "comptia", "cisco", "course"))
     return "CompTIA Security+ 701 (Infosec, 2025), Cisco Networking Academy CCNA: Introduction to Networks (2026), Introduction to Data Science (Simplilearn, 2024) and a Node.js Master Class (2026). In progress: Introduction to Power BI on DataCamp (Data Analyst in Power BI track), Microsoft Power BI Data Analyst and the full CCNA.";
   if (has("school", "study", "degree", "university", "education", "ncu", "graduate", "gpa", "class of"))
-    return "B.Sc. in Computer Science from Northern Caribbean University, 2026. GPA 3.5, Honor Roll, Top Student in Software Engineering, and a Leadership Recognition Award.";
+    return "B.Sc. in Computer Science from Northern Caribbean University, 2026. Honor Roll, Top Student in Software Engineering, and a Leadership Recognition Award.";
   if (has("security", "secure", "owasp", "rbac", "audit", "traceab"))
     return "Traceable by design is my habit: validation at the point of capture, audit logging, duplicate detection and access control from the start rather than bolted on later.";
   if (has("write", "writing", "book", "article", "gleaner", "observer", "author", "publish"))
