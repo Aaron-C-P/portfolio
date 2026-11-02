@@ -25,6 +25,8 @@ const certs = [
   "CompTIA Security+ 701, Infosec (2025)",
   "CompTIA A+ Core 1: exam prep complete (2026)",
   "Cisco Networking Academy: CCNA Introduction to Networks (2026)",
+  "Cisco Networking Academy: Introduction to Cybersecurity and Networking Basics (2025)",
+  "Cisco Networking Academy: Getting Started with Cisco Packet Tracer (2024)",
   "Cisco CCNA certification (in progress)",
   "Node.js Master Class (2026)",
   "Google Cybersecurity Professional (in progress)",

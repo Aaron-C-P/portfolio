@@ -14,6 +14,10 @@ import shotEducation from "@/assets/articles/enhancing-education.jpg";
 import shotCaricature from "@/assets/articles/caricature-art.jpg";
 import shotFrustration from "@/assets/articles/lines-of-frustration.jpg";
 import certCptr235 from "@/assets/articles/cptr235-certificate.jpg";
+import certCcna from "@/assets/articles/cert-ccna-intro.jpg";
+import certCyber from "@/assets/articles/cert-cybersecurity.jpg";
+import certNetBasics from "@/assets/articles/cert-networking-basics.jpg";
+import certPacketTracer from "@/assets/articles/cert-packet-tracer.jpg";
 import shotLifeHard from "@/assets/articles/life-is-hard.jpg";
 import becomingQuestion from "@/assets/work/becoming-question.jpg";
 import becomingMap from "@/assets/work/becoming-map.jpg";
@@ -830,12 +834,12 @@ export const feed: FeedPost[] = [
   {
     id: "ccna",
     achievement: "Cisco CCNA: Introduction to Networks certification",
-    date: "Mid-October 2026",
+    date: "5 October 2026",
     source: "LinkedIn",
     text: "New certification: CCNA: Introduction to Networks from Cisco Networking Academy.",
-    image: null,
-    imageAlt: "",
-    note: "The full CCNA certification is still in progress.",
+    image: certCcna,
+    imageAlt: "Cisco Networking Academy certificate awarded to Aaron Prince for CCNA: Introduction to Networks, offered by HEART College of Innovation and Technology, completed 5 October 2026",
+    note: "Capture of the certificate, offered through HEART College of Innovation and Technology. The full CCNA certification is still in progress.",
     href: brand.linkedin,
   },
   {
@@ -870,6 +874,36 @@ export const feed: FeedPost[] = [
     imageAlt: "Screenshot of the Castledown journal page for From augmentation to transformation, listing the authors",
     note: "Screenshot of the published, open-access article page.",
     href: "https://doi.org/10.29140/aile.2026.104107",
+  },
+  {
+    id: "cisco-cybersecurity",
+    achievement: "Cisco Networking Academy: Introduction to Cybersecurity",
+    date: "12 July 2025",
+    source: "Cisco Networking Academy",
+    text: "Certificate of completion: Introduction to Cybersecurity, through the Cisco Networking Academy program.",
+    image: certCyber,
+    imageAlt: "Cisco Networking Academy certificate awarded to Aaron Prince for Introduction to Cybersecurity, completed 12 July 2025",
+    note: "Capture of the certificate of completion.",
+  },
+  {
+    id: "cisco-networking-basics",
+    achievement: "Cisco Networking Academy: Networking Basics",
+    date: "12 July 2025",
+    source: "Cisco Networking Academy",
+    text: "Certificate of completion: Networking Basics, through the Cisco Networking Academy program.",
+    image: certNetBasics,
+    imageAlt: "Cisco Networking Academy certificate awarded to Aaron Prince for Networking Basics, completed 12 July 2025",
+    note: "Capture of the certificate of completion.",
+  },
+  {
+    id: "cisco-packet-tracer",
+    achievement: "Cisco Networking Academy: Getting Started with Cisco Packet Tracer",
+    date: "25 March 2024",
+    source: "Cisco Networking Academy",
+    text: "Certificate of completion: Getting Started with Cisco Packet Tracer, through the Cisco Networking Academy program.",
+    image: certPacketTracer,
+    imageAlt: "Cisco Networking Academy certificate awarded to Aaron Prince for Getting Started with Cisco Packet Tracer, completed 25 March 2024",
+    note: "Capture of the certificate of completion.",
   },
   {
     id: "cptr235",
