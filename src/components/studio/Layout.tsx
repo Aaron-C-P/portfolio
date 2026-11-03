@@ -154,7 +154,7 @@ const Footer = () => (
             src={graduationPhoto}
             alt="Aaron Prince in graduation cap and gown"
             className="absolute max-w-none"
-            style={{ width: 330, left: -160, top: -255 }}
+            style={{ width: 300, left: -136, top: -215 }}
           />
         </div>
         <p className="mt-5 text-2xl font-bold">{brand.name}</p>
