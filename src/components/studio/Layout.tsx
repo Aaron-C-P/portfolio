@@ -13,7 +13,7 @@ const nav = [
   { to: "/services", label: "Services" },
   { to: "/writing", label: "Writing" },
   { to: "/feed", label: "Feed" },
-  { to: "/assignment-help", label: "Assignment Help" },
+  { to: "/assignment-help", label: "Student Help" },
   { to: "/about", label: "About" },
 ];
 
@@ -133,8 +133,7 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
       { to: "/writing", label: "Writing" },
       { to: "/feed", label: "Feed" },
       { to: "/skills", label: "Skills" },
-      { to: "/assignment-help", label: "Assignment Help" },
-      { to: "/tutor", label: "AI Tutor" },
+      { to: "/assignment-help", label: "Student Help" },
     ],
   },
   {

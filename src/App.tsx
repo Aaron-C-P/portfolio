@@ -1,7 +1,7 @@
 import Skills from "@/pages/Skills";
 import Resume from "@/pages/Resume";
 import Feed from "@/pages/Feed";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/studio/Layout";
 import { usePageTitle } from "@/components/studio/parts";
 import Home from "@/pages/Home";
@@ -15,7 +15,6 @@ import Contact from "@/pages/Contact";
 import Ask from "@/pages/Ask";
 import AssignmentHelp from "@/pages/AssignmentHelp";
 import Card from "@/pages/Card";
-import Tutor from "@/pages/Tutor";
 
 const NotFound = () => {
   usePageTitle("Page not found");
@@ -48,7 +47,7 @@ const App = () => (
         <Route path="/ask" element={<Ask />} />
         <Route path="/assignment-help" element={<AssignmentHelp />} />
         <Route path="/card" element={<Card />} />
-        <Route path="/tutor" element={<Tutor />} />
+        <Route path="/tutor" element={<Navigate to="/assignment-help" replace />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

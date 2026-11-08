@@ -1,28 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpenCheck, Download, Github, Linkedin, Mail, MessageCircle, Phone, Share2, Sigma } from "lucide-react";
+import { Download, Github, Linkedin, Mail, MessageCircle, Phone, Share2 } from "lucide-react";
 import { brand, profilePhoto } from "@/data/studio";
+import { offers } from "@/data/studentHelp";
 import { usePageTitle } from "@/components/studio/parts";
 
 const whatsapp = `https://wa.me/18767902268?text=${encodeURIComponent("Hi Aaron, I would like help with ")}`;
-
-const offers = [
-  {
-    Icon: BookOpenCheck,
-    title: "Assignment help",
-    items: ["Essays", "Research papers", "Reports", "Presentations", "Lab reports", "Case studies", "Proposals", "Group projects", "IT and coding projects", "Maths problem sets"],
-  },
-  {
-    Icon: BookOpenCheck,
-    title: "SBA help",
-    items: ["Topic and aim", "Method and write-up", "Data tables and graphs", "Analysis and conclusion", "Mark scheme check", "Proofreading"],
-  },
-  {
-    Icon: Sigma,
-    title: "CSEC Mathematics",
-    items: ["Computation and number theory", "Consumer arithmetic", "Sets", "Measurement", "Statistics", "Algebra", "Relations, functions and graphs", "Geometry and trigonometry", "Vectors and matrices", "Past papers"],
-  },
-];
 
 const business = ["Websites and web apps", "Ordering and request systems", "Dashboards and reporting", "Database design"];
 
@@ -102,11 +85,9 @@ const Card = () => {
               Student help
             </h2>
             <ul className="mt-3 space-y-3">
-              {offers.map(({ Icon, title, items }) => (
+              {offers.map(({ title, items }) => (
                 <li key={title} className="rounded-2xl border border-line p-4">
-                  <p className="flex items-center gap-2 font-bold">
-                    <Icon className="h-5 w-5 shrink-0 text-violet-light" aria-hidden="true" /> {title}
-                  </p>
+                  <p className="font-bold">{title}</p>
                   <ul className="mt-3 flex flex-wrap gap-2">
                     {items.map((t) => (
                       <li key={t} className="rounded-full border border-line px-3 py-1 text-xs text-soft">
@@ -138,10 +119,7 @@ const Card = () => {
                 See my work
               </Link>
               <Link to="/assignment-help" className="text-violet-light underline underline-offset-4">
-                Assignment help guide
-              </Link>
-              <Link to="/tutor" className="text-violet-light underline underline-offset-4">
-                Try the AI tutor
+                Student help and AI tutor
               </Link>
             </div>
           </section>
