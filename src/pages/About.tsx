@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import { competencies } from "@/data/skills";
 import { brand, courses, profilePhoto, recognition } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
+import { ContactCard } from "@/components/studio/ContactCard";
 import { Specialization } from "@/components/studio/Specialization";
 import { FrontCover } from "@/components/studio/BookCover";
 
@@ -64,6 +65,9 @@ const About = () => {
             <Link to="/journey" className="btn-primary">
               Read my journey
             </Link>
+            <Link to="/card" className="btn-ghost">
+              Digital card
+            </Link>
             {brand.resumeAvailable ? (
               <a href={brand.resume} target="_blank" rel="noopener noreferrer" className="btn-ghost">
                 <Download className="h-4 w-4" /> Download résumé
@@ -79,6 +83,16 @@ const About = () => {
           <img src={profilePhoto} alt="Aaron Prince" className="aspect-[3/4] w-full rounded-[2rem] border border-line object-cover object-[56%_30%]" />
         </Reveal>
       </div>
+
+      <section className="mt-20" aria-labelledby="digital-card">
+        <Reveal>
+          <h2 id="digital-card" className="h-section">
+            My digital card
+          </h2>
+          <p className="mb-6 mt-3 max-w-2xl text-soft">Everything in one tap: call, message, email or save my details straight to your phone.</p>
+          <ContactCard />
+        </Reveal>
+      </section>
 
       <section className="mt-24">
         <Reveal>

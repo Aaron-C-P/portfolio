@@ -3,38 +3,14 @@ import { Link } from "react-router-dom";
 import { Download, Github, Linkedin, Mail, MessageCircle, Phone, Share2 } from "lucide-react";
 import { brand, profilePhoto } from "@/data/studio";
 import { offers } from "@/data/studentHelp";
+import { saveContact, whatsapp } from "@/lib/contact";
 import { usePageTitle } from "@/components/studio/parts";
 
-const whatsapp = `https://wa.me/18767902268?text=${encodeURIComponent("Hi Aaron, I would like help with ")}`;
-
 const business = ["Websites and web apps", "Ordering and request systems", "Dashboards and reporting", "Database design"];
-
-const vcard = [
-  "BEGIN:VCARD",
-  "VERSION:3.0",
-  `FN:${brand.name}`,
-  "N:Prince;Aaron;;;",
-  `ORG:${brand.studio}`,
-  "TITLE:Computer Science graduate, tutor and developer",
-  `TEL;TYPE=CELL:${brand.phone}`,
-  `EMAIL:${brand.email}`,
-  `URL:${brand.linkedin}`,
-  "ADR;TYPE=WORK:;;;Mandeville;Manchester;;Jamaica",
-  "END:VCARD",
-].join("\r\n");
 
 const Card = () => {
   usePageTitle("Digital card");
   const [note, setNote] = useState("");
-
-  const saveContact = () => {
-    const url = URL.createObjectURL(new Blob([vcard], { type: "text/vcard" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "aaron-prince.vcf";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const share = async () => {
     const data = { title: `${brand.name} | ${brand.studio}`, url: window.location.href };
