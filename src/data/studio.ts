@@ -548,7 +548,7 @@ export const milestones: Milestone[] = [
     problem: "Building software that is secure from the first commit.",
     built: "Completed Simplilearn Front End Development (2024), TestOut Security Pro (2024), Cisco Intro to Cybersecurity (2025) and Cisco Networking Basics (2025).",
     tech: ["Security", "Networking", "Front end"],
-    outcome: "Google Cybersecurity Professional and Azure Database Administrator are in progress.",
+    outcome: "Completed Cisco, TestOut and Simplilearn courses back this up.",
   },
   {
     id: "orbita",
