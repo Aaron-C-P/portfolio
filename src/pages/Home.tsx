@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, Briefcase, Check, Compass, Store, Code2, BarChart3, GraduationCap, Wrench } from "lucide-react";
 import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
+import { seasonFor } from "@/lib/season";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
 import { Specialization } from "@/components/studio/Specialization";
@@ -96,6 +99,8 @@ const Tours = () => {
 
 const Home = () => {
   usePageTitle();
+  const [params] = useSearchParams();
+  const season = seasonFor(new Date(), params.get("season"));
   const featured = projects.filter((p) => p.featured).slice(0, 3);
 
   return (
@@ -121,21 +126,8 @@ const Home = () => {
                 animation: "gridpan 5s linear infinite",
               }}
             />
-            <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet/35 blur-3xl" style={{ animation: "drift 9s ease-in-out infinite" }} />
-            <div className="absolute -right-20 top-1/3 h-80 w-80 rounded-full bg-amber-400/25 blur-3xl" style={{ animation: "drift2 11s ease-in-out infinite" }} />
-            <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" style={{ animation: "drift 13s ease-in-out infinite reverse" }} />
+            <SeasonalBackdrop season={season} />
             <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/25 to-transparent" style={{ animation: "sweep 6s ease-in-out infinite" }} />
-            {[6, 14, 23, 31, 42, 53, 61, 72, 83, 92].map((x, i) => (
-              <span
-                key={x}
-                className="absolute bottom-0 h-2 w-2 rounded-full bg-violet-light"
-                style={{
-                  left: `${x}%`,
-                  ["--dx" as string]: `${i % 2 ? 28 : -28}px`,
-                  animation: `rise ${9 + (i % 5) * 2}s linear ${i * 0.9}s infinite`,
-                }}
-              />
-            ))}
           </div>
         </div>
         <div className="mx-auto max-w-6xl px-5 pb-14 pt-[44vh] md:pb-20 md:pt-24">
@@ -144,6 +136,7 @@ const Home = () => {
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
               Open to work: data, software and IT roles
             </span>
+            <span className="mb-4 ml-2 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-4 py-1.5 text-sm font-medium text-soft">{season.greeting}</span>
             <br />
             <Note className="text-3xl">Hi, I'm Aaron.</Note>
             <h1 className="mt-2 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
