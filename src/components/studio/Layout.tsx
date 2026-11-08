@@ -141,6 +141,7 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
     links: [
       { to: "/about", label: "About" },
       { to: "/contact", label: "Contact" },
+      { to: "/card", label: "Digital card" },
       { to: "/resume", label: "Request résumé" },
       { to: "/ask", label: "Ask my AI" },
     ],

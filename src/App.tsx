@@ -14,6 +14,7 @@ import Writing from "@/pages/Writing";
 import Contact from "@/pages/Contact";
 import Ask from "@/pages/Ask";
 import AssignmentHelp from "@/pages/AssignmentHelp";
+import Card from "@/pages/Card";
 
 const NotFound = () => {
   usePageTitle("Page not found");
@@ -45,6 +46,7 @@ const App = () => (
         <Route path="/contact" element={<Contact />} />
         <Route path="/ask" element={<Ask />} />
         <Route path="/assignment-help" element={<AssignmentHelp />} />
+        <Route path="/card" element={<Card />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
