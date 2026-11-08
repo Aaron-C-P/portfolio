@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChristmasScene } from "@/components/studio/ChristmasScene";
 import type { Glyph, Season } from "@/lib/season";
 
 const shapes: Record<Glyph, ReactNode> = {
@@ -36,7 +37,7 @@ export const SeasonalBackdrop = ({ season }: { season: Season }) => (
     <div className={`absolute -left-24 top-10 h-72 w-72 rounded-full blur-3xl ${season.blobs[0]}`} style={{ animation: "drift 9s ease-in-out infinite" }} />
     <div className={`absolute -right-20 top-1/3 h-80 w-80 rounded-full blur-3xl ${season.blobs[1]}`} style={{ animation: "drift2 11s ease-in-out infinite" }} />
     <div className={`absolute bottom-0 left-1/3 h-64 w-64 rounded-full blur-3xl ${season.blobs[2]}`} style={{ animation: "drift 13s ease-in-out infinite reverse" }} />
-    {slots.map((x, i) => {
+    {season.key === "christmas" ? <ChristmasScene /> : slots.map((x, i) => {
       const glyph = season.glyphs[i % season.glyphs.length];
       const size = 22 + ((i * 7) % 5) * 6;
       const fall = season.motion === "fall";
