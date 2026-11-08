@@ -134,6 +134,7 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
       { to: "/feed", label: "Feed" },
       { to: "/skills", label: "Skills" },
       { to: "/assignment-help", label: "Assignment Help" },
+      { to: "/tutor", label: "AI Tutor" },
     ],
   },
   {

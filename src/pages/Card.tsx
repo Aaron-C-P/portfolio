@@ -1,27 +1,27 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpenCheck, Download, ExternalLink, Github, Linkedin, Mail, MessageCircle, Phone, Share2, Sigma } from "lucide-react";
+import { BookOpenCheck, Download, Github, Linkedin, Mail, MessageCircle, Phone, Share2, Sigma } from "lucide-react";
 import { brand, profilePhoto } from "@/data/studio";
 import { usePageTitle } from "@/components/studio/parts";
 
 const whatsapp = `https://wa.me/18767902268?text=${encodeURIComponent("Hi Aaron, I would like help with ")}`;
 
 const offers = [
-  { Icon: BookOpenCheck, title: "Assignment help", text: "Understand the task, plan it and improve your own draft. You do the work, I coach it." },
-  { Icon: BookOpenCheck, title: "SBA help", text: "School-Based Assessment guidance: choosing a topic, structuring the write-up and checking it against the mark scheme." },
-  { Icon: Sigma, title: "CSEC Mathematics", text: "Step-by-step lessons and past-paper practice across the syllabus." },
-];
-
-const mathTopics = [
-  "Computation and number theory",
-  "Consumer arithmetic",
-  "Sets",
-  "Measurement",
-  "Statistics",
-  "Algebra",
-  "Relations, functions and graphs",
-  "Geometry and trigonometry",
-  "Vectors and matrices",
+  {
+    Icon: BookOpenCheck,
+    title: "Assignment help",
+    items: ["Essays", "Research papers", "Reports", "Presentations", "Lab reports", "Case studies", "Proposals", "Group projects", "IT and coding projects", "Maths problem sets"],
+  },
+  {
+    Icon: BookOpenCheck,
+    title: "SBA help",
+    items: ["Topic and aim", "Method and write-up", "Data tables and graphs", "Analysis and conclusion", "Mark scheme check", "Proofreading"],
+  },
+  {
+    Icon: Sigma,
+    title: "CSEC Mathematics",
+    items: ["Computation and number theory", "Consumer arithmetic", "Sets", "Measurement", "Statistics", "Algebra", "Relations, functions and graphs", "Geometry and trigonometry", "Vectors and matrices", "Past papers"],
+  },
 ];
 
 const business = ["Websites and web apps", "Ordering and request systems", "Dashboards and reporting", "Database design"];
@@ -102,32 +102,21 @@ const Card = () => {
               Student help
             </h2>
             <ul className="mt-3 space-y-3">
-              {offers.map(({ Icon, title, text }) => (
-                <li key={title} className="flex gap-3 rounded-2xl border border-line p-4">
-                  <Icon className="mt-0.5 h-5 w-5 shrink-0 text-violet-light" aria-hidden="true" />
-                  <div>
-                    <p className="font-bold">{title}</p>
-                    <p className="text-sm text-soft">{text}</p>
-                  </div>
+              {offers.map(({ Icon, title, items }) => (
+                <li key={title} className="rounded-2xl border border-line p-4">
+                  <p className="flex items-center gap-2 font-bold">
+                    <Icon className="h-5 w-5 shrink-0 text-violet-light" aria-hidden="true" /> {title}
+                  </p>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {items.map((t) => (
+                      <li key={t} className="rounded-full border border-line px-3 py-1 text-xs text-soft">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-sm font-medium">CSEC Mathematics covers</p>
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {mathTopics.map((t) => (
-                <li key={t} className="rounded-full border border-line px-3 py-1 text-xs text-soft">
-                  {t}
-                </li>
-              ))}
-            </ul>
-            <a
-              href="https://misterwootube.com/category/mathematics/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-sm text-violet-light underline underline-offset-4"
-            >
-              Free maths video lessons by Eddie Woo <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
           </section>
 
           <section className="mt-8 text-left" aria-labelledby="card-biz">
@@ -150,6 +139,9 @@ const Card = () => {
               </Link>
               <Link to="/assignment-help" className="text-violet-light underline underline-offset-4">
                 Assignment help guide
+              </Link>
+              <Link to="/tutor" className="text-violet-light underline underline-offset-4">
+                Try the AI tutor
               </Link>
             </div>
           </section>
