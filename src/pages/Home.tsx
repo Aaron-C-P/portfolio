@@ -5,6 +5,7 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
+import { ChristmasBanner, ChristmasCountdown, ChristmasTree } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 import { NotesBoard } from "@/components/studio/NotesBoard";
 import { ProjectTour } from "@/components/studio/ProjectTour";
@@ -127,6 +128,7 @@ const Home = () => {
               }}
             />
             <SeasonalBackdrop season={season} />
+            {season.key === "christmas" && <ChristmasTree />}
             <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-white/25 to-transparent" style={{ animation: "sweep 6s ease-in-out infinite" }} />
           </div>
         </div>
@@ -137,6 +139,7 @@ const Home = () => {
               Open to work: data, software and IT roles
             </span>
             <span className="mb-4 ml-2 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-4 py-1.5 text-sm font-medium text-soft">{season.greeting}</span>
+            {season.key === "christmas" && <ChristmasCountdown />}
             <br />
             <Note className="text-3xl">Hi, I'm Aaron.</Note>
             <h1 className="mt-2 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
@@ -167,6 +170,8 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      {season.key === "christmas" && <ChristmasBanner />}
 
       <section aria-label="At a glance" className="mx-auto -mt-2 max-w-6xl px-5">
         <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">

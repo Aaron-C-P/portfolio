@@ -46,7 +46,7 @@ const baubles = [
 /** Realistic Christmas backdrop: falling snow, twinkling string lights and swinging baubles. */
 export const ChristmasScene = () => (
   <>
-    <svg aria-hidden="true" viewBox={`0 0 ${W} 100`} preserveAspectRatio="xMidYMin slice" className="absolute inset-x-0 top-14 w-full">
+    <svg aria-hidden="true" viewBox={`0 0 ${W} 100`} preserveAspectRatio="xMidYMin slice" className="absolute inset-x-0 top-20 w-full">
       <defs>
         <filter id="bulb-glow" x="-200%" y="-200%" width="500%" height="500%">
           <feGaussianBlur stdDeviation="5" />
@@ -66,7 +66,7 @@ export const ChristmasScene = () => (
     </svg>
 
     {baubles.map((b, i) => (
-      <div key={i} className="absolute top-14 hidden origin-top md:block" style={{ left: b.left, animation: `swing 5s ease-in-out ${b.delay}s infinite` }}>
+      <div key={i} className="absolute top-20 hidden origin-top md:block" style={{ left: b.left, animation: `swing 5s ease-in-out ${b.delay}s infinite` }}>
         <div className="mx-auto w-px bg-zinc-500/60" style={{ height: b.len }} />
         <svg width={b.r * 2} height={b.r * 2 + 8} viewBox={`0 0 ${b.r * 2} ${b.r * 2 + 8}`} className="-ml-[calc(var(--r)*1px)] block" style={{ ["--r" as string]: b.r }}>
           <defs>
