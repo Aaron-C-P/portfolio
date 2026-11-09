@@ -1,4 +1,4 @@
-export type Glyph = "snowflake" | "sparkle" | "ornament" | "heart" | "petal" | "sun" | "leaf" | "confetti";
+export type Glyph = "dot" | "snowflake" | "sparkle" | "ornament" | "heart" | "petal" | "sun" | "leaf" | "confetti";
 
 export type Season = {
   key: string;
@@ -15,6 +15,14 @@ export type Season = {
 };
 
 const seasons: Record<string, Season> = {
+  default: {
+    key: "default",
+    greeting: "",
+    glyphs: ["dot"],
+    colors: ["#a78bfa"],
+    blobs: ["bg-violet/35", "bg-amber-400/25", "bg-emerald-400/20"],
+    motion: "rise",
+  },
   christmas: {
     key: "christmas",
     greeting: "Merry Christmas from Mandeville",
@@ -65,15 +73,11 @@ const seasons: Record<string, Season> = {
   },
 };
 
-/** Picks the landing-page season from the date (month is 1 to 12). */
+/** Christmas runs Nov 1 to Jan 6; the rest of the year uses the normal background. A ?season= override previews any of the others. */
 export function seasonFor(date = new Date(), override?: string | null): Season {
   if (override && seasons[override]) return seasons[override];
   const m = date.getMonth() + 1;
   const d = date.getDate();
-  if (m >= 11 || m === 12 || (m === 1 && d <= 6)) return seasons.christmas;
-  if (m === 2 && d <= 14) return seasons.valentine;
-  if (m === 3 || m === 4) return seasons.spring;
-  if (m >= 5 && m <= 7) return seasons.summer;
-  if (m === 8 && d <= 10) return seasons.independence;
-  return seasons.school;
+  if (m >= 11 || (m === 1 && d <= 6)) return seasons.christmas;
+  return seasons.default;
 }

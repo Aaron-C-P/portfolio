@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { StringLights } from "@/components/studio/ChristmasScene";
 
 const daysToChristmas = (now = new Date()) => {
   const xmas = new Date(now.getFullYear(), 11, 25);
@@ -41,13 +42,6 @@ export const ChristmasTree = () => (
         <circle cx={x} cy={y} r="3.5" fill={c} />
       </g>
     ))}
-    <rect x="14" y="218" width="42" height="34" rx="2" fill="#dc2626" />
-    <rect x="31" y="218" width="8" height="34" fill="#fbbf24" />
-    <rect x="14" y="231" width="42" height="7" fill="#fbbf24" opacity="0.9" />
-    <rect x="132" y="224" width="52" height="28" rx="2" fill="#1d4ed8" />
-    <rect x="154" y="224" width="8" height="28" fill="#f1f5f9" />
-    <rect x="62" y="232" width="34" height="20" rx="2" fill="#15803d" />
-    <rect x="75" y="232" width="8" height="20" fill="#fbbf24" />
   </svg>
 );
 
@@ -67,4 +61,12 @@ export const ChristmasBanner = () => (
       </span>
     </Link>
   </section>
+);
+
+/** Festive strip across the top of the footer, with a greeting. */
+export const FooterChristmas = () => (
+  <div className="relative overflow-hidden border-b border-line bg-gradient-to-r from-red-500/10 via-amber-300/10 to-emerald-500/10">
+    <StringLights id="footer" className="pointer-events-none absolute inset-x-0 -top-1 w-full" />
+    <p className="relative px-5 pb-5 pt-16 text-center font-hand text-3xl text-red-600">Merry Christmas and a happy New Year from Mandeville</p>
+  </div>
 );

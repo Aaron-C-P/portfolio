@@ -37,18 +37,16 @@ const bulbs = Array.from({ length: SWAGS * 4 }, (_, i) => {
 const wire = Array.from({ length: SWAGS }, (_, s) => `${s === 0 ? "M" : ""}${s === 0 ? "0 6" : ""} Q ${s * SW + SW / 2} ${6 + SAG * 2} ${(s + 1) * SW} 6`).join(" ");
 
 const baubles = [
-  { left: "62%", len: 70, r: 20, color: "#dc2626", delay: 0 },
-  { left: "72%", len: 120, r: 26, color: "#b45309", delay: -1.2 },
-  { left: "83%", len: 56, r: 17, color: "#15803d", delay: -2.1 },
-  { left: "91%", len: 100, r: 22, color: "#1d4ed8", delay: -0.6 },
+  { left: "72%", len: 70, r: 20, color: "#dc2626", delay: 0 },
+  { left: "88%", len: 100, r: 22, color: "#1d4ed8", delay: -1.4 },
 ];
 
-/** Realistic Christmas backdrop: falling snow, twinkling string lights and swinging baubles. */
-export const ChristmasScene = () => (
-  <>
-    <svg aria-hidden="true" viewBox={`0 0 ${W} 100`} preserveAspectRatio="xMidYMin slice" className="absolute inset-x-0 top-20 w-full">
+export const StringLights = ({ className, id = "a" }: { className?: string; id?: string }) => {
+  const gid = `bulb-glow-${id}`;
+  return (
+    <svg aria-hidden="true" viewBox={`0 0 ${W} 100`} preserveAspectRatio="xMidYMin slice" className={className}>
       <defs>
-        <filter id="bulb-glow" x="-200%" y="-200%" width="500%" height="500%">
+        <filter id={gid} x="-200%" y="-200%" width="500%" height="500%">
           <feGaussianBlur stdDeviation="5" />
         </filter>
       </defs>
@@ -57,13 +55,20 @@ export const ChristmasScene = () => (
         <g key={i} transform={`translate(${b.x} ${b.y}) rotate(${b.angle})`}>
           <rect x="-3" y="-2" width="6" height="7" rx="1.5" fill="#1f3d2b" />
           <g style={{ animation: `twinkle 2.4s ease-in-out ${b.delay}s infinite` }}>
-            <ellipse cx="0" cy="13" rx="9" ry="12" fill={b.color} filter="url(#bulb-glow)" opacity="0.8" />
+            <ellipse cx="0" cy="13" rx="9" ry="12" fill={b.color} filter={`url(#${gid})`} opacity="0.8" />
             <ellipse cx="0" cy="12" rx="5" ry="8" fill={b.color} />
             <ellipse cx="-1.6" cy="9" rx="1.4" ry="3" fill="#fff" opacity="0.65" />
           </g>
         </g>
       ))}
     </svg>
+  );
+};
+
+/** Realistic Christmas backdrop: falling snow, twinkling string lights and swinging baubles. */
+export const ChristmasScene = () => (
+  <>
+    <StringLights className="absolute inset-x-0 top-20 w-full" />
 
     {baubles.map((b, i) => (
       <div key={i} className="absolute top-20 hidden origin-top md:block" style={{ left: b.left, animation: `swing 5s ease-in-out ${b.delay}s infinite` }}>

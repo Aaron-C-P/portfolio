@@ -138,7 +138,7 @@ const Home = () => {
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
               Open to work: data, software and IT roles
             </span>
-            <span className="mb-4 ml-2 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-4 py-1.5 text-sm font-medium text-soft">{season.greeting}</span>
+            {season.greeting && <span className="mb-4 ml-2 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-4 py-1.5 text-sm font-medium text-soft">{season.greeting}</span>}
             {season.key === "christmas" && <ChristmasCountdown />}
             <br />
             <Note className="text-3xl">Hi, I'm Aaron.</Note>

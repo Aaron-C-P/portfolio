@@ -3,6 +3,7 @@ import { ChristmasScene } from "@/components/studio/ChristmasScene";
 import type { Glyph, Season } from "@/lib/season";
 
 const shapes: Record<Glyph, ReactNode> = {
+  dot: <circle cx="12" cy="12" r="12" fill="currentColor" />,
   snowflake: (
     <g stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none">
       <path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7" />
@@ -39,7 +40,7 @@ export const SeasonalBackdrop = ({ season }: { season: Season }) => (
     <div className={`absolute bottom-0 left-1/3 h-64 w-64 rounded-full blur-3xl ${season.blobs[2]}`} style={{ animation: "drift 13s ease-in-out infinite reverse" }} />
     {season.key === "christmas" ? <ChristmasScene /> : slots.map((x, i) => {
       const glyph = season.glyphs[i % season.glyphs.length];
-      const size = 22 + ((i * 7) % 5) * 6;
+      const size = glyph === "dot" ? 8 : 22 + ((i * 7) % 5) * 6;
       const fall = season.motion === "fall";
       return (
         <svg

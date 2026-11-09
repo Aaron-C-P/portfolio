@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import { Menu, X, Github, Linkedin, Mail, Phone } from "lucide-react";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
+import { FooterChristmas } from "@/components/studio/ChristmasExtras";
+import { seasonFor } from "@/lib/season";
 
 const nav = [
   { to: "/", label: "Home", end: true },
@@ -148,8 +150,12 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
   },
 ];
 
-const Footer = () => (
+const Footer = () => {
+  const [params] = useSearchParams();
+  const christmas = seasonFor(new Date(), params.get("season")).key === "christmas";
+  return (
   <footer className="border-t border-line bg-panel">
+    {christmas && <FooterChristmas />}
     <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-[minmax(0,1fr)_2fr]">
       <div>
         <div className="relative h-48 w-36 overflow-hidden rounded-2xl border border-line bg-raise">
@@ -202,7 +208,8 @@ const Footer = () => (
       © {new Date().getFullYear()} Aaron Prince. A professional digital solutions brand, not an incorporated company.
     </div>
   </footer>
-);
+  );
+};
 
 export const Layout = () => (
   <div className="min-h-screen overflow-x-hidden">
