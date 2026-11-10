@@ -1,5 +1,6 @@
 import { useForm, ValidationError } from "@formspree/react";
 import { Github, Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
+import { collect } from "@/lib/collect";
 import { brand, services } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
@@ -9,6 +10,11 @@ const Contact = () => {
   usePageTitle("Contact");
   // Formspree emails each submission to the address on the form. If it ever fails, the email link below still works.
   const [state, submit] = useForm("mnjqgkgz");
+  // Formspree emails it; the sheet keeps a permanent copy for the dashboard.
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    void collect("contact", new FormData(e.currentTarget));
+    return submit(e);
+  };
 
   const channels = [
     { Icon: Mail, label: brand.email, href: `mailto:${brand.email}`, ext: false },
@@ -55,7 +61,7 @@ const Contact = () => {
               <p className="mt-2 text-soft">I will reply to the email address you gave.</p>
             </div>
           ) : (
-            <form onSubmit={submit} className="space-y-5 rounded-3xl border border-line bg-panel p-6 md:p-8">
+            <form onSubmit={onSubmit} className="space-y-5 rounded-3xl border border-line bg-panel p-6 md:p-8">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="mb-2 block text-sm font-medium">

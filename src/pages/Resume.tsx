@@ -1,5 +1,6 @@
 import { useForm, ValidationError } from "@formspree/react";
 import { Send } from "lucide-react";
+import { collect } from "@/lib/collect";
 import { brand } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
@@ -8,6 +9,11 @@ const field = "w-full rounded-xl border border-line bg-white/5 px-4 py-3 text-fg
 const Resume = () => {
   usePageTitle("Request my résumé");
   const [state, submit] = useForm("mnjqgkgz");
+  // Formspree emails it; the sheet keeps a permanent copy for the dashboard.
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    void collect("resume", new FormData(e.currentTarget));
+    return submit(e);
+  };
   return (
     <div className="mx-auto max-w-xl px-5 pb-24 pt-32">
       <Reveal>
@@ -24,7 +30,7 @@ const Resume = () => {
             <p className="mt-2 text-soft">I will send my résumé to the email address you gave.</p>
           </div>
         ) : (
-          <form onSubmit={submit} className="space-y-5 rounded-3xl border border-line bg-panel p-6 md:p-8">
+          <form onSubmit={onSubmit} className="space-y-5 rounded-3xl border border-line bg-panel p-6 md:p-8">
             <input type="hidden" name="_subject" value="Résumé request" />
             <input type="hidden" name="request" value="resume" />
             <div>
