@@ -205,7 +205,10 @@ const Footer = () => {
       </div>
     </div>
     <div className="border-t border-line py-5 text-center text-xs text-soft">
-      © {new Date().getFullYear()} Aaron Prince. A professional digital solutions brand, not an incorporated company.
+      © {new Date().getFullYear()} Aaron Prince. A professional digital solutions brand, not an incorporated company.{" "}
+      <Link to="/admin" className="underline-offset-2 hover:underline">
+        Admin
+      </Link>
     </div>
   </footer>
   );

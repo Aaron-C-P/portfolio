@@ -5,6 +5,7 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
+import { AdminStrip } from "@/components/studio/AdminStrip";
 import { ChristmasBanner, ChristmasCountdown, ChristmasTree } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 import { NotesBoard } from "@/components/studio/NotesBoard";
@@ -170,6 +171,8 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      <AdminStrip />
 
       {season.key === "christmas" && <ChristmasBanner />}
 
