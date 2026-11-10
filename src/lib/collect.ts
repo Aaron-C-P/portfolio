@@ -55,3 +55,15 @@ export async function collect(kind: LeadKind, data: FormData): Promise<boolean> 
   console.warn("Lead could not be stored in the sheet.");
   return false;
 }
+
+export type Lead = Record<"Timestamp" | "ID" | "Kind" | "Name" | "Email" | "Topic" | "Organisation" | "Message" | "Page" | "Referrer" | "Source" | "Medium" | "Campaign" | "Device" | "Viewport" | "Timezone" | "Status", string>;
+
+/** Admin requests. The password is checked by the Apps Script, never by this site. */
+export async function adminCall<T extends object = object>(payload: object): Promise<({ ok: true } & T) | { ok: false; error: string }> {
+  try {
+    const res = await fetch(COLLECT_URL, { method: "POST", headers, body: JSON.stringify(payload) });
+    return await res.json();
+  } catch {
+    return { ok: false, error: "network" };
+  }
+}

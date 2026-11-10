@@ -14,6 +14,15 @@ The site already posts every contact and résumé request to your Apps Script we
    same `/exec` URL. A brand new deployment would give a new URL that the site does not know.
 5. Check it: opening the `/exec` URL in a browser should show `{"ok":true,"service":"portfolio-leads"}`.
 
+## Admin page (aaronprince.vercel.app/admin)
+
+Set the password in the script, not in the website: Project Settings → Script properties → add
+`ADMIN_KEY` with your chosen password, then redeploy a new version. The site never contains the
+password; the script checks it and only returns leads when it matches. Eight wrong tries in
+15 minutes lock the page for everyone until the window passes. Without `ADMIN_KEY` the page stays off.
+Use something longer than a word and a year: this page shows your visitors' emails.
+Never commit the password to this repo; it is public.
+
 ## What you get
 
 - **Leads** tab: one row per submission with time, ID, kind, name, email, topic, organisation,

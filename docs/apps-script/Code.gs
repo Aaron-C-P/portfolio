@@ -27,6 +27,7 @@ function doPost(e) {
     var body = JSON.parse(raw);
     var f = body.fields || {};
     var m = body.meta || {};
+    if (body.action) return admin_(body);
     var kind = String(body.kind || "").toLowerCase();
 
     if (f.website) return json_({ ok: true, id: "ignored" }); // honeypot: bots fill hidden fields
@@ -71,6 +72,69 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: "server" });
   }
+}
+
+/* ---------- admin: only answers when the password matches ---------- */
+
+var ADMIN_STATUSES = ["New", "Replied", "Archived"];
+var MAX_ADMIN_FAILS = 8; // wrong passwords allowed per 15 minutes, across everyone
+
+/** Compares without stopping at the first difference, so timing reveals nothing. */
+function same_(a, b) {
+  a = String(a);
+  b = String(b);
+  var diff = a.length ^ b.length;
+  for (var i = 0; i < Math.max(a.length, b.length); i++) {
+    diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return diff === 0;
+}
+
+function admin_(body) {
+  var secret = props_().getProperty("ADMIN_KEY");
+  if (!secret) return json_({ ok: false, error: "admin_disabled" });
+  var cache = CacheService.getScriptCache();
+  var fails = Number(cache.get("admin:fails") || 0);
+  if (fails >= MAX_ADMIN_FAILS) return json_({ ok: false, error: "locked" });
+  if (!same_(body.key || "", secret)) {
+    cache.put("admin:fails", String(fails + 1), 900);
+    return json_({ ok: false, error: "wrong_password" });
+  }
+  cache.remove("admin:fails");
+
+  var sh = leadsSheet_();
+  if (body.action === "admin_list") {
+    var values = sh.getDataRange().getValues();
+    var leads = [];
+    for (var i = values.length - 1; i >= 1 && leads.length < 1000; i--) {
+      var row = {};
+      for (var c = 0; c < HEADERS.length; c++) {
+        var v = values[i][c];
+        row[HEADERS[c]] = v instanceof Date ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
+      }
+      leads.push(row);
+    }
+    return json_({ ok: true, leads: leads });
+  }
+  if (body.action === "admin_update") {
+    var status = String(body.status || "");
+    if (ADMIN_STATUSES.indexOf(status) === -1) return json_({ ok: false, error: "bad_status" });
+    var lock = LockService.getScriptLock();
+    if (!lock.tryLock(25000)) return json_({ ok: false, error: "busy" });
+    try {
+      var ids = sh.getRange(1, 2, sh.getLastRow(), 1).getValues();
+      for (var r = 1; r < ids.length; r++) {
+        if (ids[r][0] === body.id) {
+          sh.getRange(r + 1, 17).setValue(status);
+          return json_({ ok: true });
+        }
+      }
+    } finally {
+      lock.releaseLock();
+    }
+    return json_({ ok: false, error: "not_found" });
+  }
+  return json_({ ok: false, error: "bad_action" });
 }
 
 /* ---------- helpers ---------- */

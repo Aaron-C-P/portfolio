@@ -8,11 +8,18 @@ const crypto = require("crypto");
 const rows = [];
 const mails = [];
 const cacheStore = new Map();
-const propStore = new Map([["SHEET_ID", "mock"]]);
+const propStore = new Map([["SHEET_ID", "mock"], ["ADMIN_KEY", "test-secret"]]);
 
+const HEAD = ["Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message", "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status"];
 const sheet = {
   appendRow: (r) => rows.push(r),
   getSheetByName: () => sheet,
+  getDataRange: () => ({ getValues: () => [HEAD, ...rows] }),
+  getLastRow: () => rows.length + 1,
+  getRange: (row, col) => ({
+    getValues: () => [[HEAD[1]], ...rows.map((r) => [r[1]])],
+    setValue: (v) => { rows[row - 2][col - 1] = v; },
+  }),
 };
 const sandbox = {
   ContentService: {
@@ -24,6 +31,7 @@ const sandbox = {
     getScriptCache: () => ({
       get: (k) => cacheStore.get(k) ?? null,
       put: (k, v) => cacheStore.set(k, v),
+      remove: (k) => cacheStore.delete(k),
     }),
   },
   PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => propStore.get(k) ?? null, setProperty: (k, v) => propStore.set(k, v) }) },
@@ -103,6 +111,28 @@ post(lead({}, {}, { referrer: "https://www.google.com/search?q=x" }));
 post(lead({}, {}, { referrer: "https://aaronprince.vercel.app/work" }));
 const srcs = rows.slice(-3).map((x) => x[10]);
 check("source: utm, referrer host, then direct", srcs.join() === "linkedin,google.com,direct", srcs.join());
+
+// admin
+const a0 = rows.length;
+let ar = post({ action: "admin_list", key: "nope" });
+check("wrong password gets no data", ar.error === "wrong_password" && !ar.leads);
+ar = post({ action: "admin_list" });
+check("missing password gets no data", ar.error === "wrong_password" && !ar.leads);
+ar = post({ action: "admin_list", key: "test-secret" });
+check("right password lists newest first", ar.ok && ar.leads.length === a0 && ar.leads[0].ID === rows[a0 - 1][1]);
+check("list hides the formula guard apostrophe", ar.leads.some((l) => l.Name.startsWith("=HYPERLINK")));
+const target = rows.find((r) => r[2] === "contact")[1];
+check("mark as replied", post({ action: "admin_update", key: "test-secret", id: target, status: "Replied" }).ok && rows.find((r) => r[1] === target)[16] === "Replied");
+check("bad status rejected", post({ action: "admin_update", key: "test-secret", id: target, status: "Deleted" }).error === "bad_status");
+check("unknown id rejected", post({ action: "admin_update", key: "test-secret", id: "L-zzzz", status: "New" }).error === "not_found");
+check("update needs the password", post({ action: "admin_update", key: "x", id: target, status: "New" }).error === "wrong_password");
+check("unknown action rejected", post({ action: "admin_wipe", key: "test-secret" }).error === "bad_action");
+for (let i = 0; i < 9; i++) post({ action: "admin_list", key: "guess" + i });
+check("guessing locks admin, even for the right password", post({ action: "admin_list", key: "test-secret" }).error === "locked");
+cacheStore.delete("admin:fails");
+propStore.delete("ADMIN_KEY");
+check("admin is off when no ADMIN_KEY is set", post({ action: "admin_list", key: "test-secret" }).error === "admin_disabled");
+propStore.set("ADMIN_KEY", "test-secret");
 
 // volume
 const t0 = Date.now();
