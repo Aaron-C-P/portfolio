@@ -23,6 +23,14 @@ password; the script checks it and only returns leads when it matches. Eight wro
 Use something longer than a word and a year: this page shows your visitors' emails.
 Never commit the password to this repo; it is public.
 
+On the page you can search, filter, add a lead by hand, edit any field, keep private notes,
+mark replied or archive (one or many), delete (one or many, always after a confirmation),
+and export what is shown as CSV. Deletes are permanent: they remove the row from the sheet.
+Archive is the reversible way to put a lead away.
+After changing `Code.gs`, paste it again and use Deploy → Manage deployments → New version,
+or the new buttons will answer "Something went wrong". An older Leads sheet gets its new
+`Notes` column header automatically.
+
 ## What you get
 
 - **Leads** tab: one row per submission with time, ID, kind, name, email, topic, organisation,

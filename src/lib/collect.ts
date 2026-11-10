@@ -56,7 +56,7 @@ export async function collect(kind: LeadKind, data: FormData): Promise<boolean> 
   return false;
 }
 
-export type Lead = Record<"Timestamp" | "ID" | "Kind" | "Name" | "Email" | "Topic" | "Organisation" | "Message" | "Page" | "Referrer" | "Source" | "Medium" | "Campaign" | "Device" | "Viewport" | "Timezone" | "Status", string>;
+export type Lead = Record<"Timestamp" | "ID" | "Kind" | "Name" | "Email" | "Topic" | "Organisation" | "Message" | "Page" | "Referrer" | "Source" | "Medium" | "Campaign" | "Device" | "Viewport" | "Timezone" | "Status" | "Notes", string>;
 
 /** Admin requests. The password is checked by the Apps Script, never by this site. */
 export async function adminCall<T extends object = object>(payload: object): Promise<({ ok: true } & T) | { ok: false; error: string }> {

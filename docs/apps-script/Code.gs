@@ -9,7 +9,7 @@
 var KINDS = ["contact", "resume"];
 var HEADERS = [
   "Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message",
-  "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status",
+  "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes",
 ];
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 var MAX_PER_HOUR = 5; // per email address, so one person cannot flood the sheet
@@ -61,7 +61,7 @@ function doPost(e) {
         clean_(m.page, 200), clean_(m.referrer, 300), source_(m),
         clean_(m.utm_medium, 80), clean_(m.utm_campaign, 120),
         clean_(m.device, 20), clean_(m.viewport, 20), clean_(m.timezone, 60),
-        isTest ? "TEST" : "New",
+        isTest ? "TEST" : "New", "",
       ]);
     } finally {
       lock.releaseLock();
@@ -78,6 +78,8 @@ function doPost(e) {
 
 var ADMIN_STATUSES = ["New", "Replied", "Archived"];
 var MAX_ADMIN_FAILS = 8; // wrong passwords allowed per 15 minutes, across everyone
+var MAX_BATCH = 200;
+var COL = { kind: 3, name: 4, email: 5, topic: 6, organisation: 7, message: 8, status: 17, notes: 18 };
 
 /** Compares without stopping at the first difference, so timing reveals nothing. */
 function same_(a, b) {
@@ -88,6 +90,28 @@ function same_(a, b) {
     diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   }
   return diff === 0;
+}
+
+function leadFromRow_(values) {
+  var row = {};
+  for (var c = 0; c < HEADERS.length; c++) {
+    var v = values[c];
+    row[HEADERS[c]] = v instanceof Date ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
+  }
+  return row;
+}
+
+/** Row number (1-based, header is row 1) of a lead id, or 0. */
+function findRow_(sh, id) {
+  var ids = sh.getRange(1, 2, sh.getLastRow(), 1).getValues();
+  for (var r = 1; r < ids.length; r++) if (ids[r][0] === id) return r + 1;
+  return 0;
+}
+
+function idsFrom_(body) {
+  var ids = body.ids || (body.id ? [body.id] : []);
+  if (!Array.isArray(ids) || !ids.length || ids.length > MAX_BATCH) return null;
+  return ids.map(String);
 }
 
 function admin_(body) {
@@ -103,38 +127,94 @@ function admin_(body) {
   cache.remove("admin:fails");
 
   var sh = leadsSheet_();
-  if (body.action === "admin_list") {
+  var action = body.action;
+
+  if (action === "admin_list") {
     var values = sh.getDataRange().getValues();
     var leads = [];
-    for (var i = values.length - 1; i >= 1 && leads.length < 1000; i--) {
-      var row = {};
-      for (var c = 0; c < HEADERS.length; c++) {
-        var v = values[i][c];
-        row[HEADERS[c]] = v instanceof Date ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
-      }
-      leads.push(row);
-    }
+    for (var i = values.length - 1; i >= 1 && leads.length < 1000; i--) leads.push(leadFromRow_(values[i]));
     return json_({ ok: true, leads: leads });
   }
-  if (body.action === "admin_update") {
-    var status = String(body.status || "");
-    if (ADMIN_STATUSES.indexOf(status) === -1) return json_({ ok: false, error: "bad_status" });
-    var lock = LockService.getScriptLock();
-    if (!lock.tryLock(25000)) return json_({ ok: false, error: "busy" });
-    try {
-      var ids = sh.getRange(1, 2, sh.getLastRow(), 1).getValues();
-      for (var r = 1; r < ids.length; r++) {
-        if (ids[r][0] === body.id) {
-          sh.getRange(r + 1, 17).setValue(status);
-          return json_({ ok: true });
-        }
-      }
-    } finally {
-      lock.releaseLock();
-    }
-    return json_({ ok: false, error: "not_found" });
+
+  if (action !== "admin_create" && action !== "admin_update" && action !== "admin_delete") {
+    return json_({ ok: false, error: "bad_action" });
   }
-  return json_({ ok: false, error: "bad_action" });
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(25000)) return json_({ ok: false, error: "busy" });
+  try {
+    if (action === "admin_create") {
+      var f = body.fields || {};
+      var email = clean_(f.email, 200).toLowerCase();
+      var name = clean_(f.name, 120);
+      var kind = String(f.kind || "contact").toLowerCase();
+      var status = String(f.status || "New");
+      if (!name) return json_({ ok: false, error: "missing_name" });
+      if (!EMAIL_RE.test(email)) return json_({ ok: false, error: "bad_email" });
+      if (KINDS.indexOf(kind) === -1) return json_({ ok: false, error: "bad_kind" });
+      if (ADMIN_STATUSES.indexOf(status) === -1) return json_({ ok: false, error: "bad_status" });
+      var id = "L-" + Utilities.getUuid().replace(/-/g, "").slice(0, 8);
+      var rowValues = [
+        new Date(), id, kind, name, email, clean_(f.topic, 120), clean_(f.organisation, 160), clean_(f.message, 5000),
+        "admin", "", "manual", "", "", "", "", "", status, clean_(f.notes, 2000),
+      ];
+      sh.appendRow(rowValues);
+      return json_({ ok: true, lead: leadFromRow_(rowValues) });
+    }
+
+    var ids = idsFrom_(body);
+    if (!ids) return json_({ ok: false, error: "bad_ids" });
+
+    if (action === "admin_delete") {
+      var rowsToDelete = [];
+      ids.forEach(function (x) {
+        var r = findRow_(sh, x);
+        if (r) rowsToDelete.push(r);
+      });
+      rowsToDelete.sort(function (p, q) { return q - p; }); // bottom first, so row numbers stay valid
+      rowsToDelete.forEach(function (r) { sh.deleteRow(r); });
+      return json_({ ok: true, deleted: rowsToDelete.length, missing: ids.length - rowsToDelete.length });
+    }
+
+    // admin_update: a status for one or many leads, or edited fields for exactly one.
+    var patch = {};
+    if (body.status !== undefined) {
+      if (ADMIN_STATUSES.indexOf(String(body.status)) === -1) return json_({ ok: false, error: "bad_status" });
+      patch[COL.status] = String(body.status);
+    }
+    var fl = body.fields;
+    if (fl) {
+      if (ids.length !== 1) return json_({ ok: false, error: "bad_ids" });
+      if (fl.name !== undefined) {
+        patch[COL.name] = clean_(fl.name, 120);
+        if (!patch[COL.name]) return json_({ ok: false, error: "missing_name" });
+      }
+      if (fl.email !== undefined) {
+        patch[COL.email] = clean_(fl.email, 200).toLowerCase();
+        if (!EMAIL_RE.test(patch[COL.email])) return json_({ ok: false, error: "bad_email" });
+      }
+      if (fl.kind !== undefined) {
+        if (KINDS.indexOf(String(fl.kind)) === -1) return json_({ ok: false, error: "bad_kind" });
+        patch[COL.kind] = String(fl.kind);
+      }
+      if (fl.topic !== undefined) patch[COL.topic] = clean_(fl.topic, 120);
+      if (fl.organisation !== undefined) patch[COL.organisation] = clean_(fl.organisation, 160);
+      if (fl.message !== undefined) patch[COL.message] = clean_(fl.message, 5000);
+      if (fl.notes !== undefined) patch[COL.notes] = clean_(fl.notes, 2000);
+    }
+    if (!Object.keys(patch).length) return json_({ ok: false, error: "nothing_to_update" });
+
+    var updated = [];
+    ids.forEach(function (x) {
+      var r = findRow_(sh, x);
+      if (!r) return;
+      Object.keys(patch).forEach(function (col) { sh.getRange(r, Number(col)).setValue(patch[col]); });
+      updated.push(leadFromRow_(sh.getRange(r, 1, 1, HEADERS.length).getValues()[0]));
+    });
+    if (!updated.length) return json_({ ok: false, error: "not_found" });
+    return json_({ ok: true, updated: updated.length, leads: updated });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 /* ---------- helpers ---------- */
@@ -196,6 +276,9 @@ function leadsSheet_() {
     sh.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold").setBackground("#ede9fe");
     sh.getRange("A2:A").setNumberFormat("yyyy-mm-dd hh:mm");
     sh.setColumnWidth(8, 420);
+  } else if (sh.getLastColumn() < HEADERS.length) {
+    // Sheets created before the Notes column existed get the new header.
+    sh.getRange(1, HEADERS.length).setValue(HEADERS[HEADERS.length - 1]).setFontWeight("bold").setBackground("#ede9fe");
   }
   return sh;
 }

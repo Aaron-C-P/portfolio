@@ -10,14 +10,16 @@ const mails = [];
 const cacheStore = new Map();
 const propStore = new Map([["SHEET_ID", "mock"], ["ADMIN_KEY", "test-secret"]]);
 
-const HEAD = ["Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message", "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status"];
+const HEAD = ["Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message", "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes"];
 const sheet = {
   appendRow: (r) => rows.push(r),
   getSheetByName: () => sheet,
   getDataRange: () => ({ getValues: () => [HEAD, ...rows] }),
   getLastRow: () => rows.length + 1,
-  getRange: (row, col) => ({
-    getValues: () => [[HEAD[1]], ...rows.map((r) => [r[1]])],
+  getLastColumn: () => HEAD.length,
+  deleteRow: (n) => rows.splice(n - 2, 1),
+  getRange: (row, col, nRows = 1, nCols = 1) => ({
+    getValues: () => (row === 1 ? [HEAD, ...rows] : [rows[row - 2]]).map((r) => r.slice(col - 1, col - 1 + nCols)).slice(0, row === 1 ? nRows : 1),
     setValue: (v) => { rows[row - 2][col - 1] = v; },
   }),
 };
@@ -71,7 +73,7 @@ check("GET returns ok", JSON.parse(sandbox.doGet().getContent()).ok === true);
 let r = post(lead());
 check("valid contact is stored", r.ok && /^L-[0-9a-f]{8}$/.test(r.id) && rows.length === 1);
 check("owner is emailed with reply-to set", mails.length === 1 && mails[0].to === "owner@example.com" && mails[0].replyTo === rows[0][4]);
-check("row has 17 columns, Status New", rows[0].length === 17 && rows[0][16] === "New");
+check("row has 18 columns, Status New", rows[0].length === 18 && rows[0][16] === "New");
 r = post(lead({ kind: "resume" }, { message: "", topic: "", organisation: "Acme" }));
 check("résumé request needs no message", r.ok && rows[1][2] === "resume" && rows[1][6] === "Acme");
 
@@ -121,12 +123,48 @@ check("missing password gets no data", ar.error === "wrong_password" && !ar.lead
 ar = post({ action: "admin_list", key: "test-secret" });
 check("right password lists newest first", ar.ok && ar.leads.length === a0 && ar.leads[0].ID === rows[a0 - 1][1]);
 check("list hides the formula guard apostrophe", ar.leads.some((l) => l.Name.startsWith("=HYPERLINK")));
+const KEY = "test-secret";
 const target = rows.find((r) => r[2] === "contact")[1];
-check("mark as replied", post({ action: "admin_update", key: "test-secret", id: target, status: "Replied" }).ok && rows.find((r) => r[1] === target)[16] === "Replied");
-check("bad status rejected", post({ action: "admin_update", key: "test-secret", id: target, status: "Deleted" }).error === "bad_status");
-check("unknown id rejected", post({ action: "admin_update", key: "test-secret", id: "L-zzzz", status: "New" }).error === "not_found");
+let u = post({ action: "admin_update", key: KEY, id: target, status: "Replied" });
+check("mark as replied", u.ok && u.leads[0].Status === "Replied" && rows.find((r) => r[1] === target)[16] === "Replied");
+check("bad status rejected", post({ action: "admin_update", key: KEY, id: target, status: "Deleted" }).error === "bad_status");
+check("unknown id rejected", post({ action: "admin_update", key: KEY, id: "L-zzzz", status: "New" }).error === "not_found");
 check("update needs the password", post({ action: "admin_update", key: "x", id: target, status: "New" }).error === "wrong_password");
-check("unknown action rejected", post({ action: "admin_wipe", key: "test-secret" }).error === "bad_action");
+check("unknown action rejected", post({ action: "admin_wipe", key: KEY }).error === "bad_action");
+
+// create
+let c = post({ action: "admin_create", key: KEY, fields: { name: "Manual Person", email: "Manual@Example.com", topic: "Data", notes: "met at the fair", kind: "contact" } });
+check("admin can add a lead by hand", c.ok && c.lead.Email === "manual@example.com" && c.lead.Source === "manual" && c.lead.Notes === "met at the fair" && c.lead.Status === "New");
+check("added lead needs a name and a valid email", post({ action: "admin_create", key: KEY, fields: { name: "", email: "a@b.co" } }).error === "missing_name" && post({ action: "admin_create", key: KEY, fields: { name: "A", email: "bad" } }).error === "bad_email");
+check("create needs the password", post({ action: "admin_create", key: "x", fields: { name: "A", email: "a@b.co" } }).error === "wrong_password");
+check("added lead does not email the owner", mails.every((m) => m.replyTo !== "manual@example.com"));
+
+// edit
+const id = c.lead.ID;
+u = post({ action: "admin_update", key: KEY, id, fields: { name: "Renamed", topic: "Dashboards", message: "=2+2", notes: "call Monday", email: "new@example.com" } });
+const row = rows.find((r) => r[1] === id);
+check("edit changes fields and returns the lead", u.ok && row[3] === "Renamed" && row[5] === "Dashboards" && row[17] === "call Monday" && row[4] === "new@example.com" && u.leads[0].Name === "Renamed");
+check("edited text is formula-guarded", row[7] === "'=2+2" && u.leads[0].Message === "=2+2");
+check("edit with bad email keeps old data", post({ action: "admin_update", key: KEY, id, fields: { email: "nope" } }).error === "bad_email" && row[4] === "new@example.com");
+check("edit with empty name rejected", post({ action: "admin_update", key: KEY, id, fields: { name: "  " } }).error === "missing_name");
+check("field edits only for one lead at a time", post({ action: "admin_update", key: KEY, ids: [id, target], fields: { name: "X" } }).error === "bad_ids");
+check("empty update rejected", post({ action: "admin_update", key: KEY, id, fields: {} }).error === "nothing_to_update");
+check("ID column cannot be edited", (post({ action: "admin_update", key: KEY, id, fields: { ID: "L-hack", Timestamp: "x" } }), rows.find((r) => r[1] === id) === row));
+
+// bulk status + delete
+const batch = rows.filter((r) => r[16] === "New").slice(0, 3).map((r) => r[1]);
+u = post({ action: "admin_update", key: KEY, ids: batch, status: "Archived" });
+check("bulk status change", u.ok && u.updated === 3 && batch.every((x) => rows.find((r) => r[1] === x)[16] === "Archived"));
+const total = rows.length;
+let d = post({ action: "admin_delete", key: KEY, ids: batch });
+check("bulk delete removes exactly those rows", d.ok && d.deleted === 3 && rows.length === total - 3 && batch.every((x) => !rows.find((r) => r[1] === x)));
+d = post({ action: "admin_delete", key: KEY, id: "L-gone" });
+check("deleting a missing id deletes nothing", d.ok && d.deleted === 0 && d.missing === 1 && rows.length === total - 3);
+check("delete needs the password", post({ action: "admin_delete", key: "x", id }).error === "wrong_password" && rows.find((r) => r[1] === id));
+check("delete with no ids rejected", post({ action: "admin_delete", key: KEY, ids: [] }).error === "bad_ids");
+check("batch above 200 rejected", post({ action: "admin_delete", key: KEY, ids: Array.from({ length: 201 }, (_, i) => "L-" + i) }).error === "bad_ids");
+d = post({ action: "admin_delete", key: KEY, id });
+check("single delete", d.ok && d.deleted === 1 && !rows.find((r) => r[1] === id));
 for (let i = 0; i < 9; i++) post({ action: "admin_list", key: "guess" + i });
 check("guessing locks admin, even for the right password", post({ action: "admin_list", key: "test-secret" }).error === "locked");
 cacheStore.delete("admin:fails");
