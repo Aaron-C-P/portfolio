@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import { Menu, X, Github, Linkedin, Mail, Phone } from "lucide-react";
+import { Menu, X, Github, Linkedin, Lock, Mail, Phone } from "lucide-react";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
@@ -86,6 +86,9 @@ const Header = () => {
           </a>
           <Link to="/contact" className="btn-primary hidden whitespace-nowrap xl:inline-flex">
             Start a conversation
+          </Link>
+          <Link to="/admin" aria-label="Admin login" title="Admin login" className="inline-flex rounded-lg p-2 text-soft transition hover:text-violet-light">
+            <Lock className="h-5 w-5" />
           </Link>
           <button
             className="rounded-lg p-2 lg:hidden"
