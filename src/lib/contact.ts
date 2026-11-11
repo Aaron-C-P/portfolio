@@ -1,6 +1,8 @@
 import { brand } from "@/data/studio";
 
-export const whatsapp = `https://wa.me/18767902268?text=${encodeURIComponent("Hi Aaron, I would like help with ")}`;
+/** WhatsApp link with a starting message, so the visitor only has to press send. */
+export const whatsappAbout = (about: string) => `https://wa.me/18767902268?text=${encodeURIComponent(`Hi Aaron, I would like help with ${about}`)}`;
+export const whatsapp = whatsappAbout("");
 
 const vcard = [
   "BEGIN:VCARD",

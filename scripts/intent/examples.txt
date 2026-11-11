@@ -1,0 +1,209 @@
+# label|text  (one example per line; lines starting with # are ignored)
+# Hand-written starter set. Add real visitor messages here and retrain: the model improves with real data.
+human_request|can I talk to a real person
+human_request|is there a human I can speak to
+human_request|let me speak to Aaron
+human_request|connect me with Aaron directly
+human_request|I want to talk to someone not a bot
+human_request|can Aaron call me
+human_request|get me a real person please
+human_request|are you a robot or is Aaron there
+human_request|I would rather speak to the actual Aaron
+human_request|put me through to a human
+human_request|can someone call me back
+human_request|is Aaron available to chat right now
+human_request|I need to speak with an actual person
+human_request|can you ask Aaron to reply to me personally
+human_request|talk to Aaron himself
+human_request|is anyone there
+human_request|real human please
+human_request|I do not want the AI I want Aaron
+human_request|can I get Aaron on WhatsApp
+human_request|please have Aaron contact me
+human_request|can I have a person answer this
+human_request|speak to a representative
+human_request|can Aaron message me back himself
+human_request|mi want talk to di real Aaron
+hire_intent|I need a website for my business
+hire_intent|can you build an ordering system for my shop
+hire_intent|how much do you charge for a website
+hire_intent|I want to hire you for a project
+hire_intent|can I get a quote for an app
+hire_intent|are you available for freelance work
+hire_intent|I need a dashboard for my sales
+hire_intent|can you build something like the cake platform for me
+hire_intent|what would it cost to build an online store
+hire_intent|I run a small business and need a system
+hire_intent|do you take on new clients
+hire_intent|I want to order a custom application
+hire_intent|can you design a database for my company
+hire_intent|I would like to work with you on a project
+hire_intent|what is your price for a booking system
+hire_intent|I have a bakery and need online orders
+hire_intent|can you automate my spreadsheets
+hire_intent|how long would a website take and what does it cost
+hire_intent|I need a developer for my startup
+hire_intent|can you make a website for my church
+hire_intent|looking to pay someone to build an app
+hire_intent|do you offer a payment plan for projects
+hire_intent|mi need a website fi mi business
+hire_intent|can you build a delivery app like errands
+student_help|I need help with my SBA
+student_help|can you tutor me in maths
+student_help|CSEC maths help please
+student_help|help with my assignment due on Friday
+student_help|do you teach statistics
+student_help|I am struggling with algebra
+student_help|can you check my essay
+student_help|how do I pass CSEC mathematics
+student_help|my lab report is due tomorrow can you help
+student_help|do you do past paper practice
+student_help|I need an IT SBA done help me
+student_help|can you explain geometry and trigonometry
+student_help|how much is tutoring per hour
+student_help|my child needs maths lessons
+student_help|help me understand sets and venn diagrams
+student_help|can you proofread my research paper
+student_help|I need help with my group project
+student_help|can you help me with consumer arithmetic
+student_help|do you help with university assignments
+student_help|mi need help wid mi SBA
+student_help|can you explain matrices and vectors
+student_help|I have a maths exam coming up
+student_help|can I book a tutoring session
+student_help|help with my coding assignment
+about_work|what projects have you built
+about_work|tell me about the cake platform
+about_work|what is your tech stack
+about_work|what do you know about SQL
+about_work|show me your skills
+about_work|what is EGZIT
+about_work|tell me about Errands
+about_work|what did you study
+about_work|where did you go to university
+about_work|have you written any articles
+about_work|what is Vectra
+about_work|do you know React and TypeScript
+about_work|tell me about your internship
+about_work|what is the hardest problem you solved
+about_work|what certifications do you have
+about_work|where are you based
+about_work|what is the QR data lab
+about_work|explain your journey
+about_work|what is Becoming
+about_work|what do you build
+about_work|tell me about your book
+about_work|which database do you use
+about_work|can you describe your best project
+about_work|do you know Python
+job_opportunity|we are hiring a developer
+job_opportunity|are you open to a full time role
+job_opportunity|I am a recruiter looking at your profile
+job_opportunity|we have an internship opportunity
+job_opportunity|can you send me your resume
+job_opportunity|are you looking for a job
+job_opportunity|our company has a data analyst opening
+job_opportunity|would you consider a remote position
+job_opportunity|I am a hiring manager
+job_opportunity|we would like to interview you
+job_opportunity|do you have a CV
+job_opportunity|is Aaron open to work
+job_opportunity|we have a junior developer vacancy
+job_opportunity|are you available to start next month in a full time position
+job_opportunity|I found your portfolio and have a role for you
+job_opportunity|we are recruiting for an IT support position
+job_opportunity|what salary are you looking for
+job_opportunity|can we schedule an interview
+job_opportunity|we need a graduate for our software team
+job_opportunity|are you open to relocating for work
+job_opportunity|looking for talent in data and reporting
+job_opportunity|do you accept contract positions
+job_opportunity|I work at a bank and we need an analyst
+frustrated_or_complex|this is not helping
+frustrated_or_complex|you did not answer my question
+frustrated_or_complex|that is wrong
+frustrated_or_complex|this is useless
+frustrated_or_complex|I have a complicated situation
+frustrated_or_complex|it is urgent please help now
+frustrated_or_complex|your answer makes no sense
+frustrated_or_complex|I already asked that and you ignored me
+frustrated_or_complex|this is an emergency
+frustrated_or_complex|the bot keeps repeating itself
+frustrated_or_complex|none of this is what I asked
+frustrated_or_complex|I am very frustrated
+frustrated_or_complex|something went wrong with my order and I am upset
+frustrated_or_complex|my website is down and I need help immediately
+frustrated_or_complex|I have a problem that does not fit any of those
+frustrated_or_complex|stop giving me the same answer
+frustrated_or_complex|I have a complaint
+frustrated_or_complex|this does not work
+frustrated_or_complex|I think there is a mistake on your site
+frustrated_or_complex|it is a long story and I need advice
+frustrated_or_complex|you are not understanding me
+frustrated_or_complex|I paid already and nothing happened
+frustrated_or_complex|I need help with something unusual
+smalltalk|hello
+smalltalk|hi there
+smalltalk|good morning
+smalltalk|thanks
+smalltalk|thank you very much
+smalltalk|who are you
+smalltalk|how are you
+smalltalk|bye
+smalltalk|hey
+smalltalk|good evening
+smalltalk|nice to meet you
+smalltalk|wah gwaan
+smalltalk|cool thanks
+smalltalk|okay
+smalltalk|that is great
+smalltalk|what can you do
+smalltalk|are you a bot
+smalltalk|have a nice day
+smalltalk|see you later
+smalltalk|good afternoon
+smalltalk|nice site
+smalltalk|awesome thank you
+smalltalk|goodbye
+hire_intent|what packages do you offer for small businesses
+hire_intent|I want an app that takes orders from customers
+hire_intent|can you set up online payments and ordering for my restaurant
+hire_intent|my company needs a custom reporting system
+hire_intent|how do I start a project with you
+hire_intent|I would like a website like yours for my business
+hire_intent|can you build a booking page for my salon
+hire_intent|do you build mobile friendly web apps for clients
+hire_intent|I need an inventory system for my store
+hire_intent|what is the process to hire you
+hire_intent|can you take over and fix my existing website
+hire_intent|how much for a simple landing page
+frustrated_or_complex|no that is not what I meant
+frustrated_or_complex|I keep getting errors on your website
+frustrated_or_complex|the form did not work and I lost my message
+frustrated_or_complex|I am annoyed nobody has replied to me
+frustrated_or_complex|this bot is not understanding my problem
+frustrated_or_complex|I cannot explain this in a short message
+frustrated_or_complex|it is complicated and involves several things
+frustrated_or_complex|I need someone to look at my specific case
+frustrated_or_complex|I am stressed and running out of time
+frustrated_or_complex|that was not helpful at all
+frustrated_or_complex|your site is broken
+frustrated_or_complex|I was charged twice
+job_opportunity|we saw your portfolio and want to talk about a role
+job_opportunity|are you interested in a position at our company
+job_opportunity|can you apply for our developer job
+job_opportunity|we are looking for a junior data analyst
+job_opportunity|are you open to a graduate trainee programme
+job_opportunity|can I get a copy of your resume for our team
+job_opportunity|we would like to offer you an interview
+job_opportunity|do you have experience we could use in our IT department
+smalltalk|hi Aaron
+smalltalk|hello there how are you doing
+smalltalk|thanks for your help
+smalltalk|ok great
+smalltalk|lol nice
+smalltalk|good night
+student_help|I am a student and need help with homework
+student_help|can you explain this maths problem to me
+student_help|help me study for my exam
+student_help|can you tutor my daughter in mathematics

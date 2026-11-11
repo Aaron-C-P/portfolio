@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, LogOut, Lock, Plus, RefreshCw, Search } from "lucide-react";
-import { adminCall, type Lead } from "@/lib/collect";
+import { adminCall, fetchAvailable, type Lead } from "@/lib/collect";
 import { usePageTitle } from "@/components/studio/parts";
 
 const field = "w-full rounded-xl border border-line bg-white/5 px-4 py-2.5 text-fg outline-none transition focus:border-violet-light";
@@ -54,6 +54,7 @@ const LeadForm = ({ initial, submitLabel, busy, onSubmit, onCancel }: { initial:
         <select value={d.kind} onChange={set("kind")} className={field}>
           <option value="contact">Message</option>
           <option value="resume">Résumé request</option>
+          <option value="chat">Live chat</option>
         </select>
       </label>
       <span className="hidden sm:block" />
@@ -83,6 +84,72 @@ const csv = (rows: Lead[]) => {
   return [cols.join(","), ...rows.map((r) => cols.map((c) => cell(r[c] ?? "")).join(","))].join("\r\n");
 };
 
+type Line = { from: string; text: string; at?: string };
+
+/** One live conversation: the whole thread, refreshed while open, with a box to answer as Aaron. */
+const Thread = ({ id, adminKey, onAuthLost }: { id: string; adminKey: string; onAuthLost: () => void }) => {
+  const [lines, setLines] = useState<Line[] | null>(null);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState("");
+  const lost = useRef(onAuthLost);
+  lost.current = onAuthLost;
+
+  useEffect(() => {
+    let stop = false;
+    const pull = async () => {
+      if (document.hidden) return;
+      const r = await adminCall<{ messages: Line[] }>({ action: "admin_thread", key: adminKey, id });
+      if (stop) return;
+      if (r.ok) setLines(r.messages);
+      else if (r.error === "wrong_password" || r.error === "locked") lost.current();
+    };
+    void pull();
+    const t = window.setInterval(() => void pull(), 10000);
+    return () => {
+      stop = true;
+      window.clearInterval(t);
+    };
+  }, [id, adminKey]);
+
+  const reply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const body = text.trim();
+    if (!body || sending) return;
+    setSending(true);
+    setErr("");
+    const r = await adminCall<{ messages: Line[] }>({ action: "admin_reply", key: adminKey, id, text: body });
+    setSending(false);
+    if (r.ok) {
+      setLines(r.messages);
+      setText("");
+    } else setErr(r.error === "wrong_password" || r.error === "locked" ? "Logged out." : "Could not send. Try again.");
+  };
+
+  return (
+    <div className="mt-4 rounded-2xl border border-violet-light/40 p-4">
+      <div className="max-h-80 space-y-2 overflow-y-auto">
+        {lines === null && <p className="text-sm text-soft">Loading...</p>}
+        {lines?.map((m, i) => (
+          <div key={i} className={`flex ${m.from === "aaron" ? "justify-end" : ""}`}>
+            <p className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${m.from === "aaron" ? "bg-violet text-white" : m.from === "ai" ? "bg-white/5 italic text-soft" : "bg-white/10"}`}>
+              <span className="block text-[11px] uppercase tracking-wide opacity-70">{m.from === "aaron" ? "You" : m.from === "ai" ? "AI guide" : "Visitor"}</span>
+              {m.text}
+            </p>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={reply} className="mt-3 flex gap-2">
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Reply as Aaron (also emailed to them)" aria-label="Reply as Aaron" maxLength={2000} className={`${field} flex-1`} />
+        <button type="submit" disabled={sending || !text.trim()} className="btn-primary disabled:opacity-50">
+          {sending ? "Sending..." : "Reply"}
+        </button>
+      </form>
+      {err && <p className="mt-2 text-sm text-red-500">{err}</p>}
+    </div>
+  );
+};
+
 const Admin = () => {
   usePageTitle("Admin");
   useEffect(() => {
@@ -100,7 +167,9 @@ const Admin = () => {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [show, setShow] = useState<"All" | "New" | "Replied" | "Archived">("New");
-  const [kind, setKind] = useState<"all" | "contact" | "resume">("all");
+  const [kind, setKind] = useState<"all" | "contact" | "resume" | "chat">("all");
+  const [openChat, setOpenChat] = useState<string | null>(null);
+  const [available, setAvailable] = useState(false);
   const [tests, setTests] = useState(false);
   const [q, setQ] = useState("");
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -136,6 +205,22 @@ const Admin = () => {
     if (key && !leads) void load(key);
   }, [key, leads, load]);
 
+  // New live chats should appear without pressing Refresh.
+  useEffect(() => {
+    if (!key || !leads) return;
+    const t = window.setInterval(async () => {
+      if (document.hidden) return;
+      const res = await adminCall<{ leads: Lead[] }>({ action: "admin_list", key });
+      if (res.ok) setLeads(res.leads);
+    }, 30000);
+    return () => window.clearInterval(t);
+  }, [key, leads]);
+
+  useEffect(() => {
+    if (!key) return;
+    void fetchAvailable().then(setAvailable);
+  }, [key]);
+
   /** Runs one admin action. Returns the reply, or null after showing why it failed. */
   const run = async <T extends object>(payload: object, done: string) => {
     setBusy(true);
@@ -151,6 +236,10 @@ const Admin = () => {
     return res;
   };
 
+  const toggleAvailable = async () => {
+    const res = await run<{ available: boolean }>({ action: "admin_available", available: !available }, !available ? "Visitors now see that you are online." : "Visitors now see that you are away.");
+    if (res) setAvailable(res.available);
+  };
   const merge = (changed: Lead[]) => setLeads((l) => l?.map((x) => changed.find((c) => c.ID === x.ID) ?? x) ?? l);
   const status = async (ids: string[], s: string) => {
     const res = await run<{ leads: Lead[] }>({ action: "admin_update", ids, status: s }, ids.length > 1 ? `${ids.length} leads set to ${s}.` : `Marked ${s.toLowerCase()}.`);
@@ -237,6 +326,10 @@ const Admin = () => {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-extrabold">Leads</h1>
         <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => void toggleAvailable()} aria-pressed={available} className={chip(available)}>
+            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${available ? "bg-green-500" : "bg-slate-400"}`} aria-hidden="true" />
+            {available ? "Online for chat" : "Away"}
+          </button>
           <button type="button" onClick={() => { setAdding(!adding); setEditing(null); }} className="btn-primary">
             <Plus className="h-4 w-4" aria-hidden="true" /> Add lead
           </button>
@@ -300,9 +393,9 @@ const Admin = () => {
           </button>
         ))}
         <span className="mx-1 border-l border-line" />
-        {(["all", "contact", "resume"] as const).map((k) => (
+        {(["all", "contact", "resume", "chat"] as const).map((k) => (
           <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k} className={chip(kind === k)}>
-            {k === "all" ? "Everything" : k === "resume" ? "Résumé" : "Contact"}
+            {k === "all" ? "Everything" : k === "resume" ? "Résumé" : k === "chat" ? "Live chat" : "Contact"}
           </button>
         ))}
         <span className="mx-1 border-l border-line" />
@@ -368,7 +461,11 @@ const Admin = () => {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-lg font-bold">{l.Name}</p>
+                    <p className="text-lg font-bold">
+                      {l.Name}
+                      {l.Kind === "chat" && l.Priority === "hot" && <span className="ml-2 rounded-full bg-red-500 px-2 py-0.5 align-middle text-xs font-semibold text-white">Hot</span>}
+                      {l.Kind === "chat" && l.Priority === "warm" && <span className="ml-2 rounded-full bg-amber-500 px-2 py-0.5 align-middle text-xs font-semibold text-white">Warm</span>}
+                    </p>
                     <a href={`mailto:${l.Email}`} className="break-all text-violet-light underline">
                       {l.Email}
                     </a>
@@ -376,7 +473,7 @@ const Admin = () => {
                   <div className="text-right text-sm text-soft">
                     <p>{when(l.Timestamp)}</p>
                     <p>
-                      {l.Kind === "resume" ? "Résumé request" : "Message"} · {l.Status}
+                      {l.Kind === "resume" ? "Résumé request" : l.Kind === "chat" ? "Live chat" : "Message"} · {l.Status}
                     </p>
                   </div>
                 </div>
@@ -398,6 +495,15 @@ const Admin = () => {
                         <span className="font-semibold">Note: </span>
                         {l.Notes}
                       </p>
+                    )}
+                    {l.Kind === "chat" && l.Intent && <p className="mt-2 text-xs text-soft">Model read this as: {l.Intent.replace(/_/g, " ")}</p>}
+                    {l.Kind === "chat" && (
+                      <div className="mt-3">
+                        <button type="button" onClick={() => setOpenChat(openChat === l.ID ? null : l.ID)} aria-expanded={openChat === l.ID} className="btn-primary">
+                          {openChat === l.ID ? "Hide conversation" : l.Status === "TEST" ? "Open test conversation" : "Open conversation and reply"}
+                        </button>
+                        {openChat === l.ID && <Thread id={l.ID} adminKey={key} onAuthLost={logout} />}
+                      </div>
                     )}
                     <p className="mt-3 text-xs text-soft">
                       from {l.Source || "direct"} · {l.Device || "n/a"} · {l.Page} · {l.ID}

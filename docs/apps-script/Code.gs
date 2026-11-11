@@ -10,12 +10,13 @@ var KINDS = ["contact", "resume"];
 var HEADERS = [
   "Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message",
   "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes",
+  "Token", "Priority", "Intent",
 ];
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 var MAX_PER_HOUR = 5; // per email address, so one person cannot flood the sheet
 
 function doGet() {
-  return json_({ ok: true, service: "portfolio-leads" });
+  return json_({ ok: true, service: "portfolio-leads", available: props_().getProperty("AVAILABLE") === "on" });
 }
 
 function doPost(e) {
@@ -27,6 +28,7 @@ function doPost(e) {
     var body = JSON.parse(raw);
     var f = body.fields || {};
     var m = body.meta || {};
+    if (body.action && String(body.action).indexOf("chat_") === 0) return chat_(body);
     if (body.action) return admin_(body);
     var kind = String(body.kind || "").toLowerCase();
 
@@ -61,7 +63,7 @@ function doPost(e) {
         clean_(m.page, 200), clean_(m.referrer, 300), source_(m),
         clean_(m.utm_medium, 80), clean_(m.utm_campaign, 120),
         clean_(m.device, 20), clean_(m.viewport, 20), clean_(m.timezone, 60),
-        isTest ? "TEST" : "New", "",
+        isTest ? "TEST" : "New", "", "", "", "",
       ]);
     } finally {
       lock.releaseLock();
@@ -82,7 +84,8 @@ function doPost(e) {
 var ADMIN_STATUSES = ["New", "Replied", "Archived"];
 var MAX_ADMIN_FAILS = 8; // wrong passwords allowed per 15 minutes, across everyone
 var MAX_BATCH = 200;
-var COL = { kind: 3, name: 4, email: 5, topic: 6, organisation: 7, message: 8, status: 17, notes: 18 };
+var COL = { kind: 3, name: 4, email: 5, topic: 6, organisation: 7, message: 8, status: 17, notes: 18, token: 19, priority: 20 };
+var ADMIN_KINDS = ["contact", "resume", "chat"];
 
 /** Compares without stopping at the first difference, so timing reveals nothing. */
 function same_(a, b) {
@@ -103,6 +106,7 @@ function leadFromRow_(values) {
   var row = {};
   for (var c = 0; c < HEADERS.length; c++) {
     var v = values[c];
+    if (HEADERS[c] === "Token") continue;
     row[HEADERS[c]] = isDate_(v) ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
   }
   return row;
@@ -143,6 +147,38 @@ function admin_(body) {
     return json_({ ok: true, leads: leads });
   }
 
+  if (action === "admin_thread") {
+    var tid = String(body.id || "");
+    var trow = findRow_(sh, tid);
+    if (!trow) return json_({ ok: false, error: "not_found" });
+    return json_({ ok: true, messages: threadFor_(tid), available: available_() });
+  }
+
+  if (action === "admin_reply") {
+    var rid = String(body.id || "");
+    var rtext = clean_(body.text, 2000);
+    if (!rtext) return json_({ ok: false, error: "empty" });
+    var rrow = findRow_(sh, rid);
+    if (!rrow) return json_({ ok: false, error: "not_found" });
+    say_(rid, "aaron", rtext);
+    var to = String(sh.getRange(rrow, COL.email).getValue());
+    var sendCopy = String(sh.getRange(rrow, COL.status).getValue()) !== "TEST";
+    if (sendCopy) sh.getRange(rrow, COL.status).setValue("Replied");
+    if (sendCopy) {
+      try {
+        MailApp.sendEmail({ to: to, replyTo: notifyTo_(), name: "Aaron Prince", subject: "Aaron replied to your chat", body: rtext + "\n\nYou can reply to this email, or carry on in the chat on aaronprince.vercel.app." });
+      } catch (err) {
+        // the reply is stored and shows in the chat either way
+      }
+    }
+    return json_({ ok: true, messages: threadFor_(rid) });
+  }
+
+  if (action === "admin_available") {
+    props_().setProperty("AVAILABLE", body.available ? "on" : "off");
+    return json_({ ok: true, available: available_() });
+  }
+
   if (action !== "admin_create" && action !== "admin_update" && action !== "admin_delete") {
     return json_({ ok: false, error: "bad_action" });
   }
@@ -157,12 +193,12 @@ function admin_(body) {
       var status = String(f.status || "New");
       if (!name) return json_({ ok: false, error: "missing_name" });
       if (!EMAIL_RE.test(email)) return json_({ ok: false, error: "bad_email" });
-      if (KINDS.indexOf(kind) === -1) return json_({ ok: false, error: "bad_kind" });
+      if (ADMIN_KINDS.indexOf(kind) === -1) return json_({ ok: false, error: "bad_kind" });
       if (ADMIN_STATUSES.indexOf(status) === -1) return json_({ ok: false, error: "bad_status" });
       var id = "L-" + Utilities.getUuid().replace(/-/g, "").slice(0, 8);
       var rowValues = [
         new Date(), id, kind, name, email, clean_(f.topic, 120), clean_(f.organisation, 160), clean_(f.message, 5000),
-        "admin", "", "manual", "", "", "", "", "", status, clean_(f.notes, 2000),
+        "admin", "", "manual", "", "", "", "", "", status, clean_(f.notes, 2000), "", "", "",
       ];
       sh.appendRow(rowValues);
       return json_({ ok: true, lead: leadFromRow_(rowValues) });
@@ -200,7 +236,7 @@ function admin_(body) {
         if (!EMAIL_RE.test(patch[COL.email])) return json_({ ok: false, error: "bad_email" });
       }
       if (fl.kind !== undefined) {
-        if (KINDS.indexOf(String(fl.kind)) === -1) return json_({ ok: false, error: "bad_kind" });
+        if (ADMIN_KINDS.indexOf(String(fl.kind)) === -1) return json_({ ok: false, error: "bad_kind" });
         patch[COL.kind] = String(fl.kind);
       }
       if (fl.topic !== undefined) patch[COL.topic] = clean_(fl.topic, 120);
@@ -222,6 +258,148 @@ function admin_(body) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/* ---------- live handoff: a real person behind the assistant ---------- */
+
+var INTENTS = ["about_work", "frustrated_or_complex", "hire_intent", "human_request", "job_opportunity", "smalltalk", "student_help"];
+var PRIORITIES = ["hot", "warm", "normal"];
+var MAX_THREAD = 300; // messages per conversation
+
+function chatSheet_() {
+  var ss = spreadsheet_();
+  var sh = ss.getSheetByName("Chat");
+  if (!sh) {
+    sh = ss.insertSheet("Chat");
+    sh.appendRow(["Timestamp", "LeadID", "From", "Text"]);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function threadFor_(id) {
+  var v = chatSheet_().getDataRange().getValues();
+  var out = [];
+  for (var i = 1; i < v.length; i++) {
+    if (v[i][1] === id) out.push({ from: String(v[i][2]), text: String(v[i][3]), at: isDate_(v[i][0]) ? v[i][0].toISOString() : "" });
+  }
+  return out;
+}
+
+function say_(id, from, text) {
+  chatSheet_().appendRow([new Date(), id, from, clean_(text, 2000)]);
+}
+
+function available_() {
+  return props_().getProperty("AVAILABLE") === "on";
+}
+
+/** The conversation's row, only when the visitor's secret key matches. */
+function chatRow_(cache, id, token) {
+  var failKey = "ctf:" + id;
+  if (Number(cache.get(failKey) || 0) >= 10) return 0; // a guessed key locks that conversation for 15 minutes
+  var sh = leadsSheet_();
+  var row = findRow_(sh, String(id || ""));
+  var stored = row ? String(sh.getRange(row, COL.token).getValue() || "") : "";
+  if (!row || !stored || !same_(String(token || ""), stored)) {
+    cache.put(failKey, String(Number(cache.get(failKey) || 0) + 1), 900);
+    return 0;
+  }
+  return row;
+}
+
+function chat_(body) {
+  var cache = CacheService.getScriptCache();
+  var action = body.action;
+
+  if (action === "chat_start") {
+    var f = body.fields || {};
+    var email = clean_(f.email, 200).toLowerCase();
+    var name = clean_(f.name, 120);
+    if (!name) return json_({ ok: false, error: "missing_name" });
+    if (!EMAIL_RE.test(email)) return json_({ ok: false, error: "bad_email" });
+    var cid = clean_(body.cid, 80);
+    if (cid) {
+      var seen = cache.get("cid:" + cid);
+      if (seen) return json_({ ok: true, id: seen.split("|")[0], token: seen.split("|")[1], duplicate: true });
+    }
+    var isTest = /@test\.invalid$/.test(email);
+    if (!isTest && tooMany_(cache, email)) return json_({ ok: false, error: "rate_limited" });
+
+    var meta = body.meta || {};
+    var intent = INTENTS.indexOf(String(meta.intent)) === -1 ? "" : String(meta.intent);
+    var priority = PRIORITIES.indexOf(String(meta.priority)) === -1 ? "normal" : String(meta.priority);
+    var first = clean_(f.message, 2000) || "Asked to speak to a person.";
+    var transcript = Array.isArray(body.transcript) ? body.transcript.slice(-20) : [];
+
+    var lock = LockService.getScriptLock();
+    if (!lock.tryLock(25000)) return json_({ ok: false, error: "busy" });
+    var id = "L-" + Utilities.getUuid().replace(/-/g, "").slice(0, 8);
+    var token = Utilities.getUuid().replace(/-/g, "");
+    try {
+      var rowValues = [
+        new Date(), id, "chat", name, email, "Live chat", "", first,
+        clean_(meta.page, 200), "", "assistant", "", "", clean_(meta.device, 20), "", "",
+        isTest ? "TEST" : "New", "", token, priority, intent,
+      ];
+      leadsSheet_().appendRow(rowValues);
+      transcript.forEach(function (t) {
+        say_(id, t && t.from === "ai" ? "ai" : "visitor", t && t.text);
+      });
+      say_(id, "visitor", first);
+    } finally {
+      lock.releaseLock();
+    }
+    if (cid) cache.put("cid:" + cid, id + "|" + token, 600);
+    if (!isTest) {
+      try {
+        MailApp.sendEmail({
+          to: notifyTo_(),
+          replyTo: email,
+          subject: "LIVE CHAT (" + priority + "): " + name,
+          body: ["A visitor asked for you through the assistant.", "", "Name: " + name, "Email: " + email, intent ? "Looks like: " + intent : "", "", first, "", "Answer in the Chat view at aaronprince.vercel.app/admin, or just reply to this email."].join("\n"),
+        });
+      } catch (err) {
+        // the lead is stored; the email is a convenience
+      }
+    }
+    return json_({ ok: true, id: id, token: token, available: available_() });
+  }
+
+  var row = chatRow_(cache, body.id, body.token);
+  if (!row) return json_({ ok: false, error: "no_access" });
+  var sh = leadsSheet_();
+
+  if (action === "chat_poll") {
+    var have = Math.max(0, Number(body.have) || 0);
+    var all = threadFor_(String(body.id));
+    return json_({ ok: true, messages: all.slice(have), total: all.length, available: available_() });
+  }
+
+  if (action === "chat_send") {
+    var text = clean_(body.text, 1000);
+    if (!text) return json_({ ok: false, error: "empty" });
+    var lk = LockService.getScriptLock();
+    if (!lk.tryLock(25000)) return json_({ ok: false, error: "busy" });
+    try {
+      if (threadFor_(String(body.id)).length >= MAX_THREAD) return json_({ ok: false, error: "thread_full" });
+      say_(String(body.id), "visitor", text);
+      if (sh.getRange(row, COL.status).getValue() !== "TEST") sh.getRange(row, COL.status).setValue("New");
+    } finally {
+      lk.releaseLock();
+    }
+    // One email per conversation every 5 minutes, so a chatty visitor does not flood you.
+    if (!cache.get("cn:" + body.id) && sh.getRange(row, COL.status).getValue() !== "TEST") {
+      cache.put("cn:" + body.id, "1", 300);
+      try {
+        MailApp.sendEmail({ to: notifyTo_(), replyTo: String(sh.getRange(row, COL.email).getValue()), subject: "Live chat message from " + sh.getRange(row, COL.name).getValue(), body: text + "\n\nAnswer in the Chat view at aaronprince.vercel.app/admin" });
+      } catch (err) {
+        // ignore mail quota errors
+      }
+    }
+    return json_({ ok: true });
+  }
+  return json_({ ok: false, error: "bad_action" });
 }
 
 /* ---------- helpers ---------- */
@@ -285,7 +463,7 @@ function leadsSheet_() {
     sh.setColumnWidth(8, 420);
   } else if (sh.getLastColumn() < HEADERS.length) {
     // Sheets created before the Notes column existed get the new header.
-    sh.getRange(1, HEADERS.length).setValue(HEADERS[HEADERS.length - 1]).setFontWeight("bold").setBackground("#ede9fe");
+    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight("bold").setBackground("#ede9fe");
   }
   return sh;
 }

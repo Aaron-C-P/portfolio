@@ -1,6 +1,7 @@
 import { useForm, ValidationError } from "@formspree/react";
-import { Github, Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
+import { Github, Linkedin, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { collect } from "@/lib/collect";
+import { whatsapp } from "@/lib/contact";
 import { brand, services } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
@@ -110,6 +111,10 @@ const Contact = () => {
                 Prefer email? Write to{" "}
                 <a href={`mailto:${brand.email}`} className="text-cream underline">
                   {brand.email}
+                </a>
+                , or{" "}
+                <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-cream underline">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" /> message on WhatsApp
                 </a>
                 .
               </p>

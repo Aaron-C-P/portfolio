@@ -63,6 +63,32 @@ the same browser retry is never written twice, and writes are serialised with a 
 
 Project Settings → Script properties → `NOTIFY_EMAIL`.
 
+## A real person behind the assistant
+
+When a visitor asks for a person, is frustrated, wants to hire you, or the assistant is unsure, it offers
+"Ask Aaron to reply personally". The visitor gives a name and email, the chat so far is saved, and you get an email
+straight away (subject `LIVE CHAT (hot|warm|normal)`).
+
+- Answer in **/admin**: filter "Live chat", open the conversation, type a reply. The visitor sees it in their chat
+  (it checks every 10 seconds while open, every 45 seconds when closed) and also gets it by email.
+- The **Online for chat / Away** button in /admin tells visitors whether you are around.
+- Conversations live in a second sheet tab called `Chat`. Each has a secret key kept in the visitor's browser, so
+  nobody can read someone else's chat. Ten wrong guesses lock a conversation for 15 minutes.
+- Apps Script has a daily run-time quota (about 90 minutes on a free Google account). Polling uses a little of it,
+  so this suits a handful of live chats a day, not hundreds.
+- **After pasting the new Code.gs: Deploy, Manage deployments, edit, New version.** The sheet gets its three new
+  columns (Token, Priority, Intent) on the next lead.
+
+### The intent model (scikit-learn style)
+
+`scripts/intent/examples.txt` holds labelled example messages. `node scripts/intent/train.mjs` trains TF-IDF
+(words and word pairs) plus multinomial logistic regression, prints 5-fold cross-validated accuracy and writes
+`src/data/intentModel.json`, which `src/lib/intent.ts` runs in the browser. It is 76% accurate overall and about
+90% right when it is confident, so it only decides who gets offered a person; it never blocks anyone. Add real
+visitor messages to the examples file and retrain to improve it. `scripts/intent/train_sklearn.py` does the same
+with scikit-learn (`pip install scikit-learn`); it could not be run on the build machine, where Windows blocked
+scipy, so it is untested. The Node trainer is the one that produced the shipped model.
+
 ## Tests
 
 `node docs/apps-script/mock-test.cjs` runs the handler against a mock of Google's services.

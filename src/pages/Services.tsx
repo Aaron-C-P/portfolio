@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, MessageCircle } from "lucide-react";
 import { findProject, services } from "@/data/studio";
+import { whatsappAbout } from "@/lib/contact";
 import { Reveal, SectionHead, usePageTitle } from "@/components/studio/parts";
 
 const Services = () => {
@@ -52,6 +53,9 @@ const Services = () => {
         <Link to="/contact" className="mt-6 inline-flex rounded-full bg-cream px-8 py-3 font-semibold text-ink hover:bg-white">
           Start a conversation
         </Link>
+        <a href={whatsappAbout("a project (from your Services page)")} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/40 px-8 py-3 font-semibold text-white hover:bg-white/10 sm:ml-3">
+          <MessageCircle className="h-4 w-4" aria-hidden="true" /> Or message on WhatsApp
+        </a>
       </Reveal>
     </div>
   );

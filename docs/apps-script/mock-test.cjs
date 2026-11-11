@@ -10,7 +10,13 @@ const mails = [];
 const cacheStore = new Map();
 const propStore = new Map([["SHEET_ID", "mock"], ["ADMIN_KEY", "test-secret"]]);
 
-const HEAD = ["Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message", "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes"];
+const HEAD = ["Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message", "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes", "Token", "Priority", "Intent"];
+const chatRows = [];
+const chatSheet = {
+  appendRow: (r) => chatRows.push(r),
+  setFrozenRows() {},
+  getDataRange: () => ({ getValues: () => [["Timestamp", "LeadID", "From", "Text"], ...chatRows] }),
+};
 const sheet = {
   appendRow: (r) => rows.push(r),
   getSheetByName: () => sheet,
@@ -20,6 +26,7 @@ const sheet = {
   deleteRow: (n) => rows.splice(n - 2, 1),
   getRange: (row, col, nRows = 1, nCols = 1) => ({
     getValues: () => (row === 1 ? [HEAD, ...rows] : [rows[row - 2]]).map((r) => r.slice(col - 1, col - 1 + nCols)).slice(0, row === 1 ? nRows : 1),
+    getValue: () => (rows[row - 2] || [])[col - 1],
     setValue: (v) => { rows[row - 2][col - 1] = v; },
   }),
 };
@@ -37,7 +44,7 @@ const sandbox = {
     }),
   },
   PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => propStore.get(k) ?? null, setProperty: (k, v) => propStore.set(k, v) }) },
-  SpreadsheetApp: { openById: () => ({ getSheetByName: () => sheet, getUrl: () => "https://sheet.example" }) },
+  SpreadsheetApp: { openById: () => ({ getSheetByName: (n) => (n === "Chat" ? chatSheet : sheet), getUrl: () => "https://sheet.example" }) },
   Session: { getEffectiveUser: () => ({ getEmail: () => "owner@example.com" }), getScriptTimeZone: () => "UTC" },
   MailApp: { sendEmail: (m) => mails.push(m) },
   Utilities: {
@@ -74,7 +81,7 @@ check("GET returns ok", JSON.parse(sandbox.doGet().getContent()).ok === true);
 let r = post(lead());
 check("valid contact is stored", r.ok && /^L-[0-9a-f]{8}$/.test(r.id) && rows.length === 1);
 check("owner is emailed with reply-to set", mails.length === 1 && mails[0].to === "owner@example.com" && mails[0].replyTo === rows[0][4]);
-check("row has 18 columns, Status New", rows[0].length === 18 && rows[0][16] === "New");
+check("row has 21 columns, Status New", rows[0].length === 21 && rows[0][16] === "New");
 r = post(lead({ kind: "resume" }, { message: "", topic: "", organisation: "Acme" }));
 check("résumé request needs no message", r.ok && rows[1][2] === "resume" && rows[1][6] === "Acme");
 
@@ -206,6 +213,48 @@ const digestBody = mails[mails.length - 1].body; if (process.env.DEBUG_DIGEST) c
 check("digest flags a lead waiting 4 days and ignores TEST rows", digest.sent && digest.stale === 1 && /Old Timer.*waiting 4 days/.test(digestBody) && !/Test Old/.test(digestBody));
 rows.splice(rows.findIndex((r) => r[1] === "L-old00001"), 1);
 rows.splice(rows.findIndex((r) => r[1] === "L-old00002"), 1);
+
+// live chat handoff
+const startChat = (over = {}, fields = {}) => post({ action: "chat_start", cid: crypto.randomUUID(), fields: { name: "Visitor", email: `v${Math.random().toString(36).slice(2)}@example.com`, message: "Can I talk to Aaron?", ...fields }, meta: { page: "/services", device: "desktop", intent: "human_request", priority: "hot" }, transcript: [{ from: "visitor", text: "hello" }, { from: "ai", text: "Hi, how can I help?" }], ...over });
+const m2 = mails.length;
+let ch = startChat();
+check("chat_start stores a lead with a secret and hot priority", ch.ok && /^L-/.test(ch.id) && ch.token.length >= 20 && rows.find((r) => r[1] === ch.id)[2] === "chat" && rows.find((r) => r[1] === ch.id)[19] === "hot" && rows.find((r) => r[1] === ch.id)[20] === "human_request");
+check("chat_start keeps the transcript and first message", chatRows.filter((x) => x[1] === ch.id).map((x) => x[2]).join() === "visitor,ai,visitor");
+check("owner is emailed straight away", mails.slice(m2).some((m) => /LIVE CHAT \(hot\)/.test(m.subject)));
+check("chat_start needs a name and valid email", startChat({}, { name: "" }).error === "missing_name" && startChat({}, { email: "x" }).error === "bad_email");
+check("bad intent and priority are sanitised", (() => { const x = startChat({ meta: { intent: "<script>", priority: "urgent" } }); const rw = rows.find((r) => r[1] === x.id); return x.ok && rw[19] === "normal" && rw[20] === ""; })());
+let pl = post({ action: "chat_poll", id: ch.id, token: ch.token, have: 0 });
+check("poll returns the thread", pl.ok && pl.messages.length === 3 && pl.total === 3);
+check("poll with wrong token gets nothing", post({ action: "chat_poll", id: ch.id, token: "nope", have: 0 }).error === "no_access");
+check("a normal lead cannot be read as a chat (empty token)", post({ action: "chat_poll", id: rows[0][1], token: "", have: 0 }).error === "no_access");
+check("the token is never listed to admin", !JSON.stringify(post({ action: "admin_list", key: KEY })).includes(ch.token));
+const m3 = mails.length;
+check("visitor can send a follow-up", post({ action: "chat_send", id: ch.id, token: ch.token, text: "Still there?" }).ok);
+check("follow-up emails are throttled to one per 5 minutes", (post({ action: "chat_send", id: ch.id, token: ch.token, text: "again" }), mails.slice(m3).length === 1));
+check("empty chat message rejected", post({ action: "chat_send", id: ch.id, token: ch.token, text: "  " }).error === "empty");
+check("sending with wrong token rejected", post({ action: "chat_send", id: ch.id, token: "bad", text: "x" }).error === "no_access");
+const rp = post({ action: "admin_reply", key: KEY, id: ch.id, text: "Hi, Aaron here." });
+check("admin reply is stored and marks Replied", rp.ok && rp.messages.at(-1).from === "aaron" && rows.find((r) => r[1] === ch.id)[16] === "Replied");
+check("reply is emailed to the visitor", mails.some((m) => m.to === rows.find((r) => r[1] === ch.id)[4] && /Aaron here/.test(m.body)));
+pl = post({ action: "chat_poll", id: ch.id, token: ch.token, have: 5 });
+check("visitor poll sees only new messages", pl.ok && pl.messages.length === pl.total - 5 && pl.messages.at(-1).from === "aaron");
+check("admin reply needs the password", post({ action: "admin_reply", key: "x", id: ch.id, text: "hi" }).error === "wrong_password");
+check("admin can read a thread", post({ action: "admin_thread", key: KEY, id: ch.id }).messages.length >= 6);
+check("availability toggle works and is reported", post({ action: "admin_available", key: KEY, available: true }).available === true && post({ action: "chat_poll", id: ch.id, token: ch.token, have: 99 }).available === true && post({ action: "admin_available", key: KEY, available: false }).available === false);
+check("availability needs the password", post({ action: "admin_available", key: "x", available: true }).error === "wrong_password");
+const tc = startChat({}, { email: "t1@test.invalid" });
+const m4 = mails.length;
+post({ action: "chat_send", id: tc.id, token: tc.token, text: "hey" });
+post({ action: "admin_reply", key: KEY, id: tc.id, text: "reply" });
+check("TEST chats send no email and stay TEST", mails.length === m4 && rows.find((r) => r[1] === tc.id)[16] === "TEST");
+const dup = { action: "chat_start", cid: "same-cid", fields: { name: "D", email: "dup@example.com", message: "hi" }, meta: {} };
+const d1 = post(dup), d2 = post(dup);
+check("chat_start retry gives the same conversation", d1.id === d2.id && d2.duplicate === true && d1.token === d2.token);
+for (let i = 0; i < 10; i++) post({ action: "chat_poll", id: ch.id, token: "guess" + i, have: 0 });
+check("guessing a key locks that conversation", post({ action: "chat_poll", id: ch.id, token: ch.token, have: 0 }).error === "no_access");
+check("admin can still open a locked conversation", post({ action: "admin_thread", key: KEY, id: ch.id }).ok);
+const del = post({ action: "admin_delete", key: KEY, id: ch.id });
+check("chat leads can be deleted by admin", del.ok && del.deleted === 1);
 
 // volume
 const t0 = Date.now();
