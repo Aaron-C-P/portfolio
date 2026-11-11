@@ -31,6 +31,18 @@ After changing `Code.gs`, paste it again and use Deploy â†’ Manage deployments â
 or the new buttons will answer "Something went wrong". An older Leads sheet gets its new
 `Notes` column header automatically.
 
+## Automation
+
+- **Daily digest:** run `installTriggers` once from the editor. Each morning around 8am you get one email
+  listing new leads from the last 24 hours and leads still waiting for a reply after 2 days.
+  Quiet days send nothing. Replied, Archived and TEST rows are ignored.
+- **Automatic confirmation to visitors:** off by default because it sends email from your account.
+  To switch it on, add the script property `AUTO_REPLY` with the value `on`. It tells the person their
+  message arrived (and says it is automatic), sends at most one per address every few hours and at most
+  20 a day, and never goes to `@test.invalid` addresses. Switch it off by deleting the property.
+- **Assistant leads:** the "Ask Aaron" guide on every page can take a message. It lands in the same
+  Leads sheet with the topic "Sent through the assistant".
+
 ## What you get
 
 - **Leads** tab: one row per submission with time, ID, kind, name, email, topic, organisation,

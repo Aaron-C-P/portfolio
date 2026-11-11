@@ -43,11 +43,28 @@ RULES
 - Only speak to what's above. If you don't know something about me, say so honestly and offer to connect over email — never invent facts, employers, or numbers.
 - Keep it conversational and short. Don't dump my whole résumé unless asked.`;
 
+// Best-effort limit per visitor (each serverless instance keeps its own tally), so a bot
+// cannot run up the AI bill. 20 questions per 10 minutes is far above normal use.
+const hits = new Map();
+const LIMIT = 20;
+const WINDOW_MS = 10 * 60 * 1000;
+function tooMany(req) {
+  const ip = String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) hits.clear();
+  return recent.length > LIMIT;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  if (tooMany(req)) return res.status(429).json({ error: "Too many questions, try again in a few minutes." });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -59,6 +76,13 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body || "{}");
     const incoming = Array.isArray(body?.messages) ? body.messages : [];
+    // Which page the visitor is on, so answers can fit it. Only a plain path is accepted.
+    const page = typeof body?.page === "string" ? body.page.replace(/[^\w/-]/g, "").slice(0, 80) : "";
+    const system = page
+      ? `${SYSTEM_PROMPT}
+
+CONTEXT: the visitor is currently on the page "${page}" of this site. Use it to make answers relevant, but never claim to see their screen.`
+      : SYSTEM_PROMPT;
 
     // Sanitize + cap history (keep the last ~16 turns).
     const messages = incoming
@@ -86,7 +110,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 400,
-        system: SYSTEM_PROMPT,
+        system,
         messages,
       }),
     });

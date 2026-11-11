@@ -38,10 +38,11 @@ const sandbox = {
   },
   PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => propStore.get(k) ?? null, setProperty: (k, v) => propStore.set(k, v) }) },
   SpreadsheetApp: { openById: () => ({ getSheetByName: () => sheet, getUrl: () => "https://sheet.example" }) },
-  Session: { getEffectiveUser: () => ({ getEmail: () => "owner@example.com" }) },
+  Session: { getEffectiveUser: () => ({ getEmail: () => "owner@example.com" }), getScriptTimeZone: () => "UTC" },
   MailApp: { sendEmail: (m) => mails.push(m) },
   Utilities: {
     getUuid: () => crypto.randomUUID(),
+    formatDate: (d) => d.toISOString().slice(0, 10),
     DigestAlgorithm: { MD5: "md5" },
     computeDigest: (_a, s) => [...crypto.createHash("md5").update(s).digest()].map((b) => (b > 127 ? b - 256 : b)),
   },
@@ -171,6 +172,40 @@ cacheStore.delete("admin:fails");
 propStore.delete("ADMIN_KEY");
 check("admin is off when no ADMIN_KEY is set", post({ action: "admin_list", key: "test-secret" }).error === "admin_disabled");
 propStore.set("ADMIN_KEY", "test-secret");
+
+// automation: auto-reply (off by default, opt-in, capped)
+const mailsBefore = mails.length;
+post(lead({}, { email: "off@example.com" }));
+check("auto-reply is off until AUTO_REPLY=on", mails.slice(mailsBefore).every((m) => m.to === "owner@example.com"));
+propStore.set("AUTO_REPLY", "on");
+const m0 = mails.length;
+post(lead({}, { name: "Grace Hopper", email: "grace@example.com", topic: "Web development" }));
+const confirmation = mails.slice(m0).find((m) => m.to === "grace@example.com");
+check("auto-reply goes to the visitor and says it is automatic", !!confirmation && /Hi Grace/.test(confirmation.body) && /automatic confirmation/.test(confirmation.body) && confirmation.replyTo === "owner@example.com");
+const m1 = mails.length;
+post(lead({}, { name: "Grace Hopper", email: "grace@example.com" }));
+check("same address is not confirmed twice", mails.slice(m1).every((m) => m.to !== "grace@example.com"));
+post(lead({ kind: "resume" }, { name: "Rec Ruiter", email: "rec@example.com", message: "" }));
+check("résumé request gets its own wording", mails.some((m) => m.to === "rec@example.com" && /résumé/.test(m.body)));
+for (let i = 0; i < 40; i++) post(lead({}, { email: `cap${i}@example.com` }));
+const sentToday = mails.filter((m) => m.name === "Aaron Prince").length;
+check("auto-replies stop at the daily cap of 20", sentToday === 20, `${sentToday} sent`);
+post(lead({}, { email: "x@test.invalid" }));
+check("test addresses never get an auto-reply", mails.every((m) => m.to !== "x@test.invalid"));
+propStore.delete("AUTO_REPLY");
+
+// automation: daily digest
+let digest = sandbox.sendDigest();
+check("digest lists fresh leads", digest.sent && digest.fresh > 0 && mails[mails.length - 1].subject.startsWith("Leads:"));
+rows.forEach((r) => { r[16] = "Replied"; });
+check("digest stays quiet when nothing is waiting", sandbox.sendDigest().sent === false);
+rows.push([new Date(Date.now() - 4 * 86400000), "L-old00001", "contact", "Old Timer", "old@example.com", "Data", "", "hi", "", "", "", "", "", "", "", "", "New", ""]);
+rows.push([new Date(Date.now() - 4 * 86400000), "L-old00002", "contact", "Test Old", "t@test.invalid", "", "", "", "", "", "", "", "", "", "", "", "TEST", ""]);
+digest = sandbox.sendDigest();
+const digestBody = mails[mails.length - 1].body; if (process.env.DEBUG_DIGEST) console.log(JSON.stringify({ digest, digestBody }));
+check("digest flags a lead waiting 4 days and ignores TEST rows", digest.sent && digest.stale === 1 && /Old Timer.*waiting 4 days/.test(digestBody) && !/Test Old/.test(digestBody));
+rows.splice(rows.findIndex((r) => r[1] === "L-old00001"), 1);
+rows.splice(rows.findIndex((r) => r[1] === "L-old00002"), 1);
 
 // volume
 const t0 = Date.now();

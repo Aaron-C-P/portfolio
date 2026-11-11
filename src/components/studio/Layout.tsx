@@ -4,6 +4,7 @@ import { Menu, X, Github, Linkedin, Lock, Mail, Phone } from "lucide-react";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
+import { Assistant } from "@/components/studio/Assistant";
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 
@@ -227,5 +228,6 @@ export const Layout = () => (
       <Outlet />
     </main>
     <Footer />
+    <Assistant />
   </div>
 );

@@ -67,7 +67,10 @@ function doPost(e) {
       lock.releaseLock();
     }
     if (cid) cache.put("cid:" + cid, id, 600);
-    if (!isTest) notify_(kind, id, name, email, clean_(f.topic, 120), message, clean_(f.organisation, 160));
+    if (!isTest) {
+      notify_(kind, id, name, email, clean_(f.topic, 120), message, clean_(f.organisation, 160));
+      autoReply_(kind, name, email, clean_(f.topic, 120));
+    }
     return json_({ ok: true, id: id });
   } catch (err) {
     return json_({ ok: false, error: "server" });
@@ -92,11 +95,15 @@ function same_(a, b) {
   return diff === 0;
 }
 
+function isDate_(v) {
+  return Object.prototype.toString.call(v) === "[object Date]";
+}
+
 function leadFromRow_(values) {
   var row = {};
   for (var c = 0; c < HEADERS.length; c++) {
     var v = values[c];
-    row[HEADERS[c]] = v instanceof Date ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
+    row[HEADERS[c]] = isDate_(v) ? v.toISOString() : String(v == null ? "" : v).replace(/^'(?=[=+\-@])/, "");
   }
   return row;
 }
@@ -283,9 +290,13 @@ function leadsSheet_() {
   return sh;
 }
 
+function notifyTo_() {
+  return props_().getProperty("NOTIFY_EMAIL") || Session.getEffectiveUser().getEmail();
+}
+
 function notify_(kind, id, name, email, topic, message, org) {
   try {
-    var to = props_().getProperty("NOTIFY_EMAIL") || Session.getEffectiveUser().getEmail();
+    var to = notifyTo_();
     if (!to) return;
     var lines = [
       (kind === "resume" ? "Résumé request" : "New contact message") + " (" + id + ")",
@@ -306,6 +317,90 @@ function notify_(kind, id, name, email, topic, message, org) {
   } catch (err) {
     // Storing the lead matters more than the email; ignore mail quota errors.
   }
+}
+
+/* ---------- automation ---------- */
+
+var MAX_AUTO_REPLIES_PER_DAY = 20; // keeps the form from being used to mail strangers
+
+/**
+ * Optional confirmation to the person who wrote in. It is off until you set the script
+ * property AUTO_REPLY to "on", because it sends email from your account.
+ */
+function autoReply_(kind, name, email, topic) {
+  try {
+    if (props_().getProperty("AUTO_REPLY") !== "on") return false;
+    var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+    var p = props_();
+    var count = p.getProperty("AR_DAY") === today ? Number(p.getProperty("AR_COUNT") || 0) : 0;
+    if (count >= MAX_AUTO_REPLIES_PER_DAY) return false;
+    var cache = CacheService.getScriptCache();
+    var seen = "ar:" + email;
+    if (cache.get(seen)) return false; // one confirmation per address per few hours
+    cache.put(seen, "1", 21600);
+    p.setProperty("AR_DAY", today);
+    p.setProperty("AR_COUNT", String(count + 1));
+
+    var first = String(name).split(/\s+/)[0] || "there";
+    var body = kind === "resume"
+      ? "Hi " + first + ",\n\nThanks for asking for my résumé. I send it by email rather than posting it publicly, and I will reply to you personally soon.\n\nAaron Prince\n\n(This is an automatic confirmation that your request arrived.)"
+      : "Hi " + first + ",\n\nThanks for getting in touch" + (topic ? " about " + topic.toLowerCase() : "") + ". I read every message myself and will reply by email, usually within a couple of days.\n\nAaron Prince\n\n(This is an automatic confirmation that your message arrived.)";
+    MailApp.sendEmail({
+      to: email,
+      replyTo: notifyTo_(),
+      name: "Aaron Prince",
+      subject: kind === "resume" ? "I got your résumé request" : "I got your message",
+      body: body,
+    });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * Morning email: new leads from the last 24 hours and leads that have waited two days or
+ * more without a reply. Sends nothing on quiet days. Run installTriggers once to schedule it.
+ */
+function sendDigest() {
+  var to = notifyTo_();
+  if (!to) return { sent: false };
+  var values = leadsSheet_().getDataRange().getValues();
+  var now = Date.now();
+  var DAY = 86400000;
+  var fresh = [];
+  var stale = [];
+  for (var i = 1; i < values.length; i++) {
+    var r = values[i];
+    if (r[16] !== "New") continue; // only leads still waiting; TEST, Replied and Archived are skipped
+    var age = now - (isDate_(r[0]) ? r[0].getTime() : now);
+    var item = { name: r[3], email: r[4], kind: r[2], topic: r[5], days: Math.floor(age / DAY) };
+    if (age < DAY) fresh.push(item);
+    else if (age >= 2 * DAY) stale.push(item);
+  }
+  if (!fresh.length && !stale.length) return { sent: false };
+  var line = function (x) {
+    return "- " + x.name + " (" + x.email + ")" + (x.kind === "resume" ? ", résumé request" : x.topic ? ", " + x.topic : "") + (x.days ? ", waiting " + x.days + " days" : "");
+  };
+  var lines = [];
+  if (fresh.length) lines.push("New in the last 24 hours (" + fresh.length + "):", fresh.slice(0, 10).map(line).join("\n"), "");
+  if (stale.length) lines.push("Still waiting for a reply after 2+ days (" + stale.length + "):", stale.slice(0, 10).map(line).join("\n"), "");
+  lines.push("Reply, mark replied or archive them at aaronprince.vercel.app/admin");
+  MailApp.sendEmail({
+    to: to,
+    subject: "Leads: " + fresh.length + " new, " + stale.length + " waiting",
+    body: lines.join("\n"),
+  });
+  return { sent: true, fresh: fresh.length, stale: stale.length };
+}
+
+/** Run once from the editor: schedules sendDigest every morning around 8am. */
+function installTriggers() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === "sendDigest") ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger("sendDigest").timeBased().everyDays(1).atHour(8).create();
+  Logger.log("Daily digest scheduled for about 8am.");
 }
 
 /* ---------- one-time setup: run this once from the editor ---------- */
