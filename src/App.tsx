@@ -16,6 +16,7 @@ import Ask from "@/pages/Ask";
 import AssignmentHelp from "@/pages/AssignmentHelp";
 import Card from "@/pages/Card";
 import Pay from "@/pages/Pay";
+import Book from "@/pages/Book";
 import Admin from "@/pages/Admin";
 
 const NotFound = () => {
@@ -48,6 +49,7 @@ const App = () => (
         <Route path="/contact" element={<Contact />} />
         <Route path="/ask" element={<Ask />} />
         <Route path="/assignment-help" element={<AssignmentHelp />} />
+        <Route path="/book" element={<Book />} />
         <Route path="/pay" element={<Pay />} />
         <Route path="/card" element={<Card />} />
         <Route path="/admin" element={<Admin />} />

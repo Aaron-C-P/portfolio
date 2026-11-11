@@ -167,7 +167,7 @@ const Admin = () => {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [show, setShow] = useState<"All" | "New" | "Replied" | "Archived">("New");
-  const [kind, setKind] = useState<"all" | "contact" | "resume" | "chat">("all");
+  const [kind, setKind] = useState<"all" | "contact" | "resume" | "chat" | "booking" | "testimonial">("all");
   const [openChat, setOpenChat] = useState<string | null>(null);
   const [available, setAvailable] = useState(false);
   const [tests, setTests] = useState(false);
@@ -393,9 +393,9 @@ const Admin = () => {
           </button>
         ))}
         <span className="mx-1 border-l border-line" />
-        {(["all", "contact", "resume", "chat"] as const).map((k) => (
+        {(["all", "contact", "resume", "chat", "booking", "testimonial"] as const).map((k) => (
           <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k} className={chip(kind === k)}>
-            {k === "all" ? "Everything" : k === "resume" ? "Résumé" : k === "chat" ? "Live chat" : "Contact"}
+            {k === "all" ? "Everything" : k === "resume" ? "Résumé" : k === "chat" ? "Live chat" : k === "booking" ? "Bookings" : k === "testimonial" ? "Testimonials" : "Contact"}
           </button>
         ))}
         <span className="mx-1 border-l border-line" />
@@ -473,7 +473,7 @@ const Admin = () => {
                   <div className="text-right text-sm text-soft">
                     <p>{when(l.Timestamp)}</p>
                     <p>
-                      {l.Kind === "resume" ? "Résumé request" : l.Kind === "chat" ? "Live chat" : "Message"} · {l.Status}
+                      {l.Kind === "resume" ? "Résumé request" : l.Kind === "chat" ? "Live chat" : l.Kind === "booking" ? "Call booking" : l.Kind === "testimonial" ? "Testimonial" : "Message"} · {l.Status}
                     </p>
                   </div>
                 </div>

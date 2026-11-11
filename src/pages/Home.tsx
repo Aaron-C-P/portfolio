@@ -6,6 +6,9 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
 import { AdminStrip } from "@/components/studio/AdminStrip";
+import { HomeDoors } from "@/components/studio/HomeDoors";
+import { ServicesShowcase } from "@/components/studio/ServicesShowcase";
+import { Testimonials } from "@/components/studio/Testimonials";
 import { ChristmasBanner, ChristmasCountdown, ChristmasTree } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 import { NotesBoard } from "@/components/studio/NotesBoard";
@@ -171,6 +174,10 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      <HomeDoors />
+
+      <ServicesShowcase />
 
       <AdminStrip />
 
@@ -393,7 +400,9 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="px-5 pb-24">
+      <Testimonials />
+
+      <section className="px-5 pb-24 pt-14 md:pt-24">
         <Reveal className="mx-auto max-w-4xl rounded-[2rem] bg-gradient-to-br from-violet to-[#3b1d99] p-10 text-center md:p-16">
           <h2 className="text-3xl font-bold md:text-5xl">Have a problem that deserves better software?</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">Tell me what is slowing you down. I will tell you honestly whether and how I can help.</p>

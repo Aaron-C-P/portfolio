@@ -214,6 +214,23 @@ check("digest flags a lead waiting 4 days and ignores TEST rows", digest.sent &&
 rows.splice(rows.findIndex((r) => r[1] === "L-old00001"), 1);
 rows.splice(rows.findIndex((r) => r[1] === "L-old00002"), 1);
 
+// booking and testimonials
+const mb = mails.length;
+let bk = post(lead({ kind: "booking" }, { message: "Tue 10:00 or Wed 14:00", topic: "Quote: Business system" }));
+check("booking request is stored and emailed as a booking", bk.ok && rows.find((r) => r[1] === bk.id)[2] === "booking" && mails.slice(mb).some((m) => /^BOOKING request/.test(m.subject)));
+check("booking needs times in the message", post(lead({ kind: "booking" }, { message: "" })).error === "missing_message");
+const tm = post(lead({ kind: "testimonial" }, { message: "Aaron built our ordering system.", organisation: "Cake Co" }));
+check("testimonial is stored with the company", tm.ok && rows.find((r) => r[1] === tm.id)[2] === "testimonial" && rows.find((r) => r[1] === tm.id)[6] === "Cake Co");
+check("testimonial needs words", post(lead({ kind: "testimonial" }, { message: "" })).error === "missing_message");
+propStore.set("AUTO_REPLY", "on");
+propStore.delete("AR_COUNT");
+const mt = mails.length;
+post(lead({ kind: "testimonial" }, { email: "nice@example.com", message: "Great" }));
+post(lead({ kind: "booking" }, { email: "book@example.com", message: "Mon 9" }));
+check("no auto-reply to a testimonial; booking reply says it is not confirmed", mails.slice(mt).every((m) => m.to !== "nice@example.com") && mails.slice(mt).some((m) => m.to === "book@example.com" && /not booked until I confirm/.test(m.body)));
+propStore.delete("AUTO_REPLY");
+check("admin can list bookings and testimonials", post({ action: "admin_list", key: KEY }).leads.some((l) => l.Kind === "booking") && post({ action: "admin_list", key: KEY }).leads.some((l) => l.Kind === "testimonial"));
+
 // live chat handoff
 const startChat = (over = {}, fields = {}) => post({ action: "chat_start", cid: crypto.randomUUID(), fields: { name: "Visitor", email: `v${Math.random().toString(36).slice(2)}@example.com`, message: "Can I talk to Aaron?", ...fields }, meta: { page: "/services", device: "desktop", intent: "human_request", priority: "hot" }, transcript: [{ from: "visitor", text: "hello" }, { from: "ai", text: "Hi, how can I help?" }], ...over });
 const m2 = mails.length;

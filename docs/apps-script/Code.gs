@@ -6,7 +6,7 @@
  * summary, and emails the owner. Setup steps are in README.md.
  */
 
-var KINDS = ["contact", "resume"];
+var KINDS = ["contact", "resume", "booking", "testimonial"];
 var HEADERS = [
   "Timestamp", "ID", "Kind", "Name", "Email", "Topic", "Organisation", "Message",
   "Page", "Referrer", "Source", "Medium", "Campaign", "Device", "Viewport", "Timezone", "Status", "Notes",
@@ -40,7 +40,7 @@ function doPost(e) {
     var name = clean_(f.name, 120);
     var message = clean_(f.message, 5000);
     if (!name) return json_({ ok: false, error: "missing_name" });
-    if (kind === "contact" && !message) return json_({ ok: false, error: "missing_message" });
+    if ((kind === "contact" || kind === "booking" || kind === "testimonial") && !message) return json_({ ok: false, error: "missing_message" });
 
     // A retry from the browser carries the same client id: answer ok without writing twice.
     var cache = CacheService.getScriptCache();
@@ -85,7 +85,7 @@ var ADMIN_STATUSES = ["New", "Replied", "Archived"];
 var MAX_ADMIN_FAILS = 8; // wrong passwords allowed per 15 minutes, across everyone
 var MAX_BATCH = 200;
 var COL = { kind: 3, name: 4, email: 5, topic: 6, organisation: 7, message: 8, status: 17, notes: 18, token: 19, priority: 20 };
-var ADMIN_KINDS = ["contact", "resume", "chat"];
+var ADMIN_KINDS = ["contact", "resume", "chat", "booking", "testimonial"];
 
 /** Compares without stopping at the first difference, so timing reveals nothing. */
 function same_(a, b) {
@@ -477,7 +477,7 @@ function notify_(kind, id, name, email, topic, message, org) {
     var to = notifyTo_();
     if (!to) return;
     var lines = [
-      (kind === "resume" ? "Résumé request" : "New contact message") + " (" + id + ")",
+      (kind === "resume" ? "Résumé request" : kind === "booking" ? "Call booking request" : kind === "testimonial" ? "New testimonial (not public until you add it)" : "New contact message") + " (" + id + ")",
       "",
       "Name: " + name,
       "Email: " + email,
@@ -489,7 +489,7 @@ function notify_(kind, id, name, email, topic, message, org) {
     MailApp.sendEmail({
       to: to,
       replyTo: email,
-      subject: (kind === "resume" ? "Résumé request: " : "Portfolio message: ") + name,
+      subject: (kind === "resume" ? "Résumé request: " : kind === "booking" ? "BOOKING request: " : kind === "testimonial" ? "Testimonial: " : "Portfolio message: ") + name,
       body: lines.join("\n"),
     });
   } catch (err) {
@@ -507,7 +507,7 @@ var MAX_AUTO_REPLIES_PER_DAY = 20; // keeps the form from being used to mail str
  */
 function autoReply_(kind, name, email, topic) {
   try {
-    if (props_().getProperty("AUTO_REPLY") !== "on") return false;
+    if (props_().getProperty("AUTO_REPLY") !== "on" || kind === "testimonial") return false;
     var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
     var p = props_();
     var count = p.getProperty("AR_DAY") === today ? Number(p.getProperty("AR_COUNT") || 0) : 0;
@@ -522,6 +522,8 @@ function autoReply_(kind, name, email, topic) {
     var first = String(name).split(/\s+/)[0] || "there";
     var body = kind === "resume"
       ? "Hi " + first + ",\n\nThanks for asking for my résumé. I send it by email rather than posting it publicly, and I will reply to you personally soon.\n\nAaron Prince\n\n(This is an automatic confirmation that your request arrived.)"
+      : kind === "booking"
+      ? "Hi " + first + ",\n\nThanks for asking for a call. I will confirm a time by email or WhatsApp, usually within a day.\n\nAaron Prince\n\n(This is an automatic confirmation that your request arrived. The call is not booked until I confirm it.)"
       : "Hi " + first + ",\n\nThanks for getting in touch" + (topic ? " about " + topic.toLowerCase() : "") + ". I read every message myself and will reply by email, usually within a couple of days.\n\nAaron Prince\n\n(This is an automatic confirmation that your message arrived.)";
     MailApp.sendEmail({
       to: email,

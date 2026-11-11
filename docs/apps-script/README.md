@@ -89,6 +89,14 @@ visitor messages to the examples file and retrain to improve it. `scripts/intent
 with scikit-learn (`pip install scikit-learn`); it could not be run on the build machine, where Windows blocked
 scipy, so it is untested. The Node trainer is the one that produced the shipped model.
 
+## Bookings and testimonials
+
+- **/book** asks for up to three preferred times. It arrives as a `booking` lead (email subject `BOOKING request`).
+  Nothing is booked until you confirm by email or WhatsApp; the visitor is told so. There is no calendar sync.
+- **Testimonials** are sent from the Home page as `testimonial` leads. They are never shown automatically.
+  After you have the person's permission, copy the words into `src/data/testimonials.ts` and they appear on Home.
+- Filter both in /admin ("Bookings", "Testimonials"). Paste the new Code.gs and deploy a New version first.
+
 ## Tests
 
 `node docs/apps-script/mock-test.cjs` runs the handler against a mock of Google's services.

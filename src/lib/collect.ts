@@ -3,7 +3,7 @@ const COLLECT_URL =
   (import.meta.env.VITE_COLLECT_URL as string | undefined) ||
   "https://script.google.com/macros/s/AKfycbxDCTMV5sxGzsHiZRtGrnnb89aa9gW_8REfuZgOhyOVoEsM4EUYAkpwubWS9aV6I-LMyA/exec";
 
-export type LeadKind = "contact" | "resume";
+export type LeadKind = "contact" | "resume" | "booking" | "testimonial";
 export type ChatLine = { from: "visitor" | "ai" | "aaron"; text: string; at?: string };
 
 const headers = { "Content-Type": "text/plain;charset=utf-8" }; // plain text avoids a CORS preflight, which Apps Script cannot answer
