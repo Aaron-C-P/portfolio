@@ -1,7 +1,9 @@
 import { useForm, ValidationError } from "@formspree/react";
+import { useSearchParams } from "react-router-dom";
 import { Github, Linkedin, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { collect } from "@/lib/collect";
 import { whatsapp } from "@/lib/contact";
+import { packages } from "@/data/pay";
 import { brand, services } from "@/data/studio";
 import { Note, Reveal, usePageTitle } from "@/components/studio/parts";
 
@@ -9,6 +11,9 @@ const field = "w-full rounded-xl border border-line bg-white/5 px-4 py-3 text-fg
 
 const Contact = () => {
   usePageTitle("Contact");
+  const [params] = useSearchParams();
+  const wanted = params.get("package");
+  const topicDefault = wanted && packages.some((p) => `Quote: ${p.name}` === `Quote: ${wanted}`) ? `Quote: ${wanted}` : "";
   // Formspree emails each submission to the address on the form. If it ever fails, the email link below still works.
   const [state, submit] = useForm("mnjqgkgz");
   // Formspree emails it; the sheet keeps a permanent copy for the dashboard.
@@ -83,7 +88,7 @@ const Contact = () => {
                 <label htmlFor="topic" className="mb-2 block text-sm font-medium">
                   What do you need help with?
                 </label>
-                <select id="topic" name="topic" className={field} defaultValue="">
+                <select id="topic" name="topic" className={field} defaultValue={topicDefault}>
                   <option value="" disabled>
                     Choose the closest match
                   </option>
@@ -92,6 +97,14 @@ const Contact = () => {
                       {s.title}
                     </option>
                   ))}
+                  {packages.map((p) => (
+                    <option key={p.name} value={`Quote: ${p.name}`} className="bg-panel">
+                      Quote: {p.name}
+                    </option>
+                  ))}
+                  <option value="Student help" className="bg-panel">
+                    Student help
+                  </option>
                   <option value="Something else" className="bg-panel">
                     Something else
                   </option>

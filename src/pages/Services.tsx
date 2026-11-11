@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Check, MessageCircle } from "lucide-react";
 import { findProject, services } from "@/data/studio";
 import { whatsappAbout } from "@/lib/contact";
+import { packages } from "@/data/pay";
 import { Reveal, SectionHead, usePageTitle } from "@/components/studio/parts";
 
 const Services = () => {
@@ -47,6 +48,31 @@ const Services = () => {
           </Reveal>
         ))}
       </div>
+      <section aria-labelledby="packages" className="mt-14">
+        <h2 id="packages" className="text-3xl font-bold">Ways to work together</h2>
+        <p className="mt-2 text-soft">Every package is quoted within 24 hours of you describing the problem. No surprise bills.</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {packages.map((p) => (
+            <div key={p.name} className="flex flex-col rounded-3xl border border-line bg-panel p-6">
+              <h3 className="text-xl font-bold">{p.name}</h3>
+              <p className="mt-2 text-soft">{p.scope}</p>
+              <p className="mt-3 text-sm text-soft">
+                <span className="font-semibold text-fg">Good for:</span> {p.fits}
+              </p>
+              <Link to={`/contact?package=${encodeURIComponent(p.name)}`} className="btn-ghost mt-5 self-start">
+                Get a quote
+              </Link>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-sm text-soft">
+          Already agreed a price?{" "}
+          <Link to="/pay" className="text-cream underline">
+            Pay by bank transfer
+          </Link>
+          .
+        </p>
+      </section>
       <Reveal className="mt-14 rounded-3xl bg-gradient-to-br from-violet to-[#3b1d99] p-10 text-center">
         <h2 className="text-3xl font-bold">Not sure which one you need?</h2>
         <p className="mx-auto mt-3 max-w-lg text-white/80">Describe the problem in your own words. We will work out the rest together.</p>
