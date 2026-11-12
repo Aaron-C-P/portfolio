@@ -79,6 +79,12 @@
   }
 }
 
+@keyframes montage {
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
 @keyframes flow {
   to {
     stroke-dashoffset: -24;

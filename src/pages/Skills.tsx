@@ -5,6 +5,7 @@ import { ArrowRight, Search } from "lucide-react";
 import { brand } from "@/data/studio";
 import { competencies, levels, roles, skills, type Level, type RoleKey } from "@/data/skills";
 import { Note, Reveal, SectionHead, usePageTitle } from "@/components/studio/parts";
+import { LoopBackground } from "@/components/studio/LoopBackground";
 
 const levelStyle: Record<Level, string> = {
   Shipped: "border-emerald-400/50 text-emerald-300",
@@ -49,6 +50,7 @@ const Skills = () => {
 
   return (
     <div className="mx-auto max-w-6xl px-5 pb-24 pt-32">
+      <LoopBackground />
       <SectionHead
         page
         eyebrow="Skills, with proof"
