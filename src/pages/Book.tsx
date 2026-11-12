@@ -25,7 +25,7 @@ const Book = () => {
   usePageTitle("Book a call");
   const days = useMemo(upcomingDays, []);
   const [params] = useSearchParams();
-  const wanted = params.get("topic") === "Band booking" ? "Band booking" : "";
+  const wanted = params.get("topic") ?? "";
   const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,7 +76,6 @@ const Book = () => {
             {packages.map((p) => (
               <option key={p.name}>Quote: {p.name}</option>
             ))}
-            <option>Band booking</option>
             <option>Student help</option>
             <option>Hiring or a job</option>
             <option>Something else</option>
