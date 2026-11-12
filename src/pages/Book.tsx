@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CalendarCheck, MessageCircle } from "lucide-react";
 import { packages } from "@/data/pay";
 import { collect } from "@/lib/collect";
@@ -23,6 +24,8 @@ const upcomingDays = () => {
 const Book = () => {
   usePageTitle("Book a call");
   const days = useMemo(upcomingDays, []);
+  const [params] = useSearchParams();
+  const wanted = params.get("topic") === "Band booking" ? "Band booking" : "";
   const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,13 +69,14 @@ const Book = () => {
             <input name="name" required placeholder="Your name" aria-label="Your name" autoComplete="name" className={field} />
             <input name="email" type="email" required placeholder="Your email" aria-label="Your email" autoComplete="email" className={field} />
           </div>
-          <select name="topic" required defaultValue="" aria-label="What is the call about" className={field}>
+          <select name="topic" required defaultValue={wanted} aria-label="What is the call about" className={field}>
             <option value="" disabled>
               What is the call about?
             </option>
             {packages.map((p) => (
               <option key={p.name}>Quote: {p.name}</option>
             ))}
+            <option>Band booking</option>
             <option>Student help</option>
             <option>Hiring or a job</option>
             <option>Something else</option>

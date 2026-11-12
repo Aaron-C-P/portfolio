@@ -10,6 +10,7 @@ import { HomeDoors } from "@/components/studio/HomeDoors";
 import { ServicesShowcase } from "@/components/studio/ServicesShowcase";
 import { Testimonials } from "@/components/studio/Testimonials";
 import { Montage } from "@/components/studio/Montage";
+import { BandBanner } from "@/components/studio/BandBanner";
 import { ChristmasBanner, ChristmasCountdown, ChristmasTree } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 import { NotesBoard } from "@/components/studio/NotesBoard";
@@ -402,6 +403,8 @@ const Home = () => {
       </section>
 
       <Montage />
+
+      <BandBanner />
 
       <Testimonials />
 
