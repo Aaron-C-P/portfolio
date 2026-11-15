@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Project, Status } from "@/data/studio";
 
@@ -11,17 +11,52 @@ export const usePageTitle = (title?: string) => {
   }, [title]);
 };
 
-export const Reveal = ({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) => (
-  <motion.div
-    className={className}
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-60px" }}
-    transition={{ duration: 0.5, delay }}
-  >
-    {children}
-  </motion.div>
-);
+export const Reveal = ({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) => {
+  const calm = useReducedMotion();
+  return (
+    <div style={{ perspective: 900 }} className={className}>
+      <motion.div
+        initial={calm ? { opacity: 0 } : { opacity: 0, y: 36, rotateX: 16, z: -60, transformOrigin: "50% 100%" }}
+        whileInView={calm ? { opacity: 1 } : { opacity: 1, y: 0, rotateX: 0, z: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
+
+/** Leans toward the pointer in 3D, with a soft glare. Touch and reduced-motion visitors get a plain card. */
+export const Tilt = ({ children, className, max = 8 }: { children: ReactNode; className?: string; max?: number }) => {
+  const calm = useReducedMotion();
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rx = useSpring(useTransform(y, [-0.5, 0.5], [max, -max]), { stiffness: 220, damping: 18 });
+  const ry = useSpring(useTransform(x, [-0.5, 0.5], [-max, max]), { stiffness: 220, damping: 18 });
+  if (calm) return <div className={className}>{children}</div>;
+  return (
+    <div style={{ perspective: 900 }} className={className}>
+      <motion.div
+        className="h-full"
+        style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+        onPointerMove={(e) => {
+          if (e.pointerType !== "mouse") return;
+          const r = e.currentTarget.getBoundingClientRect();
+          x.set((e.clientX - r.left) / r.width - 0.5);
+          y.set((e.clientY - r.top) / r.height - 0.5);
+        }}
+        onPointerLeave={() => {
+          x.set(0);
+          y.set(0);
+        }}
+        whileHover={{ z: 24 }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
 
 /** A word with a hand-drawn cream underline, echoing a sketchbook annotation. */
 export const Underlined = ({ children }: { children: ReactNode }) => (
@@ -96,6 +131,7 @@ export const MediaNeeded = ({ name }: { name: string }) => (
 
 export const ProjectCard = ({ project, index = 0 }: { project: Project; index?: number }) => (
   <Reveal delay={Math.min(index * 0.06, 0.24)}>
+    <Tilt className="h-full">
     <Link
       to={`/work/${project.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-panel transition hover:-translate-y-1 hover:border-violet-light/60"
@@ -126,6 +162,7 @@ export const ProjectCard = ({ project, index = 0 }: { project: Project; index?: 
         </span>
       </div>
     </Link>
+    </Tilt>
   </Reveal>
 );
 

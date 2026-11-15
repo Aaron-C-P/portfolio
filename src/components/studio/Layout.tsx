@@ -1,13 +1,11 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import { Menu, X, Github, Linkedin, Lock, Mail, Phone } from "lucide-react";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
 import { Assistant } from "@/components/studio/Assistant";
-
-// three.js and the physics engine load after the page is usable, in their own file.
-const PhysicsBackdrop = lazy(() => import("@/components/studio/PhysicsBackdrop"));
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 
@@ -221,6 +219,26 @@ const Footer = () => {
   );
 };
 
+/** Each page swings in through 3D space: it turns up from depth with a little perspective. */
+const PageStage = () => {
+  const { pathname } = useLocation();
+  const calm = useReducedMotion();
+  if (calm) return <Outlet />;
+  return (
+    <div style={{ perspective: 1400 }}>
+      <motion.div
+        key={pathname}
+        initial={{ opacity: 0, rotateY: -14, rotateX: 4, z: -140, y: 20, transformOrigin: "50% 0%" }}
+        animate={{ opacity: 1, rotateY: 0, rotateX: 0, z: 0, y: 0 }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <Outlet />
+      </motion.div>
+    </div>
+  );
+};
+
 export const Layout = () => (
   <div className="min-h-screen overflow-x-hidden">
     <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-cream focus:px-4 focus:py-2 focus:text-ink">
@@ -228,12 +246,9 @@ export const Layout = () => (
     </a>
     <Header />
     <main id="main">
-      <Outlet />
+      <PageStage />
     </main>
     <Footer />
-    <Suspense fallback={null}>
-      <PhysicsBackdrop />
-    </Suspense>
     <Assistant />
   </div>
 );
