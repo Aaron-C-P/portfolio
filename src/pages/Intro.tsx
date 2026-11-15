@@ -18,6 +18,13 @@ My experience has taught me the importance of troubleshooting, clear communicati
 I enjoy helping people understand and resolve technical problems, and I'm excited about the opportunity to bring my skills and commitment to Clipboard. | Explains technical problems clearly; Committed to Clipboard
 Thank you for your consideration.`;
 
+// Same facts, said the way you would pitch yourself in person: short sentences, a hook, a close.
+const PITCH_SCRIPT = `Hi, I'm Aaron Prince, from Jamaica, and I help people solve technical problems. | Aaron Prince, Jamaica
+I've got a Computer Science degree, three years in operational support at Scotiabank, and a web development internship with Larvation Web. | B.Sc. Computer Science; 3 years operational support, Scotiabank; Web dev intern, Larvation Web
+That's taught me three things: troubleshoot fast, communicate clearly, and keep operations running smoothly. | Troubleshooting; Clear communication; Operations running smoothly
+I love turning a confusing problem into a clear answer, and I'd love to bring that energy to Clipboard. | Explains technical problems clearly; Committed to Clipboard
+Thanks for watching. Let's talk.`;
+
 type Seg = { text: string; ticks: string[] };
 const parse = (s: string): Seg[] =>
   s
@@ -483,11 +490,15 @@ const Intro = () => {
       {error && <p role="alert" className="mt-3 text-sm text-red-400">{error}</p>}
       <audio ref={audio} src={audioUrl ?? undefined} preload="auto" onEnded={onAudioEnded} />
 
-      <details className="mt-8 rounded-2xl border border-line bg-panel p-5">
-        <summary className="cursor-pointer font-bold">Change the wording to sound like you</summary>
+      <details open className="mt-8 rounded-2xl border border-line bg-panel p-5">
+        <summary className="cursor-pointer font-bold">Script and delivery: make it sound like you</summary>
         <p className="mt-2 text-sm text-soft">One line per row. After the <code>|</code> write what the clipboard ticks off, separated by semicolons. Edit it, then record again.</p>
         <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={9} disabled={busy} aria-label="Script" className="mt-3 w-full rounded-xl border border-line bg-white/5 p-3 font-mono text-sm outline-none focus:border-violet-light" />
-        <button type="button" onClick={() => setScript(DEFAULT_SCRIPT)} className="btn-ghost mt-2">Reset to the original script</button>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button type="button" onClick={() => { setScript(PITCH_SCRIPT); setMarks(null); }} disabled={busy} className="btn-primary">Use the conversational sales pitch</button>
+          <button type="button" onClick={() => { setScript(DEFAULT_SCRIPT); setMarks(null); }} disabled={busy} className="btn-ghost">Use the original script</button>
+        </div>
+        <p className="mt-3 text-sm text-soft"><b>To sound natural and persuasive:</b> smile as you start each line, speak a little faster and brighter than you would reading, pause for a beat between lines (tap Next line in that pause), and let your voice go down at the end of a sentence so you sound sure. Do two practice takes before the real one.</p>
       </details>
     </div>
   );
