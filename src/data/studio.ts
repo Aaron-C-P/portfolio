@@ -812,6 +812,28 @@ export interface FeedPost {
 /** Posts from my own LinkedIn activity, reproduced here. */
 export const feed: FeedPost[] = [
   {
+    id: "power-bi-data-modeling",
+    achievement: "LinkedIn Learning: Power BI Data Modeling, Build a Production-Ready Model",
+    date: "15 November 2026",
+    source: "LinkedIn Learning",
+    text: "Certificate of completion: Power BI Data Modeling, Build a Production-Ready Model (2 hours 28 minutes). Top skills covered: Data Analysis, Microsoft Power BI and Data Modeling.",
+    image: null,
+    imageAlt: "",
+    note: "A short course certificate, one step in learning Power BI. It is not a delivered Power BI project and not the Microsoft Power BI Data Analyst certification.",
+    href: "/certificates/power-bi-data-modeling-linkedin-learning.pdf",
+  },
+  {
+    id: "databricks-data-analysts",
+    achievement: "LinkedIn Learning: Databricks for Data Analysts",
+    date: "14 November 2026",
+    source: "LinkedIn Learning",
+    text: "Certificate of completion: Databricks for Data Analysts (1 hour 31 minutes). Top skills covered: Data Analysis and Azure Databricks.",
+    image: null,
+    imageAlt: "",
+    note: "A short course certificate that adds to the data analysis toolkit.",
+    href: "/certificates/databricks-for-data-analysts-linkedin-learning.pdf",
+  },
+  {
     id: "graduation",
     achievement: "B.Sc. in Computer Science, Northern Caribbean University (2026)",
     date: "October 2026",
