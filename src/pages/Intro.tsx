@@ -69,6 +69,7 @@ const Intro = () => {
   const [recLine, setRecLine] = useState(0);
   const [error, setError] = useState("");
   const [note, setNote] = useState("");
+  const [startTimes, setStartTimes] = useState("");
 
   const segs = useMemo(() => parse(script), [script]);
   const times = useMemo(() => timeline(segs, duration, marks), [segs, duration, marks]);
@@ -386,7 +387,7 @@ const Intro = () => {
       const dest = ctx.createMediaStreamDestination();
       src.connect(dest); // not connected to the speakers: the export is silent while it renders
       const stream = new MediaStream([...cv.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
-      const rec = new MediaRecorder(stream, { mimeType: mime || undefined, videoBitsPerSecond: 6_000_000 });
+      const rec = new MediaRecorder(stream, { mimeType: mime || undefined, videoBitsPerSecond: 4_000_000 });
       const chunks: Blob[] = [];
       rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
       rec.onstop = () => {
@@ -433,6 +434,33 @@ const Intro = () => {
     setPlaying(false);
     setT(a.currentTime);
     if (exportRec.current) finishExport();
+  };
+
+  // Use an audio file instead of recording: a phone voice memo, or a voice made by any AI voice tool.
+  const useFile = (file: File | undefined) => {
+    if (!file) return;
+    setError("");
+    const url = URL.createObjectURL(file);
+    const probe = new Audio(url);
+    probe.onloadedmetadata = () => {
+      const d = probe.duration;
+      if (!Number.isFinite(d) || d < 3) {
+        setError("That audio file could not be read, or it is too short. Try a WAV, MP3 or M4A file.");
+        URL.revokeObjectURL(url);
+        return;
+      }
+      const given = startTimes.split(/[,\s]+/).filter(Boolean).map(Number);
+      const ok = given.length === live.current.segs.length && given.every((n, i) => Number.isFinite(n) && n >= 0 && n < d && (i === 0 || n > given[i - 1]));
+      setAudioUrl((old) => {
+        if (old) URL.revokeObjectURL(old);
+        return url;
+      });
+      setDuration(d);
+      setMarks(ok ? given : null);
+      seek(0);
+      setNote(ok ? "Audio loaded. Subtitles follow the line times you gave." : "Audio loaded. Subtitles are spread across it by word count. Preview to check the timing.");
+    };
+    probe.onerror = () => setError("That audio file could not be read. Try a WAV, MP3 or M4A file.");
   };
 
   const busy = recording || exporting;
@@ -484,6 +512,13 @@ const Intro = () => {
         )}
         <input type="range" min={0} max={duration} step={0.1} value={Math.min(t, duration)} onChange={(e) => seek(Number(e.target.value))} disabled={busy} aria-label="Seek" className="min-w-32 flex-1 accent-violet" />
         <span className="font-mono text-sm text-soft">{clock}</span>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+        <label className="btn-ghost cursor-pointer">
+          Or use an audio file
+          <input type="file" accept="audio/*" disabled={busy} className="sr-only" onChange={(e) => { useFile(e.target.files?.[0]); e.target.value = ""; }} />
+        </label>
+        <input value={startTimes} onChange={(e) => setStartTimes(e.target.value)} placeholder="Optional: when each line starts, in seconds, e.g. 0, 5.4, 13.7" aria-label="Line start times in seconds" className="min-w-64 flex-1 rounded-xl border border-line bg-white/5 px-3 py-2 outline-none focus:border-violet-light" />
       </div>
       {!audioUrl && !recording && <p className="mt-2 text-sm text-soft">Download unlocks after you record your voice, so the video has your voice and not a computer voice.</p>}
       {note && <p role="status" className="mt-3 rounded-xl border border-emerald-500/40 bg-emerald-400/10 px-4 py-3 text-sm">{note}</p>}
