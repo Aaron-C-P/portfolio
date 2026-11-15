@@ -248,7 +248,16 @@ const Home = () => {
               <span className="h-2 w-2 animate-pulse rounded-full bg-white" aria-hidden="true" /> Learning now
             </span>
             <p className="text-sm text-soft">
-              <span className="font-semibold text-fg">Introduction to Power BI</span> on DataCamp, part of the Data Analyst in Power BI track, and the full Cisco CCNA.
+              <span className="font-semibold text-fg">Introduction to Power BI</span> on DataCamp, part of the Data Analyst in Power BI track, and the full Cisco CCNA.{" "}
+              Just completed on LinkedIn Learning:{" "}
+              <a href="/certificates/power-bi-data-modeling-linkedin-learning.pdf" target="_blank" rel="noopener noreferrer" className="font-semibold text-violet-light underline underline-offset-4 hover:text-fg">
+                Power BI Data Modeling
+              </a>{" "}
+              and{" "}
+              <a href="/certificates/databricks-for-data-analysts-linkedin-learning.pdf" target="_blank" rel="noopener noreferrer" className="font-semibold text-violet-light underline underline-offset-4 hover:text-fg">
+                Databricks for Data Analysts
+              </a>
+              .
             </p>
           </div>
 
