@@ -19,6 +19,7 @@ import Pay from "@/pages/Pay";
 import Book from "@/pages/Book";
 import Ad from "@/pages/Ad";
 import Intro from "@/pages/Intro";
+import SiteForge from "@/pages/SiteForge";
 import Admin from "@/pages/Admin";
 
 const NotFound = () => {
@@ -52,6 +53,7 @@ const App = () => (
         <Route path="/ask" element={<Ask />} />
         <Route path="/assignment-help" element={<AssignmentHelp />} />
         <Route path="/intro" element={<Intro />} />
+        <Route path="/siteforge" element={<SiteForge />} />
         <Route path="/watch" element={<Ad />} />
         <Route path="/book" element={<Book />} />
         <Route path="/pay" element={<Pay />} />

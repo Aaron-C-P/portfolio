@@ -89,6 +89,30 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "siteforge",
+    name: "SiteForge",
+    kind: "AI website builder and CMS platform",
+    status: "In progress",
+    oneLiner: "Clients describe their business, AI builds the site, and they edit it themselves on a monthly plan.",
+    purpose: "Give small businesses a website they can change without calling a developer, and give me income that does not depend on daily hours.",
+    problem: "One-off website builds leave clients dependent on the developer for every small change, and leave the developer with no recurring income.",
+    solution:
+      "A multi-client platform: accounts with a free trial, an AI site builder with a template fallback, tap-to-edit with version history, publish and take-offline controls, bucket storage with a link per client, per-plan AI limits, subscription billing hooks and an admin panel.",
+    role: "Product design, architecture and implementation.",
+    tech: ["Node.js", "Express", "SQLite", "S3 / Cloudflare R2", "Claude API", "Lemon Squeezy"],
+    verified: [
+      "Automated tests pass (6 of 6)",
+      "End-to-end run on my computer: sign up, build a site, publish it, view it live, take it offline, see it in the admin overview",
+      "Real AI output, the cloud bucket, live payments and a public domain are not tested yet",
+    ],
+    conceptual: ["Clients' own domains", "Multi-page sites", "Contact forms and booking requests inside each site"],
+    image: null,
+    live: null,
+    repo: null,
+    featured: true,
+    services: ["managed-website", "web-development", "custom-applications"],
+  },
+  {
     slug: "chef-hudsons-christmas-cakes",
     name: "Chef Hudson's Christmas Cakes",
     kind: "Ordering platform for a local baker",
