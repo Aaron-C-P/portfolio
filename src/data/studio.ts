@@ -772,6 +772,14 @@ export const services: Service[] = [
     examples: ["chef-hudsons-christmas-cakes", "bns-lunch-pre-order", "vectra", "qr-data-lab"],
   },
   {
+    slug: "managed-website",
+    title: "A website you can edit yourself",
+    promise: "Build your site with AI, get your own link, and change it any time without calling a developer. Cancel the plan and it goes offline.",
+    forWhom: "Small businesses and creators who want a site that stays theirs and does not need a developer for every small change.",
+    outcomes: ["Your own link and your own domain", "Edit text, photos and pages whenever you like", "Simple monthly plan, switch it off when you want"],
+    examples: ["web-development"],
+  },
+  {
     slug: "technical-support",
     title: "Technical and systems support",
     promise: "Calm, practical help when something is broken or confusing.",

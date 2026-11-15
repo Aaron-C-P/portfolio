@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import { Menu, X, Github, Linkedin, Lock, Mail, Phone } from "lucide-react";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
 import { Assistant } from "@/components/studio/Assistant";
+
+// three.js and the physics engine load after the page is usable, in their own file.
+const PhysicsBackdrop = lazy(() => import("@/components/studio/PhysicsBackdrop"));
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 
@@ -228,6 +231,9 @@ export const Layout = () => (
       <Outlet />
     </main>
     <Footer />
+    <Suspense fallback={null}>
+      <PhysicsBackdrop />
+    </Suspense>
     <Assistant />
   </div>
 );
