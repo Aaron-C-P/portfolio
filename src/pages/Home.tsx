@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Briefcase, Check, Compass, Store, Code2, BarChart3, GraduationCap, Wrench } from "lucide-react";
+import { ArrowRight, Play, Briefcase, Check, Compass, Store, Code2, BarChart3, GraduationCap, Wrench } from "lucide-react";
 import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -184,6 +184,19 @@ const Home = () => {
       <AdminStrip />
 
       {season.key === "christmas" && <ChristmasBanner />}
+
+      <section aria-label="Watch the brand video" className="mx-auto max-w-6xl px-5 pt-8">
+        <Link to="/watch" className="group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-violet-light/40 bg-gradient-to-r from-violet/30 to-panel px-6 py-5 transition hover:border-violet-light">
+          <span className="flex items-center gap-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream text-ink"><Play className="h-5 w-5 translate-x-0.5" aria-hidden="true" /></span>
+            <span>
+              <span className="block text-lg font-bold">Watch the 30-second brand video</span>
+              <span className="block text-sm text-soft">Who I am, what I build, and how to work with me.</span>
+            </span>
+          </span>
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-cream">Play it <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+        </Link>
+      </section>
 
       <section aria-label="At a glance" className="mx-auto -mt-2 max-w-6xl px-5">
         <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
