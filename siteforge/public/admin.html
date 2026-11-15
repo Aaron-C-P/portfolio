@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{BRAND}} — Admin</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <a class="logo" href="/app"><i>✦</i><span class="word">{{BRAND}}</span></a>
+  <nav class="nav"><a href="/app">My websites</a><a href="/admin" class="on">Admin</a></nav>
+  <div class="spacer"></div>
+</div></header>
+<main class="page">
+  <div class="page-head"><div><h1>Business overview</h1><p class="muted">Every client, plan and website in one place.</p></div>
+    <button class="btn btn-line btn-sm" id="reload">Refresh</button></div>
+  <div class="stats" id="stats"></div>
+  <h2 style="margin:8px 0 12px">Clients</h2>
+  <div class="card table-wrap"><table id="clients"></table></div>
+  <h2 style="margin:28px 0 12px">Websites</h2>
+  <div class="card table-wrap"><table id="sites"></table></div>
+  <p class="muted small" style="margin-top:18px">“Paid until” is for clients who pay you outside the card checkout (WiPay invoice, bank transfer, cash). Their sites stay online until that date.</p>
+</main>
+<div class="toasts" id="toasts"></div>
+<script type="module" src="/static/admin.js"></script>
+</body>
+</html>

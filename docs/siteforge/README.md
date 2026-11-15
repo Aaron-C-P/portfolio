@@ -53,3 +53,12 @@ tenancy and billing, not the hosting.
 - Business/product name and which domain this runs on (domain was just purchased).
 - Starting price and plan tiers.
 - AWS or Cloudflare (R2 + Workers is cheaper to serve and simpler for wildcard sites).
+
+## Update: working app imported
+A complete first version now lives in [`/siteforge`](../../siteforge/README.md) (working name SiteCraft): accounts with
+free trial, AI site builder with a built-in template fallback, tap-to-edit, version history, publish/offline, bucket
+storage (local folder, or S3/R2), Lemon Squeezy billing, per-plan AI limits and an admin panel.
+Verified locally: its 6 unit tests pass, and an end-to-end run signed up, built a site, published it at `/s/<name>/`,
+took it offline, and read the admin overview. Not yet verified: real AI output (needs `ANTHROPIC_API_KEY`), the S3/R2
+bucket, live card payments, wildcard subdomains on the real domain, and custom domains.
+It is a separate Node app (not part of the portfolio's Vite build) and needs a small always-on server, not Vercel.

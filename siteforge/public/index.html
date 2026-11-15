@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{BRAND}} — Your business website, built by AI, edited by you</title>
+<meta name="description" content="Tell us about your business and AI builds your website in about a minute. Edit it any time from your phone. Your own link, no tech skills needed. Start free.">
+<meta name="theme-color" content="#12141a">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+body{background:var(--paper)}
+.l-nav{max-width:1180px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.l-nav a.txt{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+.l-nav a.txt:hover{color:var(--ink)}
+.hero{max-width:1180px;margin:0 auto;padding:40px 20px 70px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.kicker{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 6px;font-size:13px;font-weight:600}
+.kicker b{background:var(--accent);border-radius:999px;padding:3px 9px;font-size:12px}
+.hero h1{font-size:clamp(42px,6.4vw,78px);line-height:1;margin:22px 0 20px;letter-spacing:-.035em}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--accent) 62%)}
+.hero p.lead{font-size:19px;color:var(--muted);max-width:34rem;margin-bottom:28px}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero .note{font-size:13px;color:var(--muted);margin-top:14px}
+.demo{position:relative}
+.browser{background:#fff;border-radius:18px;box-shadow:0 40px 80px -40px rgba(18,20,26,.5);border:1px solid var(--line);overflow:hidden;transform:rotate(-1.2deg)}
+.browser .bar{display:flex;align-items:center;gap:6px;padding:11px 14px;border-bottom:1px solid var(--line);background:#faf9f6}
+.browser .bar i{width:10px;height:10px;border-radius:50%;background:#e2ded3}
+.browser .bar span{margin-left:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12px;color:var(--muted)}
+.mock{padding:22px;display:grid;gap:14px;background:linear-gradient(160deg,#0f766e 0%,#115e59 100%);color:#fff;min-height:250px}
+.mock small{letter-spacing:.14em;text-transform:uppercase;font-size:10px;opacity:.8;font-weight:700}
+.mock h3{font-size:30px;line-height:1.05}
+.mock .btns{display:flex;gap:8px}
+.mock .btns span{background:#fff;color:#0f766e;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700}
+.mock .btns span+span{background:transparent;color:#fff;border:1.5px solid #fff}
+.mock .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.mock .tiles div{background:rgba(255,255,255,.14);border-radius:10px;padding:10px;font-size:11px;font-weight:600}
+.chat{position:absolute;right:-12px;bottom:-34px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;width:250px;box-shadow:0 24px 50px -24px rgba(18,20,26,.45);display:grid;gap:8px;font-size:13px;transform:rotate(1.5deg)}
+.chat .me{background:var(--ink);color:#fff;border-radius:14px 14px 4px 14px;padding:8px 11px;justify-self:end}
+.chat .ai{background:var(--accent-soft);border-radius:14px 14px 14px 4px;padding:8px 11px}
+.band{background:var(--ink);color:#fff;padding:80px 20px}
+.band .in,.sec .in{max-width:1180px;margin:0 auto}
+.band h2,.sec h2{font-size:clamp(30px,4.4vw,48px);margin-bottom:12px}
+.band p.sub{color:#aeb3bf;max-width:36rem;font-size:17px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.step{border:1px solid #2c303b;border-radius:18px;padding:24px}
+.step b{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--ink);font-family:var(--head);font-size:18px;margin-bottom:16px}
+.step h3{font-size:22px;margin-bottom:6px}
+.step p{color:#aeb3bf}
+.sec{padding:80px 20px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.feature{padding:24px}
+.feature .ic{font-size:26px;margin-bottom:12px}
+.feature h3{font-size:20px;margin-bottom:6px}
+.feature p{color:var(--muted)}
+.faq{max-width:780px;margin:30px auto 0;display:grid;gap:10px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.faq summary{font-weight:700;cursor:pointer}
+.faq p{color:var(--muted);margin-top:8px}
+.final{text-align:center;display:grid;justify-items:center;gap:16px}
+footer.l-foot{border-top:1px solid var(--line);padding:26px 20px;color:var(--muted);font-size:14px}
+footer.l-foot .in{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:16px;gap:56px}
+  .steps,.features{grid-template-columns:1fr}
+  .chat{right:6px;bottom:-40px;width:220px}
+  .l-nav a.txt{display:none}
+  .band,.sec{padding:60px 20px}
+}
+</style>
+</head>
+<body>
+<nav class="l-nav">
+  <a class="logo" href="/"><i>✦</i>{{BRAND}}</a>
+  <div class="spacer"></div>
+  <a class="txt" href="#how">How it works</a>
+  <a class="txt" href="#pricing">Pricing</a>
+  <a class="btn btn-line btn-sm" href="/app#login">Log in</a>
+  <a class="btn btn-dark btn-sm" href="/app#signup">Start free</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <span class="kicker"><b>New</b> Websites for small businesses</span>
+    <h1>Your business online <em>today.</em></h1>
+    <p class="lead">Tell us about your business and AI builds your website in about a minute. Change words, photos and prices yourself — any time, right from your phone.</p>
+    <div class="ctas">
+      <a class="btn btn-gold btn-lg" href="/app#signup">Build my website free</a>
+      <a class="btn btn-line btn-lg" href="#how">See how it works</a>
+    </div>
+    <p class="note">{{TRIAL_DAYS}}-day free trial · No card needed · Cancel any time</p>
+  </div>
+  <div class="demo" aria-hidden="true">
+    <div class="browser">
+      <div class="bar"><i></i><i></i><i></i><span>freshcutz.{{SITE_DOMAIN}}</span></div>
+      <div class="mock">
+        <small>Barber shop · Portmore</small>
+        <h3>Fresh Cutz<br>Barber Shop</h3>
+        <div class="btns"><span>Chat on WhatsApp</span><span>Call us</span></div>
+        <div class="tiles"><div>✂️ Fades</div><div>🧔 Beard trims</div><div>👦 Kids cuts</div></div>
+      </div>
+    </div>
+    <div class="chat">
+      <div class="me">Add a price list — haircut $1500, beard $800</div>
+      <div class="ai">✨ Done! Added a price list under Services.</div>
+    </div>
+  </div>
+</header>
+
+<section class="band" id="how">
+  <div class="in">
+    <h2>Three steps. No developer.</h2>
+    <p class="sub">You don’t need to know anything about websites. If you can send a WhatsApp message, you can run your own site.</p>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Tell us about you</h3><p>Your business name, what you do, and how customers reach you. Two minutes, tops.</p></div>
+      <div class="step"><b>2</b><h3>AI builds it</h3><p>A full, mobile-friendly website with your details, colours and a WhatsApp button — in about a minute.</p></div>
+      <div class="step"><b>3</b><h3>Publish & share</h3><p>Hit Publish and your site is live at <b>yourname.{{SITE_DOMAIN}}</b>. Put the link in your bio and status.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="in">
+    <h2>You stay in control</h2>
+    <p class="muted" style="max-width:36rem;font-size:17px">No more waiting on someone to update your site. It’s yours — change it whenever business changes.</p>
+    <div class="features">
+      <div class="card feature"><div class="ic">✎</div><h3>Tap to edit</h3><p>Tap any text on your site to change it. Tap a photo to swap in your own.</p></div>
+      <div class="card feature"><div class="ic">✨</div><h3>Ask the AI</h3><p>“Add our Christmas specials.” “Make it more colourful.” Type it and it’s done.</p></div>
+      <div class="card feature"><div class="ic">📱</div><h3>Built for phones</h3><p>Your customers are on their phones. Every site looks sharp on any screen.</p></div>
+      <div class="card feature"><div class="ic">↺</div><h3>Undo anything</h3><p>Every version is saved. Go back to any earlier version with one tap.</p></div>
+      <div class="card feature"><div class="ic">⏸</div><h3>Pause any time</h3><p>Closed for the season? Take your site offline and bring it back when you’re ready.</p></div>
+      <div class="card feature"><div class="ic">🔗</div><h3>Your own link</h3><p>Get <b>yourname.{{SITE_DOMAIN}}</b> free, or ask us to connect your own domain.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="pricing" style="padding-top:0">
+  <div class="in">
+    <h2>Simple monthly pricing</h2>
+    <p class="muted" style="font-size:17px">Start with a free {{TRIAL_DAYS}}-day trial. Pick a plan when you’re happy.</p>
+    <div class="plans" style="margin-top:30px">
+      <div class="card plan">
+        <h2>Starter</h2>
+        <div class="price">{{PRICE_STARTER}}<small> / month</small></div>
+        <ul><li>1 website</li><li>{{AI_STARTER}} AI changes a month</li><li>Edit text & photos any time</li><li>Free yourname.{{SITE_DOMAIN}} link</li></ul>
+        <a class="btn btn-dark" href="/app#signup">Start free trial</a>
+      </div>
+      <div class="card plan featured">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h2>Business</h2><span class="pill changes">Most popular</span></div>
+        <div class="price">{{PRICE_BUSINESS}}<small> / month</small></div>
+        <ul><li>Up to {{SITES_BUSINESS}} websites</li><li>{{AI_BUSINESS}} AI changes a month</li><li>No “Made with {{BRAND}}” badge</li><li>Priority help on WhatsApp</li></ul>
+        <a class="btn btn-gold" href="/app#signup">Start free trial</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="in">
+    <h2 style="text-align:center">Questions</h2>
+    <div class="faq">
+      <details><summary>Do I need to know anything about websites?</summary><p>No. You answer a few questions in plain words and the AI does the rest. Editing is as simple as tapping the text you want to change.</p></details>
+      <details><summary>Can I use my own domain name?</summary><p>Yes. Every site gets a free yourname.{{SITE_DOMAIN}} link, and we can connect a domain you own — just message us.</p></details>
+      <details><summary>What happens if I stop paying?</summary><p>Your site goes offline, but nothing is deleted. Pick a plan again and it comes right back.</p></details>
+      <details><summary>Can I pay without a card?</summary><p>Yes — message us to pay by bank transfer or WiPay and we’ll switch your plan on.</p></details>
+      <details><summary>Can I cancel?</summary><p>Any time, from your dashboard. No contracts.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="in final">
+    <h2>Get your business online today.</h2>
+    <p class="sub">It takes about five minutes from sign-up to a live website.</p>
+    <a class="btn btn-gold btn-lg" href="/app#signup">Build my website free</a>
+  </div>
+</section>
+
+<footer class="l-foot"><div class="in"><span>© {{YEAR}} {{BRAND}}</span><span><a href="/app#login">Log in</a></span></div></footer>
+</body>
+</html>

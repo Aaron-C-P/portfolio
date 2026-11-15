@@ -1,0 +1,169 @@
+// AI website generation and editing (Anthropic Claude API, streamed).
+// If no ANTHROPIC_API_KEY is set, new sites are built from the built-in template instead,
+// so you can demo the whole product for free.
+import { config } from './config.js';
+import { templateSite } from './templates.js';
+
+export const aiEnabled = () => !!config.ai.apiKey;
+
+const SHARED_RULES = `
+- Mobile-first and fully responsive: most visitors are on phones.
+- All CSS in one <style> tag in <head>. You may load up to two Google Fonts with <link>. No other external CSS, no JS frameworks, no external scripts.
+- JavaScript is optional. If used, keep it to one small <script> at the end of <body> (for example a mobile menu toggle). The page must look right and work without JavaScript.
+- Use semantic <section> elements with ids (for example #home, #services, #about, #gallery, #reviews, #contact) and a sticky header with anchor links.
+- Photos: use <img> tags with src="/_ph/WIDTHxHEIGHT/short-label?c=HEX", for example src="/_ph/1200x800/hero-shop?c=1f6feb", where HEX is the main brand color without the #. These are placeholders the owner replaces with real photos, so always write a descriptive alt. Never use external image URLs and never use CSS background-image for photos.
+- Keep every image whose src starts with "assets/" exactly as it is: those are the owner's own uploaded photos.
+- Use only the real details provided (name, phone, email, address, hours, prices). Never invent phone numbers, addresses, emails, prices, awards, years in business or customer names. If a detail is missing, write copy that does not need it, or a clearly editable placeholder such as "Add your opening hours".
+- Never write fake testimonials attributed to invented people. A reviews section may only contain placeholders like "Add a real customer review here." with "— Customer name".
+- If a WhatsApp number is given, add a prominent "Chat on WhatsApp" button linking to https://wa.me/<digits only, with country code>. Phone numbers use tel: links, emails use mailto: links.
+- There is no form backend: use WhatsApp, call or email buttons instead of a <form>.
+- Include <title>, a meta description and a viewport meta tag. Use good contrast, alt text, visible focus styles and rem sizes.
+- Keep the whole document under about 40 KB.`;
+
+const GENERATE_SYSTEM = `You are a senior web designer and front-end developer who builds beautiful, conversion-focused one-page websites for small businesses (barbers, salons, restaurants, cook shops, tradespeople, churches, tutors, shops, tour operators and so on), many of them in Jamaica and the wider Caribbean.
+
+Produce ONE complete, production-ready HTML document for the business described by the user.
+
+Rules:
+- Reply with the HTML document only, starting with <!DOCTYPE html> and ending with </html>. No markdown fences, no commentary.
+${SHARED_RULES}
+- Make it look custom and premium, not like a template: confident typography, generous spacing, a clear visual identity that fits the business type and the requested vibe, and tasteful details (subtle gradients, shapes, dividers, hover states).
+- Write warm, specific, persuasive copy in the voice of the business. Lead with what the customer gets, and repeat the main call to action (WhatsApp, call or visit) near the top and at the bottom.`;
+
+const EDIT_SYSTEM = `You edit an existing small-business website (one HTML document) to carry out the owner's request.
+
+Rules:
+- Reply with exactly one line "SUMMARY: <one short, plain sentence saying what you changed>", then the complete updated HTML document from <!DOCTYPE html> to </html>. No markdown fences, no other commentary.
+- Change only what the request needs. Keep everything else exactly as it is, including the owner's own wording.
+${SHARED_RULES}
+- If the request can't be done in a static site (online payments, booking systems, logins), make the closest sensible change (for example a WhatsApp booking button) and say so in the SUMMARY.`;
+
+function briefToText(b) {
+  const lines = [
+    ['Business name', b.name],
+    ['Type of business', b.type],
+    ['What they do / description', b.description],
+    ['Location / address', b.location],
+    ['Phone', b.phone],
+    ['WhatsApp', b.whatsapp],
+    ['Email', b.email],
+    ['Instagram', b.instagram],
+    ['Opening hours', b.hours],
+    ['Style / vibe', b.vibe],
+    ['Brand color', b.color],
+    ['Anything else', b.extra],
+  ];
+  return lines
+    .filter(([, v]) => v && String(v).trim())
+    .map(([k, v]) => `${k}: ${String(v).trim()}`)
+    .join('\n');
+}
+
+async function streamClaude({ system, user, onChars }) {
+  const res = await fetch(`${config.ai.baseUrl}/v1/messages`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': config.ai.apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: config.ai.model,
+      max_tokens: config.ai.maxTokens,
+      system,
+      messages: [{ role: 'user', content: user }],
+      stream: true,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`The AI service returned an error (${res.status}). ${body.slice(0, 200)}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  let text = '';
+  let stopReason = null;
+  const usage = { input_tokens: 0, output_tokens: 0 };
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+    let i;
+    while ((i = buf.indexOf('\n\n')) >= 0) {
+      const chunk = buf.slice(0, i);
+      buf = buf.slice(i + 2);
+      const data = chunk
+        .split('\n')
+        .filter((l) => l.startsWith('data:'))
+        .map((l) => l.slice(5).trim())
+        .join('');
+      if (!data) continue;
+      let ev;
+      try {
+        ev = JSON.parse(data);
+      } catch {
+        continue;
+      }
+      if (ev.type === 'message_start') usage.input_tokens = ev.message?.usage?.input_tokens || 0;
+      else if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') {
+        text += ev.delta.text;
+        onChars?.(text.length);
+      } else if (ev.type === 'message_delta') {
+        if (ev.usage?.output_tokens != null) usage.output_tokens = ev.usage.output_tokens;
+        stopReason = ev.delta?.stop_reason || stopReason;
+      } else if (ev.type === 'error') {
+        throw new Error(`AI error: ${ev.error?.message || 'unknown'}`);
+      }
+    }
+  }
+  if (stopReason === 'max_tokens') throw new Error('The AI ran out of room before finishing. Try a shorter request.');
+  return { text, usage };
+}
+
+export function extractHtml(text) {
+  const start = text.search(/<!doctype html|<html[\s>]/i);
+  const end = text.toLowerCase().lastIndexOf('</html>');
+  if (start < 0 || end < 0 || end < start) throw new Error('The AI reply did not contain a full web page. Please try again.');
+  return text.slice(start, end + 7);
+}
+
+export function cleanHtml(html) {
+  let out = html.replace(/<base\b[^>]*>/gi, '');
+  if (!/^<!doctype html>/i.test(out.trim())) out = '<!DOCTYPE html>\n' + out.replace(/^\s*<!doctype[^>]*>/i, '');
+  if (!/<meta[^>]+name=["']viewport["']/i.test(out))
+    out = out.replace(/<head([^>]*)>/i, '<head$1>\n<meta name="viewport" content="width=device-width, initial-scale=1">');
+  return out;
+}
+
+const progressFrom = (chars, expected) => Math.min(95, 8 + Math.round((chars / expected) * 87));
+
+export async function generateSite(brief, onProgress = () => {}) {
+  if (!aiEnabled()) {
+    onProgress(60, 'Designing your site…');
+    await new Promise((r) => setTimeout(r, 600));
+    return { html: templateSite(brief), usage: null };
+  }
+  onProgress(5, 'Planning the layout…');
+  const { text, usage } = await streamClaude({
+    system: GENERATE_SYSTEM,
+    user: `Build the website for this business:\n\n${briefToText(brief)}`,
+    onChars: (n) => onProgress(progressFrom(n, 28000), n < 3000 ? 'Choosing fonts and colours…' : n < 14000 ? 'Writing your pages…' : 'Adding the finishing touches…'),
+  });
+  return { html: cleanHtml(extractHtml(text)), usage };
+}
+
+export async function editSite(html, instruction, brief, onProgress = () => {}) {
+  if (!aiEnabled())
+    throw new Error('AI editing is not switched on yet. You can still change text and photos with "Edit text & photos".');
+  onProgress(5, 'Reading your site…');
+  const { text, usage } = await streamClaude({
+    system: EDIT_SYSTEM,
+    user: `Business details:\n${briefToText(brief || {})}\n\nCurrent website:\n${html}\n\nOwner's request: ${instruction}`,
+    onChars: (n) => onProgress(progressFrom(n, html.length + 500), 'Making your changes…'),
+  });
+  const prefix = text.slice(0, Math.max(0, text.search(/<!doctype html|<html[\s>]/i)));
+  const m = prefix.match(/SUMMARY:\s*(.+)/i);
+  const summary = m ? m[1].trim().slice(0, 300) : 'Updated your site.';
+  return { html: cleanHtml(extractHtml(text)), usage, summary };
+}
