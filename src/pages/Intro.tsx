@@ -13,7 +13,7 @@ const H = 720;
 
 // One line per row: what is said | what gets ticked off on the clipboard (separate with ;)
 const DEFAULT_SCRIPT = `Hello, my name is Aaron Prince, and I'm from Jamaica. | Aaron Prince, Jamaica
-I have a Bachelor's degree in Computer Science and three years of experience in operational support at Scotiabank. | B.Sc. Computer Science; 3 years operational support, Scotiabank
+I have a Bachelor's degree in Computer Science and three years of experience in operational support at Scotiabank. I also completed a web development internship with Larvation Web. | B.Sc. Computer Science; 3 years operational support, Scotiabank; Web dev intern, Larvation Web
 My experience has taught me the importance of troubleshooting, clear communication and keeping business operations running smoothly. | Troubleshooting; Clear communication; Operations running smoothly
 I enjoy helping people understand and resolve technical problems, and I'm excited about the opportunity to bring my skills and commitment to Clipboard. | Explains technical problems clearly; Committed to Clipboard
 Thank you for your consideration.`;
