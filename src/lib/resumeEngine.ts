@@ -4,7 +4,7 @@ import model from "@/data/bulletModel.json";
  * The résumé optimiser. Three small, honest techniques:
  *  1. Bayesian keyword matching: smoothed term weights from the job posting, and a Beta-prior match score.
  *  2. A bullet-strength classifier (logistic regression, weights in bulletModel.json, trained by scripts/resume).
- *  3. A Thompson-sampling bandit that learns which layout works best from outcomes the user reports.
+ *  3. ATS format checks (see resumeFormat.ts): one plain, machine-readable format instead of design templates.
  * None of this predicts whether someone gets hired. It measures how well a résumé matches a posting and
  * how specific its bullets are, which are things applicant tracking systems and recruiters do look at.
  */
@@ -188,71 +188,6 @@ export function bulletTips(r: Resume): BulletTip[] {
                 : "Strong: specific and result-focused.";
       return { text, strength, tip };
     });
-}
-
-// ---------- layout bandit ----------
-export const LAYOUTS = [
-  { id: "impact", name: "Impact first", note: "Summary, then experience, then skills. Suits people with relevant jobs." },
-  { id: "skills", name: "Skills first", note: "Skills up top. Suits career changers and technical roles." },
-  { id: "education", name: "Education first", note: "Education before experience. Suits students and new graduates." },
-] as const;
-export type LayoutId = (typeof LAYOUTS)[number]["id"];
-
-export type BanditState = Record<LayoutId, { wins: number; losses: number }>;
-export const freshBandit = (): BanditState => ({ impact: { wins: 0, losses: 0 }, skills: { wins: 0, losses: 0 }, education: { wins: 0, losses: 0 } });
-
-// Gamma sampler (Marsaglia and Tsang) so we can draw from Beta without a library.
-function gamma(k: number): number {
-  if (k < 1) return gamma(k + 1) * Math.random() ** (1 / k);
-  const d = k - 1 / 3;
-  const c = 1 / Math.sqrt(9 * d);
-  for (;;) {
-    let x: number;
-    let v: number;
-    do {
-      const u1 = Math.random() || 1e-12;
-      const u2 = Math.random();
-      x = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      v = 1 + c * x;
-    } while (v <= 0);
-    v = v ** 3;
-    const u = Math.random() || 1e-12;
-    if (Math.log(u) < 0.5 * x * x + d - d * v + d * Math.log(v)) return d * v;
-  }
-}
-const beta = (a: number, b: number) => {
-  const x = gamma(a);
-  return x / (x + gamma(b));
-};
-
-/** Thompson sampling: draw a plausible success rate for each layout from Beta(1+wins, 1+losses) and pick the highest. */
-export function chooseLayout(state: BanditState, prefer?: LayoutId): LayoutId {
-  let best: LayoutId = prefer ?? "impact";
-  let top = -1;
-  for (const l of LAYOUTS) {
-    const s = state[l.id];
-    // The sensible default starts with a prior of 4 wins and 1 loss, so until real outcomes say otherwise it is
-    // usually chosen. Other layouts still get picked sometimes (exploration) and take over if they win more.
-    const prior = l.id === prefer ? { w: 4, l: 1 } : { w: 1, l: 1 };
-    const draw = beta(prior.w + s.wins, prior.l + s.losses);
-    if (draw > top) {
-      top = draw;
-      best = l.id;
-    }
-  }
-  return best;
-}
-
-export const recordOutcome = (state: BanditState, layout: LayoutId, gotInterview: boolean): BanditState => ({
-  ...state,
-  [layout]: { wins: state[layout].wins + (gotInterview ? 1 : 0), losses: state[layout].losses + (gotInterview ? 0 : 1) },
-});
-
-/** A starting guess before any outcomes exist: students lead with education, technical roles with skills. */
-export function sensibleDefault(r: Resume): LayoutId {
-  const hasJobs = r.experience.some((j) => j.role.trim() && j.bullets.some((b) => b.trim()));
-  if (!hasJobs) return "education";
-  return /(developer|engineer|analyst|data|it |support|technician)/i.test(r.title) ? "skills" : "impact";
 }
 
 // ---------- overall checks ----------

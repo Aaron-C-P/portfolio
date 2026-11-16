@@ -5,7 +5,7 @@ A résumé app at $10 per résumé. Free to build and preview; the clean PDF is 
 ## User journey
 1. **The job**: paste a posting. Key terms are extracted (smoothed term weights).
 2. **Your details**: contact, summary, experience, education, skills. Autosaved in the browser only.
-3. **Improve it**: job-match score, bullet-by-bullet feedback, checklist, layout suggestion. All free, so the value is clear before any ask.
+3. **Improve it**: job-match score, bullet-by-bullet feedback, checklist, ATS check with a "what an ATS reads" view. All free, so the value is clear before any ask.
 4. **Get it**: watermarked preview, then name/email (and consent) to place an order, then payment, then an unlock code.
    After applying, the user can report "got an interview?", which feeds the layout bandit.
 
@@ -14,7 +14,8 @@ Only name, email, phone and order details go to the Google Sheet (kind `builder`
 ## What the "optimiser" actually is (src/lib/resumeEngine.ts)
 - **Bayesian keyword match**: smoothed term weights from the posting, boosted in "required/must" lines; score is the posterior mean of a Beta(2,2)-prior coverage over weighted keywords.
 - **Bullet strength**: logistic regression on 9 readable features. Weights in `src/data/bulletModel.json`, trained by `scripts/resume/train.mjs` (runs on this PC) or `scripts/resume/train_sklearn.py` (scikit-learn; run on a machine that allows scipy). Trained on 50 hand-written bullets, so treat it as a starter heuristic. Add real, reviewed bullets to `scripts/resume/examples.txt` and retrain.
-- **Layout bandit**: Thompson sampling over three layouts with Beta priors; the sensible default for the person starts with a head start. Outcomes are stored per device today. To learn across all users, aggregate the `builder` "outcome" rows in the sheet.
+- **One ATS format, no templates** (`src/lib/resumeFormat.ts`, `resumePdf.ts`): single column, standard headings (PROFESSIONAL SUMMARY, WORK EXPERIENCE, EDUCATION, SKILLS), plain "-" bullets, Helvetica, contact details in the body, no tables, columns, icons or images. The PDF is drawn as real text by jsPDF (verified: zero image objects, every line extractable, reading order preserved). It is not made with a canvas or a design tool such as Canva, because those export pictures of text, which ATS software cannot read.
+- **Outcomes**: after applying, users report whether they got an interview; the row lands in the sheet (kind `builder`, topic "Résumé Studio outcome"). The earlier layout bandit was removed with the templates, since there is nothing left for it to choose between. Once there are enough outcome rows it can be pointed at a real choice, for example which keywords or summary style to emphasise.
 None of this predicts being hired. It measures fit to a posting and how specific the bullets are.
 
 ## To switch payments on

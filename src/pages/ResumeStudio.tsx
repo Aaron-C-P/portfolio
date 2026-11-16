@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, Lock, Plus, Printer, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Lock, Plus, Download, Sparkles, X } from "lucide-react";
 import { Note, usePageTitle } from "@/components/studio/parts";
 import { collect } from "@/lib/collect";
 import { bank, bankReady } from "@/data/pay";
 import { priceLabel, studio } from "@/data/resume";
 import {
-  LAYOUTS, basicChecks, bulletTips, chooseLayout, emptyResume, exampleResume, extractKeywords, freshBandit, matchScore, recordOutcome, resumeText, sensibleDefault,
-  type BanditState, type LayoutId, type Resume,
+  basicChecks, bulletTips, emptyResume, exampleResume, extractKeywords, matchScore, type Resume,
 } from "@/lib/resumeEngine";
+import { atsChecks, atsText, resumeBlocks } from "@/lib/resumeFormat";
+import { downloadResumePdf } from "@/lib/resumePdf";
 
 const KEY = "resume-studio-v1";
 const STEPS = ["The job", "Your details", "Improve it", "Get it"] as const;
@@ -18,8 +19,6 @@ interface Saved {
   resume: Resume;
   posting: string;
   step: number;
-  bandit: BanditState;
-  layout: LayoutId | null;
   code: string;
   ref: string;
   ordered: boolean;
@@ -27,7 +26,7 @@ interface Saved {
 }
 
 const newRef = () => `RS-${Array.from({ length: 5 }, () => "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 31)]).join("")}`;
-const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, bandit: freshBandit(), layout: null, code: "", ref: newRef(), ordered: false, reported: false });
+const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, code: "", ref: newRef(), ordered: false, reported: false });
 const load = (): Saved => {
   try {
     const raw = localStorage.getItem(KEY);
@@ -37,56 +36,25 @@ const load = (): Saved => {
   }
 };
 
-/** The résumé itself, laid out by the chosen layout. Also what gets printed. */
-const Doc = ({ r, layout, locked }: { r: Resume; layout: LayoutId; locked: boolean }) => {
-  const contact = [r.email, r.phone, r.location, r.links].filter(Boolean).join("  ·  ");
-  const Head = ({ children }: { children: string }) => <h3 className="mb-1 mt-4 border-b border-black/20 pb-0.5 text-xs font-bold uppercase tracking-widest text-black/70">{children}</h3>;
-  const summary = r.summary.trim() && (
-    <section>
-      <Head>Summary</Head>
-      <p className="text-sm">{r.summary}</p>
-    </section>
-  );
-  const skills = r.skills.trim() && (
-    <section>
-      <Head>Skills</Head>
-      <p className="text-sm">{r.skills.split(",").map((s) => s.trim()).filter(Boolean).join("  ·  ")}</p>
-    </section>
-  );
-  const experience = r.experience.some((j) => j.role.trim()) && (
-    <section>
-      <Head>Experience</Head>
-      {r.experience.filter((j) => j.role.trim()).map((j, i) => (
-        <div key={i} className="mb-2">
-          <p className="flex justify-between gap-3 text-sm font-semibold"><span>{j.role}{j.org && `, ${j.org}`}</span><span className="shrink-0 font-normal text-black/60">{j.dates}</span></p>
-          <ul className="ml-5 list-disc text-sm">{j.bullets.filter((b) => b.trim()).map((b, k) => <li key={k}>{b}</li>)}</ul>
-        </div>
-      ))}
-    </section>
-  );
-  const education = r.education.some((s) => s.school.trim()) && (
-    <section>
-      <Head>Education</Head>
-      {r.education.filter((s) => s.school.trim()).map((s, i) => (
-        <p key={i} className="flex justify-between gap-3 text-sm"><span><b>{s.school}</b>{s.what && `, ${s.what}`}</span><span className="shrink-0 text-black/60">{s.dates}</span></p>
-      ))}
-    </section>
-  );
-  const order = layout === "skills" ? [skills, summary, experience, education] : layout === "education" ? [summary, education, skills, experience] : [summary, experience, skills, education];
-  return (
-    <div id="resume-print" className="relative mx-auto w-full max-w-[794px] bg-white p-8 text-black shadow-xl" style={{ minHeight: 560 }}>
-      <h2 className="text-2xl font-bold">{r.name || "Your Name"}</h2>
-      {r.title && <p className="text-sm text-black/70">{r.title}</p>}
-      <p className="mt-1 text-xs text-black/70">{contact}</p>
-      {order.map((o, i) => <div key={i}>{o}</div>)}
-      {locked && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span style={{ transform: "rotate(-30deg)" }} className="select-none text-6xl font-black tracking-widest text-black/10">PREVIEW</span>
-        </div>
-      )}
-    </div>
-  );
-};
+/** On-screen preview of the single ATS format. The downloaded PDF is built from the same blocks. */
+const Doc = ({ r, locked }: { r: Resume; locked: boolean }) => (
+  <div className="relative mx-auto w-full max-w-[794px] bg-white p-8 text-black shadow-xl" style={{ minHeight: 560, fontFamily: "Helvetica, Arial, sans-serif" }}>
+    {resumeBlocks(r).map((b, i) =>
+      b.kind === "name" ? <h2 key={i} className="text-2xl font-bold">{b.text}</h2>
+      : b.kind === "title" ? <p key={i} className="text-sm">{b.text}</p>
+      : b.kind === "contact" ? <p key={i} className="mt-0.5 text-xs">{b.text}</p>
+      : b.kind === "heading" ? <h3 key={i} className="mb-1 mt-4 border-b border-black pb-0.5 text-xs font-bold">{b.text}</h3>
+      : b.kind === "role" ? <p key={i} className="mt-2 flex justify-between gap-3 text-sm font-bold"><span>{b.text}</span>{b.aside && <span className="shrink-0 font-normal">{b.aside}</span>}</p>
+      : b.kind === "bullet" ? <p key={i} className="ml-4 text-sm" style={{ textIndent: "-0.9rem" }}>- {b.text}</p>
+      : <p key={i} className="text-sm">{b.text}</p>,
+    )}
+    {locked && (
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+        <span style={{ transform: "rotate(-30deg)" }} className="select-none text-6xl font-black tracking-widest text-black/10">PREVIEW</span>
+      </div>
+    )}
+  </div>
+);
 
 const Bar = ({ value, label }: { value: number; label: string }) => (
   <div>
@@ -118,10 +86,8 @@ const ResumeStudio = () => {
   const match = useMemo(() => matchScore(r, keywords), [r, keywords]);
   const tips = useMemo(() => bulletTips(r), [r]);
   const checks = useMemo(() => basicChecks(r), [r]);
-  const baseline = sensibleDefault(r);
-  // Drawn once per default/outcome change, so the suggestion does not flicker while the user types.
-  const recommended = useMemo(() => chooseLayout(s.bandit, baseline), [s.bandit, baseline]);
-  const layout = s.layout ?? recommended;
+  const ats = useMemo(() => atsChecks(r), [r]);
+  const [showAts, setShowAts] = useState(false);
   const unlocked = s.code !== "";
   const avgBullet = tips.length ? Math.round((tips.reduce((a, t) => a + t.strength, 0) / tips.length) * 100) : 0;
 
@@ -142,7 +108,7 @@ const ResumeStudio = () => {
     data.set("name", lead.name);
     data.set("email", lead.email);
     data.set("topic", "Résumé Studio order");
-    data.set("message", `Order ${s.ref}. Phone: ${lead.phone || "not given"}. Layout: ${layout}. Target role: ${r.title || "not given"}. Keyword match: ${match.score}%. Price: ${priceLabel}.`);
+    data.set("message", `Order ${s.ref}. Phone: ${lead.phone || "not given"}. Target role: ${r.title || "not given"}. Keyword match: ${match.score}%. Price: ${priceLabel}.`);
     await collect("builder", data);
     setBusy(false);
     patch({ ordered: true });
@@ -163,12 +129,12 @@ const ResumeStudio = () => {
   };
 
   const report = async (got: boolean) => {
-    patch({ bandit: recordOutcome(s.bandit, layout, got), reported: true });
+    patch({ reported: true });
     const data = new FormData();
     data.set("name", lead.name || "Résumé Studio user");
     data.set("email", lead.email || "outcome@resume.invalid");
     data.set("topic", "Résumé Studio outcome");
-    data.set("message", `Order ${s.ref}. Layout ${layout}. Got an interview: ${got ? "yes" : "no"}.`);
+    data.set("message", `Order ${s.ref}. Got an interview: ${got ? "yes" : "no"}.`);
     void collect("builder", data);
   };
 
@@ -181,10 +147,9 @@ const ResumeStudio = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-5 pb-24 pt-32">
-      <style>{`@media print{body *{visibility:hidden}#resume-print,#resume-print *{visibility:visible}#resume-print{position:absolute;left:0;top:0;width:100%;box-shadow:none}}`}</style>
       <Note>{studio.name}</Note>
       <h1 className="h-section mt-1 md:text-5xl">A résumé built for the job you want.</h1>
-      <p className="mt-3 max-w-2xl text-lg text-soft">Paste the job, add your details, and the app shows how well you match and what to sharpen. Build and preview free. A clean download is {priceLabel}.</p>
+      <p className="mt-3 max-w-2xl text-lg text-soft">Paste the job, add your details, and the app shows how well you match and what to sharpen, in a format applicant tracking systems read. Build and preview free. A clean download is {priceLabel}.</p>
 
       <ol className="mt-8 flex flex-wrap gap-2" aria-label="Progress">
         {STEPS.map((t, i) => (
@@ -292,16 +257,13 @@ const ResumeStudio = () => {
           )}
 
           <div className="mt-6 rounded-2xl border border-violet-light/40 bg-violet/10 p-5">
-            <h3 className="text-lg font-bold">Layout</h3>
-            <p className="mt-1 text-sm text-soft">The app suggests <b>{LAYOUTS.find((l) => l.id === recommended)?.name}</b> for you. It starts from your background, then shifts toward layouts that worked for other applicants as outcomes are reported.</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {LAYOUTS.map((l) => (
-                <button key={l.id} onClick={() => patch({ layout: l.id })} aria-pressed={layout === l.id} className={`rounded-xl border p-3 text-left text-sm ${layout === l.id ? "border-violet-light bg-violet/30" : "border-line"}`}>
-                  <b>{l.name}</b>{l.id === recommended && <span className="ml-2 text-xs text-emerald-300">suggested</span>}
-                  <span className="mt-1 block text-xs text-soft">{l.note}</span>
-                </button>
-              ))}
-            </div>
+            <h3 className="text-lg font-bold">ATS check</h3>
+            <p className="mt-1 text-sm text-soft">Most employers run résumés through an applicant tracking system (ATS) before a person reads them. Your résumé uses one plain format that those systems read reliably: one column, standard headings, real text.</p>
+            <ul className="mt-3 space-y-1.5 text-sm">
+              {ats.map((c) => <li key={c.text} className={`flex gap-2 ${c.ok ? "text-emerald-300" : "text-amber-200"}`}>{c.ok ? <Check className="mt-0.5 h-4 w-4 shrink-0" /> : <span className="mt-0.5 h-4 w-4 shrink-0 text-center">!</span>}{c.text}</li>)}
+            </ul>
+            <button className="mt-3 text-sm text-violet-light underline" onClick={() => setShowAts(!showAts)}>{showAts ? "Hide" : "Show"} exactly what an ATS will read</button>
+            {showAts && <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap rounded-xl bg-black/40 p-3 text-xs">{atsText(r) || "Fill in your details to see this."}</pre>}
           </div>
           <Nav back={1} next={() => go(3)} nextLabel="Preview and get it" />
         </section>
@@ -310,16 +272,16 @@ const ResumeStudio = () => {
       {s.step === 3 && (
         <section className="mt-8">
           <h2 className="text-2xl font-bold">{unlocked ? "Your résumé is ready" : "Your résumé preview"}</h2>
-          <div className="mt-4 overflow-x-auto"><Doc r={r} layout={layout} locked={!unlocked} /></div>
+          <div className="mt-4 overflow-x-auto"><Doc r={r} locked={!unlocked} /></div>
 
           {unlocked ? (
             <div className="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-5">
               <p className="font-semibold text-emerald-200">Unlocked. Download as many versions as you like.</p>
-              <button onClick={() => window.print()} className="btn-primary mt-3"><Printer className="h-4 w-4" /> Download PDF</button>
-              <p className="mt-2 text-xs text-soft">In the print window, choose "Save as PDF" as the printer and turn off headers and footers.</p>
+              <button onClick={() => void downloadResumePdf(r)} className="btn-primary mt-3"><Download className="h-4 w-4" /> Download ATS-ready PDF</button>
+              <p className="mt-2 text-xs text-soft">A real text PDF: an employer system can read and search every word.</p>
               <div className="mt-5 border-t border-line pt-4">
                 <p className="text-sm font-semibold">After you apply: did this résumé get you an interview?</p>
-                {s.reported ? <p className="mt-1 text-sm text-soft">Thank you. That helps the app learn which layouts work.</p> : (
+                {s.reported ? <p className="mt-1 text-sm text-soft">Thank you. That helps me see what is working.</p> : (
                   <div className="mt-2 flex gap-2"><button onClick={() => report(true)} className="rounded-full border border-line px-4 py-1.5 text-sm">Yes</button><button onClick={() => report(false)} className="rounded-full border border-line px-4 py-1.5 text-sm">Not yet</button></div>
                 )}
               </div>
@@ -362,7 +324,7 @@ const ResumeStudio = () => {
             </div>
           )}
           <Nav back={2} />
-          <p className="mt-6 text-xs text-soft">Questions? <Link to="/contact" className="underline">Contact me</Link>. Your résumé text ({resumeText(r).length} characters) stays in your browser unless you download or share it yourself.</p>
+          <p className="mt-6 text-xs text-soft">Questions? <Link to="/contact" className="underline">Contact me</Link>. Your résumé text stays in your browser unless you download or share it yourself.</p>
         </section>
       )}
     </div>
