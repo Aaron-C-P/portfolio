@@ -155,11 +155,41 @@ for (const t of TEMPLATES) {
   assert.ok(["helvetica", "times"].includes(t.font), `${t.id}: standard font`);
 }
 assert.equal(templateById("nope").id, "classic");
-assert.equal(isTemplateId("bold"), true);
+assert.equal(isTemplateId("geo"), true);
 assert.equal(isTemplateId("<script>"), false);
 // the endpoint honours the template and ignores unknown ids
-assert.equal((await run(pdf, { body: { code: makeCode("7001"), resume, template: "bold" } })).status, 200);
+assert.equal((await run(pdf, { body: { code: makeCode("7001"), resume, template: "geo" } })).status, 200);
 assert.equal((await run(pdf, { body: { code: makeCode("7002"), resume, template: "../../etc/passwd" } })).status, 200);
 ok("all 10 templates build real-text PDFs with every line, no images, standard fonts; bad template ids fall back");
+
+// 11. The art: personal, different per template, vector only, and never in the way of the words
+const { artFor } = await import("../../src/lib/resumeArt.js");
+const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+const contrast = (a, b) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+const sig = (name, t) => JSON.stringify(artFor(t, name));
+const artTs = TEMPLATES.filter((t) => t.art);
+assert.equal(TEMPLATES.filter((t) => !t.art).length, 1, "exactly one plain template");
+assert.equal(new Set(artTs.map((t) => t.art)).size, artTs.length, "every template has its own art style");
+for (const t of artTs) {
+  assert.equal(sig("Jordan Brown", t), sig("Jordan Brown", t), `${t.id}: same name, same art`);
+  assert.notEqual(sig("Jordan Brown", t), sig("Alex Morgan", t), `${t.id}: different name, different art`);
+  for (const s of artFor(t, "Jordan Brown")) {
+    assert.ok(s.k === "poly" || s.k === "circle", `${t.id}: vector shapes only`);
+    if (s.edge) continue; // the edge strip sits in the margin, away from the text
+    if (t.band && s.pts && s.pts[1] <= t.bandH) {
+      assert.ok(contrast(s.c, [255, 255, 255]) >= 4.5 || s.c === t.pal[2], `${t.id}: white text readable on the band`);
+    } else if (!t.band) {
+      assert.ok(contrast(s.c, [0, 0, 0]) >= 7, `${t.id}: black text readable over the art (${s.c})`);
+    }
+  }
+  assert.ok(contrast(t.accent, [255, 255, 255]) >= 4.5 || t.headingColor === "black", `${t.id}: heading colour readable`);
+}
+assert.ok(contrast(templateById("midnight").pal[0], [255, 255, 255]) >= 12, "band is dark");
+// the art survives into the real PDF as drawing commands, still with no images and with the text intact
+const art = buildResumePdf(jsPDF, sanitizeResume(resume), "mosaic", false).output();
+assert.ok(/ re\b| f\b| l\b/.test(art) && !/\/Subtype\s*\/Image/.test(art));
+const midnight = buildResumePdf(jsPDF, sanitizeResume(resume), "midnight", false).output();
+assert.ok(/\n1\.? g\n/.test(midnight), "white header text on the band");
+ok("art is personal, different per template, vector only, and keeps the text readable");
 
 console.log(`\n${n} groups passed`);

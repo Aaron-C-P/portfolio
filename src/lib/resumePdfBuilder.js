@@ -3,6 +3,7 @@
 // with a standard built-in font, so every word stays selectable and readable by an applicant tracking system.
 import { resumeBlocks } from "./resumeBlocks.js";
 import { templateById } from "./resumeTemplates.js";
+import { artFor } from "./resumeArt.js";
 
 export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true) {
   const t = templateById(templateId);
@@ -13,9 +14,32 @@ export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true
   const maxW = W - M * 2;
   let y = M;
 
+  // The art is vector shapes only (no images), drawn first so the text sits on top of it.
+  const art = artFor(t, r.name);
+  const paint = (shapes) => {
+    for (const s of shapes) {
+      const style = s.fill ? "F" : "S";
+      if (s.fill) doc.setFillColor(...s.c);
+      else {
+        doc.setDrawColor(...s.c);
+        doc.setLineWidth(s.w || 1);
+      }
+      if (s.k === "circle") doc.circle(s.x, s.y, s.r, style);
+      else {
+        const rel = [];
+        for (let i = 2; i < s.pts.length; i += 2) rel.push([s.pts[i] - s.pts[i - 2], s.pts[i + 1] - s.pts[i - 1]]);
+        doc.lines(rel, s.pts[0], s.pts[1], [1, 1], style, !!s.fill);
+      }
+    }
+  };
+  paint(art);
+  let inBand = t.band; // header text is white while we are on the dark band
+  if (t.band) y = 44;
+
   const ensure = (need) => {
     if (y + need > H - M) {
       doc.addPage();
+      paint(art.filter((s) => s.edge));
       y = M;
     }
   };
@@ -23,7 +47,7 @@ export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true
     doc.setFont(t.font, style);
     doc.setFontSize(size);
   };
-  const black = () => doc.setTextColor(0, 0, 0);
+  const black = () => (inBand ? doc.setTextColor(255, 255, 255) : doc.setTextColor(0, 0, 0));
   const accent = () => doc.setTextColor(...t.accent);
   const put = (text, x, yy, align) => doc.text(text, align === "center" ? W / 2 : x, yy, align === "center" ? { align: "center" } : undefined);
 
@@ -53,6 +77,10 @@ export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true
       }
     } else if (b.kind === "heading") {
       font("bold", t.headingSize);
+      if (inBand) {
+        inBand = false;
+        y = Math.max(y, t.bandH - t.gap + 4);
+      }
       ensure(t.gap + t.headingSize + 16);
       y += t.gap;
       if (t.headingColor === "accent") accent();

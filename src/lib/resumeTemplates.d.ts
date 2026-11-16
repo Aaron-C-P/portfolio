@@ -18,6 +18,13 @@ export interface Template {
   /** Extra space after each line, in points. */
   lineGap: number;
   bullet: string;
+  /** Name of the generated art style in resumeArt.js; empty for none. */
+  art: string;
+  /** Colours the art draws from. */
+  pal: number[][];
+  /** True when the header is printed in white on a dark band. */
+  band: boolean;
+  bandH: number;
 }
 
 export const TEMPLATES: Template[];
