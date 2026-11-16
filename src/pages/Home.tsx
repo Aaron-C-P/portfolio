@@ -185,17 +185,14 @@ const Home = () => {
 
       {season.key === "christmas" && <ChristmasBanner />}
 
-      <section aria-label="SiteForge" className="mx-auto max-w-6xl px-5 pt-4">
-        <Link to="/siteforge" className="group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-panel px-6 py-5 transition hover:border-amber-300">
-          <span className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-300 text-ink"><Sparkles className="h-5 w-5" aria-hidden="true" /></span>
-            <span>
-              <span className="block text-lg font-bold">New: SiteForge, a website you can edit yourself</span>
-              <span className="block text-sm text-soft">AI builds it, you change it any time, cancel and it goes offline. Join the waitlist.</span>
-            </span>
+      <section aria-label="An idea in development" className="mx-auto max-w-6xl px-5 pt-4">
+        <div className="flex items-center gap-4 rounded-3xl border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-panel px-6 py-5">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-300 text-ink"><Sparkles className="h-5 w-5" aria-hidden="true" /></span>
+          <span>
+            <span className="block text-lg font-bold">SiteForge: an idea in development</span>
+            <span className="block text-sm text-soft">A website builder where owners edit their own site. Not ready yet, and not open to sign-ups. I am still working on it.</span>
           </span>
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-cream">See how it works <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-        </Link>
+        </div>
       </section>
 
       <section aria-label="Watch the brand video" className="mx-auto max-w-6xl px-5 pt-8">

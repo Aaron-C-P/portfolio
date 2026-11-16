@@ -19,7 +19,6 @@ const nav = [
   { to: "/feed", label: "Feed" },
   { to: "/assignment-help", label: "Student Help" },
   { to: "/watch", label: "Watch" },
-  { to: "/siteforge", label: "SiteForge" },
   { to: "/about", label: "About" },
 ];
 

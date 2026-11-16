@@ -89,30 +89,6 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    slug: "siteforge",
-    name: "SiteForge",
-    kind: "AI website builder and CMS platform",
-    status: "In progress",
-    oneLiner: "Clients describe their business, AI builds the site, and they edit it themselves on a monthly plan.",
-    purpose: "Give small businesses a website they can change without calling a developer, and give me income that does not depend on daily hours.",
-    problem: "One-off website builds leave clients dependent on the developer for every small change, and leave the developer with no recurring income.",
-    solution:
-      "A multi-client platform: accounts with a free trial, an AI site builder with a template fallback, tap-to-edit with version history, publish and take-offline controls, bucket storage with a link per client, per-plan AI limits, subscription billing hooks and an admin panel.",
-    role: "Product design, architecture and implementation.",
-    tech: ["Node.js", "Express", "SQLite", "S3 / Cloudflare R2", "Claude API", "Lemon Squeezy"],
-    verified: [
-      "Automated tests pass (6 of 6)",
-      "End-to-end run on my computer: sign up, build a site, publish it, view it live, take it offline, see it in the admin overview",
-      "Real AI output, the cloud bucket, live payments and a public domain are not tested yet",
-    ],
-    conceptual: ["Clients' own domains", "Multi-page sites", "Contact forms and booking requests inside each site"],
-    image: null,
-    live: null,
-    repo: null,
-    featured: true,
-    services: ["managed-website", "web-development", "custom-applications"],
-  },
-  {
     slug: "chef-hudsons-christmas-cakes",
     name: "Chef Hudson's Christmas Cakes",
     kind: "Ordering platform for a local baker",
@@ -794,14 +770,6 @@ export const services: Service[] = [
     forWhom: "Teams doing the same copy-paste and checking every day.",
     outcomes: ["Fewer errors from manual entry", "Faster turnaround", "Processes that can be tested"],
     examples: ["chef-hudsons-christmas-cakes", "bns-lunch-pre-order", "vectra", "qr-data-lab"],
-  },
-  {
-    slug: "managed-website",
-    title: "A website you can edit yourself",
-    promise: "Build your site with AI, get your own link, and change it any time without calling a developer. Cancel the plan and it goes offline.",
-    forWhom: "Small businesses and creators who want a site that stays theirs and does not need a developer for every small change.",
-    outcomes: ["Your own link and your own domain", "Edit text, photos and pages whenever you like", "Simple monthly plan, switch it off when you want"],
-    examples: ["web-development"],
   },
   {
     slug: "technical-support",
