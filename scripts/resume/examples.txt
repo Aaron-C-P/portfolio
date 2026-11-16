@@ -1,0 +1,52 @@
+# label|bullet.  strong = specific, action-led, shows result.  weak = vague, duty-style, no result.
+# Written by hand as a small starter set. Replace/extend with real, reviewed bullets to improve the model.
+strong|Reduced order errors by 40% by rebuilding the intake form and adding duplicate checks
+strong|Built a Google Sheets dashboard that cut weekly reporting time from 5 hours to 30 minutes
+strong|Resolved 25+ customer tickets per day with a 96% satisfaction score
+strong|Led a team of 4 volunteers to run 12 workshops for 300 small business owners
+strong|Designed a React ordering site that handled 120 orders in one weekend without downtime
+strong|Increased social media engagement by 65% in three months through a weekly content plan
+strong|Automated invoice follow-ups with Apps Script, recovering $2,400 in late payments
+strong|Trained 18 new staff on the point-of-sale system, reducing onboarding from 2 weeks to 4 days
+strong|Diagnosed and fixed network faults for 40 users, cutting repeat incidents by 30%
+strong|Managed a $5,000 budget and delivered the project two weeks early
+strong|Wrote documentation for 15 internal tools, halving questions to the support team
+strong|Analysed 3 years of sales data in Power BI and identified the 5 best-selling products
+strong|Improved page load time by 55% by compressing images and removing unused code
+strong|Coordinated deliveries for 60 customers weekly with 99% on-time completion
+strong|Launched a booking system that filled 90% of available weekend slots in the first month
+strong|Cut stock write-offs by 22% by introducing a weekly count and reorder rule
+strong|Presented findings to 30 stakeholders and secured approval for a $12,000 upgrade
+strong|Mentored 6 students to pass CSEC Mathematics, with 5 earning Grade I or II
+strong|Implemented access rules for 3 user roles, preventing unauthorised data changes
+strong|Tested 400 order scenarios with an automated suite and caught 9 defects before release
+strong|Negotiated supplier prices down 15% across 8 recurring purchases
+strong|Supported 200 customers by phone and chat, resolving 80% on first contact
+strong|Migrated 5,000 records from spreadsheets to a database with zero data loss
+strong|Organised a youth event for 150 attendees and raised $3,200 for local charities
+strong|Streamlined the returns process, shortening average handling time by 35%
+weak|Responsible for helping customers
+weak|Duties included answering phones and other tasks
+weak|Helped with various projects at the company
+weak|Worked on the website
+weak|Was in charge of the team
+weak|Assisted with data entry
+weak|Good communication skills and a team player
+weak|Handled many different things every day
+weak|Participated in meetings and discussions
+weak|Responsible for the daily operations of the office
+weak|Did general computer work
+weak|Involved in customer service
+weak|Hard working and always on time
+weak|Worked with a team to get things done
+weak|Helped out with social media
+weak|Tasked with various administrative duties
+weak|In charge of cleaning and organising
+weak|Used Microsoft Word and Excel
+weak|Dealt with problems when they came up
+weak|Responsible for stock
+weak|Helped the manager with whatever was needed
+weak|Worked on a school project about computers
+weak|Part of the sales team
+weak|Took care of customers
+weak|Duties: filing, copying, and other work

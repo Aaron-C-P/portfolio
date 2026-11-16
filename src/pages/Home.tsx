@@ -177,6 +177,20 @@ const Home = () => {
         </div>
       </section>
 
+      <section aria-label="Résumé Studio" className="mx-auto max-w-6xl px-5 pt-8">
+        <Link to="/resume-builder" className="group grid items-center gap-5 rounded-3xl border border-violet-light/50 bg-gradient-to-br from-violet/40 via-panel to-panel p-6 transition hover:border-violet-light md:grid-cols-[1fr_auto] md:p-8">
+          <span>
+            <span className="font-hand text-2xl text-violet-light">New app</span>
+            <span className="mt-1 block text-2xl font-bold md:text-3xl">Résumé Studio: a résumé built for the exact job.</span>
+            <span className="mt-2 block text-soft">Paste the job posting, add your details, and see how well you match and what to sharpen. Build and preview free. The clean PDF is $10.</span>
+            <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
+              <span>✓ Match score against the job</span><span>✓ Bullet-by-bullet feedback</span><span>✓ Layout that fits you</span>
+            </span>
+          </span>
+          <span className="btn-primary justify-self-start whitespace-nowrap">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+        </Link>
+      </section>
+
       <HomeDoors />
 
       <ServicesShowcase />

@@ -13,6 +13,7 @@ const routes: Route[] = [
   { path: "/work/becoming", label: "Becoming", test: /\bbecoming\b/ },
   { path: "/work/jamoment", label: "Jamoment", test: /\bjamoment\b/ },
   { path: "/work/qr-data-lab", label: "QR Data Lab", test: /\bqr\b/ },
+  { path: "/resume-builder", label: "Résumé Studio, which builds and checks a résumé for $10", test: /(resume|résumé|cv\b|job application|cover)/ },
   { path: "/watch", label: "the 30-second brand video", test: /(\bvideo\b|\bad\b|advert|watch)/ },
   { path: "/book", label: "the booking page", test: /(\bbook\b|booking|schedule|appointment|meeting|\bcall\b)/ },
   { path: "/pay", label: "the payment page", test: /(\bpay\b|payment|invoice|bank transfer|deposit)/ },
