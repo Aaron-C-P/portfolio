@@ -37,6 +37,7 @@ const { makeCode, verifyCode } = await import("../../api/_resumeCodes.js");
 const { buildResumePdf } = await import("../../src/lib/resumePdfBuilder.js");
 const { resumeBlocks, sanitizeResume } = await import("../../src/lib/resumeBlocks.js");
 const { jsPDF } = await import("jspdf");
+const { TEMPLATES, templateById, isTemplateId } = await import("../../src/lib/resumeTemplates.js");
 
 let n = 0;
 const run = async (handler, { method = "POST", raw, headers = {}, body }) => {
@@ -84,7 +85,7 @@ assert.equal(r.status, 200);
 assert.equal(r.headers["content-type"], "application/pdf");
 assert.equal(r.headers["cache-control"], "no-store");
 assert.ok(r.bytes.subarray(0, 5).toString() === "%PDF-");
-const plain = buildResumePdf(jsPDF, sanitizeResume(resume), false).output();
+const plain = buildResumePdf(jsPDF, sanitizeResume(resume), "classic", false).output();
 const lines = [...plain.matchAll(/\((.*?)(?<!\\)\)\s*Tj/g)].map((m) => m[1]);
 for (const b of resumeBlocks(resume)) assert.ok(lines.some((l) => l.includes(b.text.slice(0, 20))), `missing in PDF text: ${b.text}`);
 assert.ok(!/\/Subtype\s*\/Image/.test(plain), "no images");
@@ -138,5 +139,27 @@ ok("oversized or malformed résumé input is trimmed safely");
 process.env.RESUME_CODES = "RS-HAND1";
 assert.equal((await verifyCode("rs-hand1")).ok, true);
 ok("manually issued codes work too");
+
+// 10. Every template: real text, no images, standard fonts, same words, sensible length
+const long = { ...resume, experience: [...resume.experience, ...Array(3).fill(resume.experience[0])] };
+assert.equal(TEMPLATES.length, 10);
+assert.equal(new Set(TEMPLATES.map((t) => t.id)).size, 10, "unique ids");
+for (const t of TEMPLATES) {
+  const raw = buildResumePdf(jsPDF, sanitizeResume(long), t.id, false);
+  const out = raw.output();
+  const got = [...out.matchAll(/\((.*?)(?<!\\)\)\s*Tj/g)].map((m) => m[1]);
+  for (const b of resumeBlocks(long)) assert.ok(got.some((l) => l.includes(b.text.slice(0, 20))), `${t.id}: missing "${b.text}"`);
+  assert.ok(!/\/Subtype\s*\/Image/.test(out), `${t.id}: no images`);
+  assert.ok(raw.getNumberOfPages() <= 2, `${t.id}: pages ${raw.getNumberOfPages()}`);
+  assert.ok(t.bodySize >= 9 && t.bodySize <= 12, `${t.id}: readable size`);
+  assert.ok(["helvetica", "times"].includes(t.font), `${t.id}: standard font`);
+}
+assert.equal(templateById("nope").id, "classic");
+assert.equal(isTemplateId("bold"), true);
+assert.equal(isTemplateId("<script>"), false);
+// the endpoint honours the template and ignores unknown ids
+assert.equal((await run(pdf, { body: { code: makeCode("7001"), resume, template: "bold" } })).status, 200);
+assert.equal((await run(pdf, { body: { code: makeCode("7002"), resume, template: "../../etc/passwd" } })).status, 200);
+ok("all 10 templates build real-text PDFs with every line, no images, standard fonts; bad template ids fall back");
 
 console.log(`\n${n} groups passed`);

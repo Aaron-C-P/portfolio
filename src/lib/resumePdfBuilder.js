@@ -1,9 +1,11 @@
-// Draws the ATS résumé as a real text PDF. Runs on the server only (api/resume-pdf.js), after a paid code is
-// verified, so the PDF cannot be produced from the browser without paying. jsPDF draws text with a standard
-// built-in font, so every word stays selectable and readable by an applicant tracking system.
+// Draws the ATS résumé as a real text PDF in the chosen template. Runs on the server only (api/resume-pdf.js),
+// after a paid code is verified, so the PDF cannot be produced from the browser without paying. jsPDF draws text
+// with a standard built-in font, so every word stays selectable and readable by an applicant tracking system.
 import { resumeBlocks } from "./resumeBlocks.js";
+import { templateById } from "./resumeTemplates.js";
 
-export function buildResumePdf(jsPDF, r, compress = true) {
+export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true) {
+  const t = templateById(templateId);
   const doc = new jsPDF({ unit: "pt", format: "letter", compress });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
@@ -18,69 +20,83 @@ export function buildResumePdf(jsPDF, r, compress = true) {
     }
   };
   const font = (style, size) => {
-    doc.setFont("helvetica", style);
+    doc.setFont(t.font, style);
     doc.setFontSize(size);
   };
+  const black = () => doc.setTextColor(0, 0, 0);
+  const accent = () => doc.setTextColor(...t.accent);
+  const put = (text, x, yy, align) => doc.text(text, align === "center" ? W / 2 : x, yy, align === "center" ? { align: "center" } : undefined);
 
   doc.setProperties({ title: `${r.name || "Resume"} - Resume`, author: r.name || undefined, subject: "Resume", creator: "Resume Studio" });
-  doc.setTextColor(0, 0, 0);
+  black();
 
   for (const b of resumeBlocks(r)) {
     if (b.kind === "name") {
-      font("bold", 20);
-      ensure(26);
-      doc.text(b.text, M, (y += 20));
+      font("bold", t.nameSize);
+      ensure(t.nameSize + 8);
+      black();
+      put(b.text, M, (y += t.nameSize), t.nameAlign);
       y += 4;
     } else if (b.kind === "title") {
-      font("normal", 12);
-      ensure(16);
-      doc.text(b.text, M, (y += 12));
+      font("normal", t.titleSize);
+      ensure(t.titleSize + 4);
+      black();
+      put(b.text, M, (y += t.titleSize), t.nameAlign);
       y += 3;
     } else if (b.kind === "contact") {
-      font("normal", 10);
+      font("normal", t.bodySize - 0.5);
+      black();
       for (const line of doc.splitTextToSize(b.text, maxW)) {
         ensure(14);
-        doc.text(line, M, (y += 10));
+        put(line, M, (y += t.bodySize - 0.5), t.nameAlign);
         y += 3;
       }
     } else if (b.kind === "heading") {
-      font("bold", 11);
-      ensure(34);
-      y += 12;
-      doc.text(b.text, M, (y += 11));
-      doc.setDrawColor(0);
-      doc.setLineWidth(0.6);
-      doc.line(M, y + 3, W - M, y + 3);
+      font("bold", t.headingSize);
+      ensure(t.gap + t.headingSize + 16);
+      y += t.gap;
+      if (t.headingColor === "accent") accent();
+      else black();
+      put(b.text, M, (y += t.headingSize), t.headingAlign);
+      if (t.rule > 0) {
+        doc.setDrawColor(...(t.headingColor === "accent" ? t.accent : [0, 0, 0]));
+        doc.setLineWidth(t.rule);
+        doc.line(M, y + 3, W - M, y + 3);
+      }
       y += 8;
+      black();
     } else if (b.kind === "role") {
-      font("bold", 10.5);
+      font("bold", t.bodySize);
       ensure(30);
+      black();
       const dateW = b.aside ? doc.getTextWidth(b.aside) + 12 : 0;
       doc.splitTextToSize(b.text, maxW - dateW).forEach((line, i) => {
         ensure(14);
-        doc.text(line, M, (y += 10.5));
+        doc.text(line, M, (y += t.bodySize));
         if (i === 0 && b.aside) {
-          font("normal", 10.5);
+          font("normal", t.bodySize);
           doc.text(b.aside, W - M, y, { align: "right" });
-          font("bold", 10.5);
+          font("bold", t.bodySize);
         }
-        y += 3;
+        y += t.lineGap + 0.5;
       });
     } else if (b.kind === "bullet") {
-      font("normal", 10.5);
+      font("normal", t.bodySize);
+      black();
       doc.splitTextToSize(b.text, maxW - 14).forEach((line, i) => {
         ensure(14);
-        y += 10.5;
-        if (i === 0) doc.text("-", M + 3, y);
+        y += t.bodySize;
+        if (i === 0) doc.text(t.bullet, M + 3, y);
         doc.text(line, M + 14, y);
-        y += 2.5;
+        y += t.lineGap;
       });
     } else {
-      font("normal", 10.5);
+      font("normal", t.bodySize);
+      black();
       for (const line of doc.splitTextToSize(b.text, maxW)) {
         ensure(14);
-        doc.text(line, M, (y += 10.5));
-        y += 2.5;
+        doc.text(line, M, (y += t.bodySize));
+        y += t.lineGap;
       }
     }
   }

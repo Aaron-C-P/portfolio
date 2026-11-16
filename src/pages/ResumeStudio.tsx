@@ -8,10 +8,14 @@ import { priceLabel, studio } from "@/data/resume";
 import {
   basicChecks, bulletTips, emptyResume, exampleResume, extractKeywords, matchScore, type Resume,
 } from "@/lib/resumeEngine";
-import { atsChecks, atsText, resumeBlocks } from "@/lib/resumeFormat";
+import { atsChecks, atsText } from "@/lib/resumeFormat";
+import { Fit, ResumeDoc } from "@/components/studio/ResumeDoc";
+import { TemplateGallery } from "@/components/studio/TemplateGallery";
+import { samples } from "@/data/resumeSamples";
+import { templateById } from "@/lib/resumeTemplates.js";
 
 const KEY = "resume-studio-v1";
-const STEPS = ["The job", "Your details", "Improve it", "Get it"] as const;
+const STEPS = ["The job", "Your details", "Improve it", "Template", "Get it"] as const;
 const field = "mt-1 w-full rounded-xl border border-line bg-raise px-3 py-2 text-sm";
 
 interface Saved {
@@ -22,10 +26,11 @@ interface Saved {
   ref: string;
   ordered: boolean;
   reported: boolean;
+  template: string;
 }
 
 const newRef = () => `RS-${Array.from({ length: 5 }, () => "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 31)]).join("")}`;
-const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, code: "", ref: newRef(), ordered: false, reported: false });
+const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, code: "", ref: newRef(), ordered: false, reported: false, template: "classic" });
 const load = (): Saved => {
   try {
     const raw = localStorage.getItem(KEY);
@@ -33,35 +38,6 @@ const load = (): Saved => {
   } catch {
     return initial();
   }
-};
-
-/**
- * On-screen preview of the single ATS format. Until the résumé is paid for, the body text is NOT in the page at all:
- * it is drawn as grey bars, so copying, "save as" or a screenshot gets structure only. The real file is built on the server.
- */
-const Doc = ({ r, locked }: { r: Resume; locked: boolean }) => {
-  const bar = (key: number, len: number, indent = false) => (
-    <div key={key} aria-hidden="true" className={`my-1.5 h-2.5 rounded-full bg-black/15 ${indent ? "ml-4" : ""}`} style={{ width: `${Math.min(96, 24 + len * 0.9)}%` }} />
-  );
-  return (
-    <div id="resume-preview" onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative mx-auto w-full max-w-[794px] bg-white p-8 text-black shadow-xl ${locked ? "select-none" : ""}`} style={{ minHeight: 560, fontFamily: "Helvetica, Arial, sans-serif" }}>
-      {resumeBlocks(r).map((b, i) =>
-        b.kind === "name" ? <h2 key={i} className="text-2xl font-bold">{b.text}</h2>
-        : b.kind === "heading" ? <h3 key={i} className="mb-1 mt-4 border-b border-black pb-0.5 text-xs font-bold">{b.text}</h3>
-        : locked ? bar(i, b.text.length, b.kind === "bullet")
-        : b.kind === "title" ? <p key={i} className="text-sm">{b.text}</p>
-        : b.kind === "contact" ? <p key={i} className="mt-0.5 text-xs">{b.text}</p>
-        : b.kind === "role" ? <p key={i} className="mt-2 flex justify-between gap-3 text-sm font-bold"><span>{b.text}</span>{b.aside && <span className="shrink-0 font-normal">{b.aside}</span>}</p>
-        : b.kind === "bullet" ? <p key={i} className="ml-4 text-sm" style={{ textIndent: "-0.9rem" }}>- {b.text}</p>
-        : <p key={i} className="text-sm">{b.text}</p>,
-      )}
-      {locked && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span style={{ transform: "rotate(-30deg)" }} className="select-none text-5xl font-black tracking-widest text-black/15">PREVIEW - UNPAID</span>
-        </div>
-      )}
-    </div>
-  );
 };
 
 const Bar = ({ value, label }: { value: number; label: string }) => (
@@ -96,6 +72,8 @@ const ResumeStudio = () => {
   const checks = useMemo(() => basicChecks(r), [r]);
   const ats = useMemo(() => atsChecks(r), [r]);
   const [showAts, setShowAts] = useState(false);
+  const [sampleId, setSampleId] = useState(samples[0].id);
+  const sample = samples.find((x) => x.id === sampleId) ?? samples[0];
   const unlocked = s.code !== "";
   const avgBullet = tips.length ? Math.round((tips.reduce((a, t) => a + t.strength, 0) / tips.length) * 100) : 0;
 
@@ -103,7 +81,7 @@ const ResumeStudio = () => {
     setBusy(true);
     setMsg("");
     try {
-      const res = await fetch("/api/resume-pdf", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: s.code, resume: r }) });
+      const res = await fetch("/api/resume-pdf", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: s.code, resume: r, template: s.template }) });
       if (!res.ok || !(res.headers.get("content-type") || "").includes("pdf")) {
         const why = res.status === 401 ? ((await res.json().catch(() => ({}))) as { reason?: string }).reason : res.status === 429 ? "limit" : "error";
         if (why === "expired" || why === "revoked" || why === "invalid") patch({ code: "" });
@@ -139,7 +117,7 @@ const ResumeStudio = () => {
     data.set("name", lead.name);
     data.set("email", lead.email);
     data.set("topic", "Résumé Studio order");
-    data.set("message", `Order ${s.ref}. Phone: ${lead.phone || "not given"}. Target role: ${r.title || "not given"}. Keyword match: ${match.score}%. Price: ${priceLabel}.`);
+    data.set("message", `Order ${s.ref}. Phone: ${lead.phone || "not given"}. Target role: ${r.title || "not given"}. Keyword match: ${match.score}%. Template: ${s.template}. Price: ${priceLabel}.`);
     await collect("builder", data);
     setBusy(false);
     patch({ ordered: true });
@@ -203,6 +181,18 @@ const ResumeStudio = () => {
           {keywords.length > 0 && <p className="mt-3 text-sm text-soft">Found {keywords.length} key terms, such as: {keywords.slice(0, 6).map((k) => k.term).join(", ")}.</p>}
           <div className="mt-2 text-sm"><button className="text-violet-light underline" onClick={() => patch({ resume: exampleResume() })}>Fill in an example résumé so I can see how it works</button></div>
           <Nav next={() => go(1)} />
+          <div className="mt-10 rounded-3xl border border-line bg-panel p-5 md:p-6">
+            <h3 className="text-xl font-bold">Sample résumés and 10 templates</h3>
+            <p className="mt-1 text-sm text-soft">Every template is built for applicant tracking systems: one column, real text, standard fonts. They differ in look, so pick the one that suits the job. These samples use made-up people.</p>
+            <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Sample résumés">
+              {samples.map((x) => (
+                <button key={x.id} role="tab" aria-selected={x.id === sample.id} onClick={() => setSampleId(x.id)} className={`rounded-full border px-4 py-1.5 text-sm ${x.id === sample.id ? "border-violet-light bg-violet/30 text-cream" : "border-line text-soft"}`}>{x.label}</button>
+              ))}
+            </div>
+            <div className="mt-4"><TemplateGallery r={sample.resume} selected={s.template} onSelect={(id) => patch({ template: id })} locked={false} /></div>
+            <p className="mt-3 text-sm text-soft">Selected: <b className="text-fg">{templateById(s.template).name}</b>. You can change it any time before you download.</p>
+            <button className="mt-2 text-sm text-violet-light underline" onClick={() => patch({ resume: sample.resume })}>Start from this sample ({sample.label}) and edit it into yours</button>
+          </div>
         </section>
       )}
 
@@ -290,21 +280,31 @@ const ResumeStudio = () => {
 
           <div className="mt-6 rounded-2xl border border-violet-light/40 bg-violet/10 p-5">
             <h3 className="text-lg font-bold">ATS check</h3>
-            <p className="mt-1 text-sm text-soft">Most employers run résumés through an applicant tracking system (ATS) before a person reads them. Your résumé uses one plain format that those systems read reliably: one column, standard headings, real text.</p>
+            <p className="mt-1 text-sm text-soft">Most employers run résumés through an applicant tracking system (ATS) before a person reads them. Every template uses the same plain structure that those systems read reliably: one column, standard headings, real text.</p>
             <ul className="mt-3 space-y-1.5 text-sm">
               {ats.map((c) => <li key={c.text} className={`flex gap-2 ${c.ok ? "text-emerald-300" : "text-amber-200"}`}>{c.ok ? <Check className="mt-0.5 h-4 w-4 shrink-0" /> : <span className="mt-0.5 h-4 w-4 shrink-0 text-center">!</span>}{c.text}</li>)}
             </ul>
             <button className="mt-3 text-sm text-violet-light underline" onClick={() => setShowAts(!showAts)}>{showAts ? "Hide" : "Show"} exactly what an ATS will read</button>
             {showAts && <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap rounded-xl bg-black/40 p-3 text-xs">{atsText(r) || "Fill in your details to see this."}</pre>}
           </div>
-          <Nav back={1} next={() => go(3)} nextLabel="Preview and get it" />
+          <Nav back={1} next={() => go(3)} nextLabel="Choose a template" />
         </section>
       )}
 
       {s.step === 3 && (
         <section className="mt-8">
+          <h2 className="text-2xl font-bold">Choose a template</h2>
+          <p className="mt-1 text-soft">All ten read the same way to an applicant tracking system. Pick the look you like. Your text is hidden in these previews until you unlock the download.</p>
+          <div className="mt-5"><TemplateGallery r={r} selected={s.template} onSelect={(id) => patch({ template: id })} locked={!unlocked} /></div>
+          <Nav back={2} next={() => go(4)} nextLabel="Preview and get it" />
+        </section>
+      )}
+
+      {s.step === 4 && (
+        <section className="mt-8">
           <h2 className="text-2xl font-bold">{unlocked ? "Your résumé is ready" : "Your résumé preview"}</h2>
-          <div className="mt-4 overflow-x-auto"><Doc r={r} locked={!unlocked} /></div>
+          <p className="mt-1 text-sm text-soft">Template: <b className="text-fg">{templateById(s.template).name}</b> <button className="ml-2 text-violet-light underline" onClick={() => go(3)}>Change</button></p>
+          <div className="mx-auto mt-4 max-w-[760px] overflow-hidden rounded-lg shadow-xl"><Fit><ResumeDoc id="resume-preview" r={r} templateId={s.template} locked={!unlocked} /></Fit></div>
 
           {unlocked ? (
             <div className="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-5">
@@ -345,7 +345,7 @@ const ResumeStudio = () => {
                     <p className="text-soft">After payment you receive an unlock code by email. Enter it on the right.</p>
                   </div>
                 )}
-                {msg && s.step === 3 && !s.ordered && <p role="alert" className="mt-3 text-sm text-red-300">{msg}</p>}
+                {msg && s.step === 4 && !s.ordered && <p role="alert" className="mt-3 text-sm text-red-300">{msg}</p>}
               </div>
               <div className="rounded-2xl border border-line bg-panel p-5">
                 <h3 className="text-lg font-bold">Already paid?</h3>
@@ -356,7 +356,7 @@ const ResumeStudio = () => {
               </div>
             </div>
           )}
-          <Nav back={2} />
+          <Nav back={3} />
           <p className="mt-6 text-xs text-soft">Questions? <Link to="/contact" className="underline">Contact me</Link>. Your résumé stays in your browser until you download it; it is then sent once to build your PDF and is not stored.</p>
         </section>
       )}

@@ -8,6 +8,7 @@ import { tooMany } from "./_guard.js";
 import { bump } from "./_store.js";
 import { sanitizeResume } from "../src/lib/resumeBlocks.js";
 import { buildResumePdf } from "../src/lib/resumePdfBuilder.js";
+import { isTemplateId } from "../src/lib/resumeTemplates.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -38,7 +39,8 @@ export default async function handler(req, res) {
   try {
     const resume = sanitizeResume(body?.resume);
     if (!resume.name.trim()) return res.status(400).json({ error: "Add your name first." });
-    const doc = buildResumePdf(jsPDF, resume);
+    const template = isTemplateId(body?.template) ? body.template : "classic"; // unknown ids fall back, never throw
+    const doc = buildResumePdf(jsPDF, resume, template);
     const bytes = Buffer.from(doc.output("arraybuffer"));
     const slug = resume.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "resume";
     res.setHeader("Content-Type", "application/pdf");
