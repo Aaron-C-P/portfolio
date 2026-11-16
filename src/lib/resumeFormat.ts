@@ -1,47 +1,13 @@
+import { resumeBlocks } from "./resumeBlocks.js";
 import type { Resume } from "@/lib/resumeEngine";
 
 /**
  * The one résumé format, built for applicant tracking systems (ATS): a single column, standard section
- * headings, real text, plain bullets, no tables, columns, icons, images or text boxes. The same structure
- * feeds the PDF and the "what an ATS reads" view, so what the user sees is what the ATS gets.
+ * headings, real text, plain bullets, no tables, columns, icons, images or text boxes. The blocks come from
+ * resumeBlocks.js, which the server also uses to draw the PDF, so the preview and the PDF always match.
  */
-export interface Block {
-  kind: "name" | "title" | "contact" | "heading" | "role" | "text" | "bullet";
-  text: string;
-  /** Right-aligned text on the same line (dates). Printed as "  |  dates" in the plain-text view. */
-  aside?: string;
-}
-
-const clean = (s: string) => s.replace(/\s+/g, " ").trim();
-
-export function resumeBlocks(r: Resume): Block[] {
-  const out: Block[] = [];
-  if (r.name.trim()) out.push({ kind: "name", text: clean(r.name) });
-  if (r.title.trim()) out.push({ kind: "title", text: clean(r.title) });
-  const contact = [r.email, r.phone, r.location, r.links].map(clean).filter(Boolean).join(" | ");
-  if (contact) out.push({ kind: "contact", text: contact });
-
-  if (r.summary.trim()) out.push({ kind: "heading", text: "PROFESSIONAL SUMMARY" }, { kind: "text", text: clean(r.summary) });
-
-  const jobs = r.experience.filter((j) => j.role.trim());
-  if (jobs.length) {
-    out.push({ kind: "heading", text: "WORK EXPERIENCE" });
-    for (const j of jobs) {
-      out.push({ kind: "role", text: [clean(j.role), clean(j.org)].filter(Boolean).join(", "), aside: clean(j.dates) || undefined });
-      j.bullets.filter((b) => b.trim()).forEach((b) => out.push({ kind: "bullet", text: clean(b) }));
-    }
-  }
-
-  const schools = r.education.filter((s) => s.school.trim());
-  if (schools.length) {
-    out.push({ kind: "heading", text: "EDUCATION" });
-    for (const s of schools) out.push({ kind: "role", text: [clean(s.what), clean(s.school)].filter(Boolean).join(", "), aside: clean(s.dates) || undefined });
-  }
-
-  const skills = r.skills.split(",").map(clean).filter(Boolean);
-  if (skills.length) out.push({ kind: "heading", text: "SKILLS" }, { kind: "text", text: skills.join(", ") });
-  return out;
-}
+export { resumeBlocks };
+export type { Block } from "./resumeBlocks.js";
 
 /** Exactly the text an ATS will extract, in reading order. */
 export const atsText = (r: Resume): string =>

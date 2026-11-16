@@ -7,7 +7,8 @@
 // optional RESUME_VARIANT_ID (only orders for this product variant get a code), optional SITE_URL.
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { makeCode } from "./_resumeCodes.js";
+import { makeCode, maxAgeDays, revokeKey } from "./_resumeCodes.js";
+import { flag, storeReady } from "./_store.js";
 
 export const config = { api: { bodyParser: false } }; // the signature is over the raw bytes
 
@@ -31,7 +32,7 @@ export const validSignature = (raw, signature, secret) => {
 const emailBody = (code, site) =>
   `Thank you for your order.\n\nYour Résumé Studio unlock code is:\n\n    ${code}\n\n` +
   `How to use it:\n1. Open ${site}/resume-builder (use the same browser you built your résumé in).\n2. Go to the last step, "Get it".\n3. Type the code under "Already paid?" and press Unlock.\n\n` +
-  `The code works for the résumé you built, with unlimited edits and downloads. If anything goes wrong, reply to this email and I will sort it out.\n\nAaron Prince`;
+  `The code is personal to you, so please do not share it. It works for ${maxAgeDays()} days, with edits and re-downloads of your résumé. If anything goes wrong, reply to this email and I will sort it out.\n\nAaron Prince`;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -53,6 +54,31 @@ export default async function handler(req, res) {
 
   const name = event?.meta?.event_name;
   const attrs = event?.data?.attributes || {};
+  // A refund switches the code off straight away (needs the Upstash store); otherwise it is flagged for you in the sheet.
+  if (name === "order_refunded" && event?.data?.type === "orders") {
+    const orderId = String(event.data.id);
+    const revoked = storeReady() ? await flag(revokeKey(orderId), maxAgeDays() * 86400 + 86400) : null;
+    try {
+      await fetch(COLLECT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          kind: "builder",
+          cid: `lemon-refund-${orderId}`,
+          fields: {
+            name: String(attrs.user_name || "Résumé Studio buyer").slice(0, 120),
+            email: String(attrs.user_email || "refund@resume.invalid").toLowerCase(),
+            topic: "Résumé Studio REFUND",
+            message: `Refunded order ${orderId}. ${revoked !== null ? "Its code has been switched off automatically." : "Automatic revoking is not set up (no Upstash store): this code still works until it expires. Rotate RESUME_CODE_SECRET only if it is being abused."}`,
+          },
+          meta: { page: "/api/resume-webhook" },
+        }),
+      });
+    } catch (err) {
+      console.error("resume-webhook: refund record failed", err);
+    }
+    return res.status(200).json({ ok: true, revoked: revoked !== null });
+  }
   if (name !== "order_created" || event?.data?.type !== "orders") return res.status(200).json({ ignored: true });
   if (attrs.status && attrs.status !== "paid") return res.status(200).json({ ignored: "not paid" });
 

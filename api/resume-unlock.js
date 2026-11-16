@@ -1,31 +1,19 @@
 // Vercel Serverless Function: checks a Résumé Studio unlock code. Lives at /api/resume-unlock.
-// Set RESUME_CODES in Vercel as a comma-separated list of codes you give out after a payment is confirmed,
-// e.g. RESUME_CODES=RS-4F9K2,RS-7M3QD. Remove a code from the list to retire it.
-// The browser never sees the list: it only learns whether the code it sent is valid.
+// The browser only learns whether the code is valid; it cannot read the list or work a code out.
+// A valid code does NOT let the browser make the PDF itself: the PDF is built on the server by /api/resume-pdf,
+// which checks the code again on every download.
 
-import { timingSafeEqual } from "node:crypto";
-import { isDerivedCode } from "./_resumeCodes.js";
+import { verifyCode } from "./_resumeCodes.js";
+import { tooMany } from "./_guard.js";
 
-const same = (a, b) => {
-  const x = Buffer.from(a);
-  const y = Buffer.from(b);
-  return x.length === y.length && timingSafeEqual(x, y);
-};
-
-const tries = new Map(); // best-effort throttle per instance
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
-  const list = (process.env.RESUME_CODES || "").split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
-  if (list.length === 0 && !process.env.RESUME_CODE_SECRET) return res.status(503).json({ error: "Unlock is not configured" });
-
-  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
-  const now = Date.now();
-  const recent = (tries.get(ip) || []).filter((t) => now - t < 10 * 60 * 1000);
-  if (recent.length >= 8) return res.status(429).json({ error: "Too many tries. Wait a few minutes." });
-  tries.set(ip, [...recent, now]);
+  if (!process.env.RESUME_CODES && !process.env.RESUME_CODE_SECRET) return res.status(503).json({ error: "Unlock is not configured" });
+  if (await tooMany(req, "unlock", 8, 600)) return res.status(429).json({ error: "Too many tries. Wait a few minutes." });
 
   let body = req.body;
   if (typeof body === "string") {
@@ -35,7 +23,7 @@ export default async function handler(req, res) {
       body = {};
     }
   }
-  const code = typeof body?.code === "string" ? body.code.trim().toUpperCase().slice(0, 40) : "";
-  const ok = code.length > 0 && (list.some((c) => same(c, code)) || isDerivedCode(code));
-  return res.status(ok ? 200 : 401).json({ ok });
+  const v = await verifyCode(body?.code);
+  if (v.ok) return res.status(200).json({ ok: true });
+  return res.status(401).json({ ok: false, reason: v.reason });
 }

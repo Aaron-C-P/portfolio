@@ -9,7 +9,6 @@ import {
   basicChecks, bulletTips, emptyResume, exampleResume, extractKeywords, matchScore, type Resume,
 } from "@/lib/resumeEngine";
 import { atsChecks, atsText, resumeBlocks } from "@/lib/resumeFormat";
-import { downloadResumePdf } from "@/lib/resumePdf";
 
 const KEY = "resume-studio-v1";
 const STEPS = ["The job", "Your details", "Improve it", "Get it"] as const;
@@ -36,25 +35,34 @@ const load = (): Saved => {
   }
 };
 
-/** On-screen preview of the single ATS format. The downloaded PDF is built from the same blocks. */
-const Doc = ({ r, locked }: { r: Resume; locked: boolean }) => (
-  <div className="relative mx-auto w-full max-w-[794px] bg-white p-8 text-black shadow-xl" style={{ minHeight: 560, fontFamily: "Helvetica, Arial, sans-serif" }}>
-    {resumeBlocks(r).map((b, i) =>
-      b.kind === "name" ? <h2 key={i} className="text-2xl font-bold">{b.text}</h2>
-      : b.kind === "title" ? <p key={i} className="text-sm">{b.text}</p>
-      : b.kind === "contact" ? <p key={i} className="mt-0.5 text-xs">{b.text}</p>
-      : b.kind === "heading" ? <h3 key={i} className="mb-1 mt-4 border-b border-black pb-0.5 text-xs font-bold">{b.text}</h3>
-      : b.kind === "role" ? <p key={i} className="mt-2 flex justify-between gap-3 text-sm font-bold"><span>{b.text}</span>{b.aside && <span className="shrink-0 font-normal">{b.aside}</span>}</p>
-      : b.kind === "bullet" ? <p key={i} className="ml-4 text-sm" style={{ textIndent: "-0.9rem" }}>- {b.text}</p>
-      : <p key={i} className="text-sm">{b.text}</p>,
-    )}
-    {locked && (
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-        <span style={{ transform: "rotate(-30deg)" }} className="select-none text-6xl font-black tracking-widest text-black/10">PREVIEW</span>
-      </div>
-    )}
-  </div>
-);
+/**
+ * On-screen preview of the single ATS format. Until the résumé is paid for, the body text is NOT in the page at all:
+ * it is drawn as grey bars, so copying, "save as" or a screenshot gets structure only. The real file is built on the server.
+ */
+const Doc = ({ r, locked }: { r: Resume; locked: boolean }) => {
+  const bar = (key: number, len: number, indent = false) => (
+    <div key={key} aria-hidden="true" className={`my-1.5 h-2.5 rounded-full bg-black/15 ${indent ? "ml-4" : ""}`} style={{ width: `${Math.min(96, 24 + len * 0.9)}%` }} />
+  );
+  return (
+    <div id="resume-preview" onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative mx-auto w-full max-w-[794px] bg-white p-8 text-black shadow-xl ${locked ? "select-none" : ""}`} style={{ minHeight: 560, fontFamily: "Helvetica, Arial, sans-serif" }}>
+      {resumeBlocks(r).map((b, i) =>
+        b.kind === "name" ? <h2 key={i} className="text-2xl font-bold">{b.text}</h2>
+        : b.kind === "heading" ? <h3 key={i} className="mb-1 mt-4 border-b border-black pb-0.5 text-xs font-bold">{b.text}</h3>
+        : locked ? bar(i, b.text.length, b.kind === "bullet")
+        : b.kind === "title" ? <p key={i} className="text-sm">{b.text}</p>
+        : b.kind === "contact" ? <p key={i} className="mt-0.5 text-xs">{b.text}</p>
+        : b.kind === "role" ? <p key={i} className="mt-2 flex justify-between gap-3 text-sm font-bold"><span>{b.text}</span>{b.aside && <span className="shrink-0 font-normal">{b.aside}</span>}</p>
+        : b.kind === "bullet" ? <p key={i} className="ml-4 text-sm" style={{ textIndent: "-0.9rem" }}>- {b.text}</p>
+        : <p key={i} className="text-sm">{b.text}</p>,
+      )}
+      {locked && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span style={{ transform: "rotate(-30deg)" }} className="select-none text-5xl font-black tracking-widest text-black/15">PREVIEW - UNPAID</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Bar = ({ value, label }: { value: number; label: string }) => (
   <div>
@@ -90,6 +98,29 @@ const ResumeStudio = () => {
   const [showAts, setShowAts] = useState(false);
   const unlocked = s.code !== "";
   const avgBullet = tips.length ? Math.round((tips.reduce((a, t) => a + t.strength, 0) / tips.length) * 100) : 0;
+
+  const download = async () => {
+    setBusy(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/resume-pdf", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: s.code, resume: r }) });
+      if (!res.ok || !(res.headers.get("content-type") || "").includes("pdf")) {
+        const why = res.status === 401 ? ((await res.json().catch(() => ({}))) as { reason?: string }).reason : res.status === 429 ? "limit" : "error";
+        if (why === "expired" || why === "revoked" || why === "invalid") patch({ code: "" });
+        setMsg(why === "expired" ? "This code has expired. Reply to your order email and I will help." : why === "revoked" ? "This order was refunded, so the code no longer works." : why === "invalid" ? "That code is no longer valid." : why === "limit" ? "This code has reached its download limit. Reply to your order email and I will help." : "Could not build the PDF. Please try again in a moment.");
+      } else {
+        const url = URL.createObjectURL(await res.blob());
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${(r.name || "resume").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "resume"}-resume.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      setMsg("Could not reach the server. Check your connection and try again.");
+    }
+    setBusy(false);
+  };
 
   const go = (step: number) => {
     setMsg("");
@@ -147,6 +178,7 @@ const ResumeStudio = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-5 pb-24 pt-32">
+      <style>{`@media print{#resume-preview{display:none!important}}`}</style>
       <Note>{studio.name}</Note>
       <h1 className="h-section mt-1 md:text-5xl">A résumé built for the job you want.</h1>
       <p className="mt-3 max-w-2xl text-lg text-soft">Paste the job, add your details, and the app shows how well you match and what to sharpen, in a format applicant tracking systems read. Build and preview free. A clean download is {priceLabel}.</p>
@@ -276,9 +308,10 @@ const ResumeStudio = () => {
 
           {unlocked ? (
             <div className="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-5">
-              <p className="font-semibold text-emerald-200">Unlocked. Download as many versions as you like.</p>
-              <button onClick={() => void downloadResumePdf(r)} className="btn-primary mt-3"><Download className="h-4 w-4" /> Download ATS-ready PDF</button>
-              <p className="mt-2 text-xs text-soft">A real text PDF: an employer system can read and search every word.</p>
+              <p className="font-semibold text-emerald-200">Unlocked. You can edit and download again any time in the next 90 days.</p>
+              <button onClick={() => void download()} disabled={busy} className="btn-primary mt-3 disabled:opacity-60"><Download className="h-4 w-4" /> {busy ? "Building…" : "Download ATS-ready PDF"}</button>
+              {msg && <p role="alert" className="mt-2 text-sm text-red-300">{msg}</p>}
+              <p className="mt-2 text-xs text-soft">A real text PDF: an employer system can read and search every word. Your résumé is sent securely once to build the file and is not stored.</p>
               <div className="mt-5 border-t border-line pt-4">
                 <p className="text-sm font-semibold">After you apply: did this résumé get you an interview?</p>
                 {s.reported ? <p className="mt-1 text-sm text-soft">Thank you. That helps me see what is working.</p> : (
@@ -290,7 +323,7 @@ const ResumeStudio = () => {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="rounded-2xl border border-line bg-panel p-5">
                 <h3 className="flex items-center gap-2 text-lg font-bold"><Lock className="h-4 w-4" /> Get the clean PDF, {priceLabel}</h3>
-                <p className="mt-1 text-sm text-soft">One payment per résumé. No subscription. Unlimited edits and downloads of this résumé.</p>
+                <p className="mt-1 text-sm text-soft">One payment per résumé. No subscription. Edit and re-download for 90 days (up to 25 downloads). Your code is personal, so please do not share it.</p>
                 {!s.ordered ? (
                   <div className="mt-4 space-y-3">
                     <label className="block text-sm font-semibold">Your name<input className={field} value={lead.name} onChange={(e) => setLead({ ...lead, name: e.target.value })} autoComplete="name" /></label>
@@ -324,7 +357,7 @@ const ResumeStudio = () => {
             </div>
           )}
           <Nav back={2} />
-          <p className="mt-6 text-xs text-soft">Questions? <Link to="/contact" className="underline">Contact me</Link>. Your résumé text stays in your browser unless you download or share it yourself.</p>
+          <p className="mt-6 text-xs text-soft">Questions? <Link to="/contact" className="underline">Contact me</Link>. Your résumé stays in your browser until you download it; it is then sent once to build your PDF and is not stored.</p>
         </section>
       )}
     </div>

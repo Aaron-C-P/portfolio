@@ -9,7 +9,7 @@ A résumé app at $10 per résumé. Free to build and preview; the clean PDF is 
 4. **Get it**: watermarked preview, then name/email (and consent) to place an order, then payment, then an unlock code.
    After applying, the user can report "got an interview?", which feeds the layout bandit.
 
-Only name, email, phone and order details go to the Google Sheet (kind `builder`). The résumé text never leaves the browser.
+Only name, email, phone and order details go to the Google Sheet (kind `builder`). The résumé stays in the browser until the user downloads it; it is then sent once to the server to build the PDF and is not stored or logged.
 
 ## What the "optimiser" actually is (src/lib/resumeEngine.ts)
 - **Bayesian keyword match**: smoothed term weights from the posting, boosted in "required/must" lines; score is the posterior mean of a Beta(2,2)-prior coverage over weighted keywords.
@@ -37,8 +37,26 @@ None of this predicts being hired. It measures fit to a posting and how specific
    Test the whole thing with `node scripts/resume/webhook.test.mjs`, then do one real $10 test order (Lemon Squeezy has a test mode) before announcing it.
 4. Re-paste `docs/apps-script/Code.gs` in Apps Script and deploy a **New version** so the `builder` kind is accepted.
 
+## Protecting the paid file (theft and abuse)
+No website can block screenshots, and trying to is theatre. What matters is that nothing worth stealing is available without paying:
+| Angle | What stops it |
+| --- | --- |
+| Screenshot or copy of the preview | Before payment the body text is not in the page at all (grey bars only, no selecting, no right-click, hidden when printing). A screenshot shows structure, nothing usable. |
+| Calling the download from the browser console, or editing saved state | The PDF does not exist in the browser. `/api/resume-pdf` builds it on the server and checks the code on every request. |
+| Guessing or inventing a code | Codes carry an HMAC signature made with `RESUME_CODE_SECRET`; attempts are rate limited per IP. |
+| Sharing one paid code | Personal to the buyer, expires after `RESUME_CODE_DAYS` (default 90), and stops after `RESUME_MAX_DOWNLOADS` (default 25) downloads. Download counts and rate limits are shared across servers only when the Upstash store is set up. |
+| Refund then keep using the code | A refund event revokes the code immediately (needs Upstash). Without it, the sheet gets a "REFUND" row so you can act. |
+| Fake "payment received" | Codes are only issued by the signed webhook for orders Lemon Squeezy marks paid (checked against the variant id), or by you by hand. The webhook rejects any request without a valid signature. |
+| Chargebacks and card fraud | Lemon Squeezy is the merchant of record and handles them. |
+| Oversized or malicious input to the PDF endpoint | Input is trimmed to fixed sizes and rendered as plain text; no HTML or scripts are involved. |
+
+**Making sure you are paid.** You get an email from the sheet (kind `builder`) for every order, and a "Résumé Studio PAID" row when the webhook sees a paid order. Reconcile weekly: Lemon Squeezy orders should equal PAID rows. A buyer with no code email is a webhook or email failure; the sheet row has the code to send by hand.
+
+Optional Upstash (free tier): set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in Vercel to turn on shared download caps, shared rate limits and refund revocation. Everything else works without it.
+
 ## Known limits
-- The paywall is a watermark plus a server-checked code. A determined user can remove the watermark with browser tools, and a code can be shared. For $10 that is a reasonable trade; real enforcement needs accounts and server-side PDF generation.
-- Card payments get codes automatically; bank transfer and WiPay payments still need a code from you.
-- The webhook is written for Lemon Squeezy's `order_created` event. It has been tested with signed sample events, not with a live Lemon Squeezy order. Refunds do not revoke a code.
+- Anyone who has paid can of course screenshot or copy their own résumé; it is their content. The thing being sold is the ATS-formatted PDF and the checking, and that is what is protected.
+- A buyer could still hand their code and a résumé to a friend within the download cap. That is capped, not impossible.
+- Card payments get codes automatically; bank transfer and WiPay payments still need a code from you (add it to `RESUME_CODES`; those do not expire).
+- The webhook is written for Lemon Squeezy's `order_created` and `order_refunded` events and has been tested with signed sample events and a fake store, not with a live Lemon Squeezy order or a live Upstash database. Do one test order before announcing.
 - No accounts yet: the résumé lives in the browser that built it.

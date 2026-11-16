@@ -1,12 +1,9 @@
-import { resumeBlocks } from "@/lib/resumeFormat";
-import type { Resume } from "@/lib/resumeEngine";
+// Draws the ATS résumé as a real text PDF. Runs on the server only (api/resume-pdf.js), after a paid code is
+// verified, so the PDF cannot be produced from the browser without paying. jsPDF draws text with a standard
+// built-in font, so every word stays selectable and readable by an applicant tracking system.
+import { resumeBlocks } from "./resumeBlocks.js";
 
-/**
- * Builds a real PDF with selectable text (jsPDF draws text, not images), using a standard built-in font and
- * the ATS format from resumeFormat.ts. Loaded on demand so the library is not part of every page load.
- */
-export async function buildResumePdf(r: Resume, compress = true) {
-  const { jsPDF } = await import("jspdf");
+export function buildResumePdf(jsPDF, r, compress = true) {
   const doc = new jsPDF({ unit: "pt", format: "letter", compress });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
@@ -14,13 +11,13 @@ export async function buildResumePdf(r: Resume, compress = true) {
   const maxW = W - M * 2;
   let y = M;
 
-  const ensure = (need: number) => {
+  const ensure = (need) => {
     if (y + need > H - M) {
       doc.addPage();
       y = M;
     }
   };
-  const font = (style: "normal" | "bold", size: number) => {
+  const font = (style, size) => {
     doc.setFont("helvetica", style);
     doc.setFontSize(size);
   };
@@ -41,7 +38,7 @@ export async function buildResumePdf(r: Resume, compress = true) {
       y += 3;
     } else if (b.kind === "contact") {
       font("normal", 10);
-      for (const line of doc.splitTextToSize(b.text, maxW) as string[]) {
+      for (const line of doc.splitTextToSize(b.text, maxW)) {
         ensure(14);
         doc.text(line, M, (y += 10));
         y += 3;
@@ -59,8 +56,7 @@ export async function buildResumePdf(r: Resume, compress = true) {
       font("bold", 10.5);
       ensure(30);
       const dateW = b.aside ? doc.getTextWidth(b.aside) + 12 : 0;
-      const lines = doc.splitTextToSize(b.text, maxW - dateW) as string[];
-      lines.forEach((line, i) => {
+      doc.splitTextToSize(b.text, maxW - dateW).forEach((line, i) => {
         ensure(14);
         doc.text(line, M, (y += 10.5));
         if (i === 0 && b.aside) {
@@ -72,8 +68,7 @@ export async function buildResumePdf(r: Resume, compress = true) {
       });
     } else if (b.kind === "bullet") {
       font("normal", 10.5);
-      const lines = doc.splitTextToSize(b.text, maxW - 14) as string[];
-      lines.forEach((line, i) => {
+      doc.splitTextToSize(b.text, maxW - 14).forEach((line, i) => {
         ensure(14);
         y += 10.5;
         if (i === 0) doc.text("-", M + 3, y);
@@ -82,7 +77,7 @@ export async function buildResumePdf(r: Resume, compress = true) {
       });
     } else {
       font("normal", 10.5);
-      for (const line of doc.splitTextToSize(b.text, maxW) as string[]) {
+      for (const line of doc.splitTextToSize(b.text, maxW)) {
         ensure(14);
         doc.text(line, M, (y += 10.5));
         y += 2.5;
@@ -90,10 +85,4 @@ export async function buildResumePdf(r: Resume, compress = true) {
     }
   }
   return doc;
-}
-
-export async function downloadResumePdf(r: Resume) {
-  const doc = await buildResumePdf(r);
-  const slug = (r.name || "resume").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "resume";
-  doc.save(`${slug}-resume.pdf`);
 }
