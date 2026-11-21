@@ -70,7 +70,7 @@ export function placeholder(req, res) {
 const pageCache = new Map();
 export function renderPage(file) {
   if (process.env.NODE_ENV === 'production' && pageCache.has(file)) return pageCache.get(file);
-  const raw = fs.readFileSync(path.join(ROOT, 'public', file), 'utf8');
+  const raw = fs.readFileSync(path.join(ROOT, 'pages', file), 'utf8');
   const money = (n) => (CURRENCY === 'USD' ? `$${n}` : `${n} ${CURRENCY}`);
   const vars = {
     BRAND: esc(config.brand),
