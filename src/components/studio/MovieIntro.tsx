@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, FastForward, Play } from "lucide-react";
+import { Spider } from "@/components/studio/Spider";
 import { ResumeDoc } from "@/components/studio/ResumeDoc";
 import { samples } from "@/data/resumeSamples";
 import { brand, services } from "@/data/studio";
@@ -23,7 +24,7 @@ const SCENES: Scene[] = [
   { key: "content", ms: 3400, kicker: "02 · Content creation", title: "Stories that get seen", lines: ["Brand films", "Writing for real audiences", "A feed that shows the work"] },
   { key: "tech", ms: 3400, kicker: "03 · Technology", title: "Built to last", lines: ["Fast on a phone", "Clear for the people using it", "Yours to own and update"] },
   { key: "brand", ms: 3400, kicker: "04 · Branding", title: "Brand the person, too", lines: ["Your story", "Your look", "One place that proves it"] },
-  { key: "siteforge", ms: 4000, kicker: "05 · SiteForge", title: "Describe it. Get a site.", lines: ["My own AI website builder", "Edit any word or photo yourself", "Built Help Hamster Haven"] },
+  { key: "webber", ms: 4400, kicker: "05 · The Webber", title: "Let’s web you in.", lines: ["An automated website maker", "Clients edit their own site, or switch it off", "One fee, powered by free AI models"] },
   { key: "resume", ms: 6000, kicker: "06 · The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
 ];
 
@@ -36,7 +37,7 @@ const LayersReel = () => {
     </div>
   );
   return (
-    <motion.div initial={{ rotateY: -50, rotateX: 12, opacity: 0 }} animate={{ rotateY: [-28, 14, -28], rotateX: 8, opacity: 1 }} transition={{ rotateY: { duration: 9, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.8 } }} style={{ position: "absolute", left: "50%", top: 0, marginLeft: -688, width: 816, height: 1056, transformStyle: "preserve-3d", scale: 0.2, transformOrigin: "top center" }} aria-hidden="true">
+    <motion.div initial={{ rotateY: -50, rotateX: 12, opacity: 0 }} animate={{ rotateY: [-28, 14, -28], rotateX: 8, opacity: 1 }} transition={{ rotateY: { duration: 9, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.8 } }} style={{ position: "absolute", left: "50%", top: 0, marginLeft: -484, width: 816, height: 1056, transformStyle: "preserve-3d", scale: 0.2, transformOrigin: "top center" }} aria-hidden="true">
       {page("art", -120)}
       {page("text", 40)}
       <div style={{ position: "absolute", inset: 0, transform: "translate3d(560px,30px,120px)" }} className="rounded-sm bg-[#07111f]/95 p-[54pt] font-mono text-emerald-300">
@@ -126,10 +127,13 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
       </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center" style={{ perspective: 1000 }}>
-        <AnimatePresence mode="wait">
-          <motion.div key={sc.key} initial={{ opacity: 0, z: -700, rotateY: -35 }} animate={{ opacity: 1, z: 0, rotateY: 0 }} exit={{ opacity: 0, z: 500, rotateY: 25, scale: 1.2 }} transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }} style={{ transformStyle: "preserve-3d" }} className="max-w-3xl">
+        <AnimatePresence mode="popLayout">
+          <motion.div key={sc.key} initial={{ opacity: 0, z: -700, rotateY: -35 }} animate={{ opacity: 1, z: 0, rotateY: 0, transition: { duration: 0.8, delay: 0.2, ease: [0.2, 0.8, 0.2, 1] } }} exit={{ opacity: 0, z: 500, rotateY: 25, scale: 1.2, transition: { duration: 0.5 } }} style={{ transformStyle: "preserve-3d" }} className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.4em] text-violet-300">{sc.kicker}</p>
             <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl">{sc.title}</h2>
+            {sc.key === "webber" && (
+              <motion.div initial={{ opacity: 0, y: -80 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 60, damping: 8, delay: 0.3 }} className="mx-auto mt-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-amber-300 text-[#12141a] shadow-[0_0_60px_rgba(251,191,36,.45)]"><Spider className="h-16 w-16" /></motion.div>
+            )}
             {sc.key === "resume" && <div className="relative mx-auto mt-6 h-[230px] w-[320px]" style={{ perspective: 1100 }}><LayersReel /></div>}
             <ul className="mt-6 space-y-1 text-lg text-white/75">
               {sc.lines.map((l, n) => (

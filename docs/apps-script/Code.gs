@@ -508,6 +508,8 @@ var MAX_AUTO_REPLIES_PER_DAY = 20; // keeps the form from being used to mail str
 function autoReply_(kind, name, email, topic) {
   try {
     if (props_().getProperty("AUTO_REPLY") !== "on" || kind === "testimonial" || kind === "builder") return false;
+    // A tailored résumé was already downloaded straight from the site, so there is nothing to promise or send.
+    if (kind === "resume" && String(topic || "").indexOf("Résumé downloaded") === 0) return false;
     var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
     var p = props_();
     var count = p.getProperty("AR_DAY") === today ? Number(p.getProperty("AR_COUNT") || 0) : 0;
@@ -555,8 +557,9 @@ function sendDigest() {
     if (r[16] !== "New") continue; // only leads still waiting; TEST, Replied and Archived are skipped
     var age = now - (isDate_(r[0]) ? r[0].getTime() : now);
     var item = { name: r[3], email: r[4], kind: r[2], topic: r[5], days: Math.floor(age / DAY) };
+    var served = String(r[5]).indexOf("Résumé downloaded") === 0; // already got the file instantly: never "waiting for a reply"
     if (age < DAY) fresh.push(item);
-    else if (age >= 2 * DAY) stale.push(item);
+    else if (age >= 2 * DAY && !served) stale.push(item);
   }
   if (!fresh.length && !stale.length) return { sent: false };
   var line = function (x) {

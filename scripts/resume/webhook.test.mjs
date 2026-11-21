@@ -210,4 +210,85 @@ assert.equal((await run(pdf, { body: { code: makeCode("7003"), resume, template:
 assert.equal((await run(pdf, { body: { code: makeCode("7004"), resume, template: "aurora", variant: "<x>" } })).status, 200);
 ok("art remix is repeatable, keeps text readable, changes the PDF, and bad input is ignored");
 
+// 13. Aaron's own résumé: one set of true facts, shaped for who is asking
+const { default: master } = await import("../../src/data/myResume.json", { with: { type: "json" } });
+const { default: myResume } = await import("../../api/my-resume.js");
+const { tailor, detectFocus } = await import("../../src/lib/tailorResume.js");
+const everything = JSON.stringify(master);
+assert.ok(!/Forbes|Canute|Thompson|490-1572|393-9254/i.test(everything), "no third-party reference details in the master");
+const allText = new Set([...master.highlights.map((h) => h.text), ...master.jobs.flatMap((j) => j.bullets.map((b) => b.text)), ...master.projects.map((p) => p.text)]);
+for (const f of Object.keys(master.focuses)) {
+  const t = tailor(master, { focus: f });
+  assert.equal(t.focus, f);
+  for (const e of t.resume.experience) for (const b of e.bullets) assert.ok(allText.has(b), `${f}: every bullet is a real, existing fact`);
+  assert.ok(!JSON.stringify(t.resume).match(/Forbes|Canute|490-1572/), `${f}: no references`);
+  assert.ok(t.resume.email && t.resume.phone, `${f}: contact included for the PDF`);
+  for (const id of ["classic", "midnight"]) {
+    const d = buildResumePdf(jsPDF, sanitizeResume(t.resume), id, false);
+    assert.ok(d.getNumberOfPages() <= 2, `${f}/${id}: at most 2 pages (${d.getNumberOfPages()})`);
+  }
+}
+const web = tailor(master, { focus: "web" }), net = tailor(master, { focus: "network" }), dat = tailor(master, { focus: "data" });
+assert.ok(!web.resume.experience.some((e) => /Scotiabank/.test(e.org)), "web version leaves the bank job out, like the web PDF");
+assert.ok(/Scotiabank/.test(net.resume.experience[1].org), "network version leads with the bank role after highlights");
+assert.match(dat.resume.education.map((e) => e.what).join("|"), /Power BI/);
+assert.match(dat.resume.experience.map((e) => e.role).join("|"), /Dashboard/);
+assert.match(net.resume.title, /Network/);
+assert.equal(tailor(master, { focus: "web", contact: false }).resume.phone, "");
+// posting detection and fallbacks
+assert.equal(detectFocus(master, "Seeking a Power BI analyst: DAX, SQL, dashboards and KPI reporting").focus, "data");
+assert.equal(detectFocus(master, "CCNA certified network technician, routing, switching, VLAN, ATM support").focus, "network");
+assert.equal(tailor(master, { posting: "React and TypeScript front-end developer, REST APIs" }).focus, "web");
+assert.equal(tailor(master, { focus: "<script>", posting: "" }).focus, master.defaultFocus);
+assert.ok(tailor(master, { posting: "Power BI DAX SQL dashboards" }).matched.includes("dax"));
+// the endpoint
+const ip = { "x-forwarded-for": "7.7.7.7" };
+calls.length = 0;
+r = await run(myResume, { headers: ip, body: { name: "Pat Hiring", email: "pat@company.com", organisation: "Acme", posting: "Power BI analyst, DAX and SQL dashboards", template: "aurora", variant: 2 } });
+assert.equal(r.status, 200);
+assert.equal(r.headers["content-type"], "application/pdf");
+assert.ok(r.bytes.subarray(0, 5).toString() === "%PDF-");
+const logged = calls.find((c) => c.url.includes("script.google.com"));
+assert.ok(logged && logged.body.kind === "resume" && logged.body.fields.topic.startsWith("Résumé downloaded") && logged.body.fields.email === "pat@company.com");
+assert.match(logged.body.fields.message, /Focus: data/);
+assert.equal((await run(myResume, { headers: ip, body: { name: "", email: "pat@company.com" } })).status, 400);
+assert.equal((await run(myResume, { headers: ip, body: { name: "Pat", email: "not-an-email" } })).status, 400);
+assert.equal((await run(myResume, { headers: ip, body: { name: "Bot", email: "b@x.com", website: "http://spam" } })).status, 400, "honeypot");
+assert.equal((await run(myResume, { headers: ip, method: "GET", body: {} })).status, 405);
+assert.equal((await run(myResume, { headers: ip, body: { name: "Pat", email: "pat@company.com", resume: { name: "Injected" }, template: "../x", variant: "<x>", focus: "<x>" } })).status, 200, "extra or junk input is ignored");
+for (let k = 0; k < 8; k++) await run(myResume, { headers: { "x-forwarded-for": "8.8.8.8" }, body: { name: "Rate", email: "r@x.com" } });
+assert.equal((await run(myResume, { headers: { "x-forwarded-for": "8.8.8.8" }, body: { name: "Rate", email: "r@x.com" } })).status, 429, "rate limited");
+ok("own résumé: only true facts, no references, shaped per role or posting, logged, abuse-limited");
+
+// 14. The coach and the inbox: weak wording is flagged, approved entries reach the résumé, unapproved ones do not
+const { coach, applyLog, wording } = await import("../../src/lib/resumeCoach.js");
+assert.ok(wording("Helped with various tasks").length >= 3, "vague, short, no number, weak verb");
+assert.equal(wording("Reduced weekly reporting time from 5 hours to 30 minutes by automating the Excel export").length, 0, "a strong line is left alone");
+const snapshot = JSON.stringify(master);
+const inbox = { entries: [
+  { id: "a", date: "2026-12-01", kind: "skill", text: "DAX measures", tags: ["data"], approve: true },
+  { id: "b", date: "2026-12-02", kind: "bullet", job: "larvation", text: "Reduced API response time by 40% by adding database indexes to the three slowest queries", tags: ["web"], approve: true },
+  { id: "c", date: "2026-12-03", kind: "bullet", job: "larvation", text: "Not approved yet, so it must not appear", tags: ["web"] },
+  { id: "d", date: "2026-12-04", kind: "bullet", job: "no-such-job", text: "Built something with a missing role id and 2 problems", tags: ["web"], approve: true },
+  { id: "e", date: "2026-12-05", kind: "cert", what: "Microsoft Power BI Data Analyst", who: "Microsoft", year: "2026", tags: ["data"], approve: true },
+], applied: [] };
+const res = applyLog(master, inbox, new Date("2026-12-10"));
+assert.equal(JSON.stringify(master), snapshot, "the input master is never mutated");
+assert.deepEqual(res.applied.map((e) => e.id), ["a", "b", "e"]);
+assert.ok(res.master.skills.some((s) => s.name === "DAX measures"));
+assert.ok(res.master.jobs.find((j) => j.id === "larvation").bullets.some((b) => /40%/.test(b.text)));
+assert.ok(!JSON.stringify(res.master).includes("must not appear"));
+assert.equal(res.master.updated, "2026-12-10");
+assert.deepEqual(res.log.entries.map((e) => e.id), ["c", "d"], "unapproved and unappliable entries stay in the inbox");
+assert.match(res.log.entries[1].note, /Could not apply/);
+assert.equal(res.log.applied.length, 3);
+assert.equal(applyLog(res.master, { entries: [{ kind: "skill", text: "dax measures", approve: true }], applied: [] }).applied.length, 0, "no duplicate skills");
+// an approved entry really changes the tailored résumé
+assert.match(tailor(res.master, { focus: "web" }).resume.experience.map((e) => e.bullets.join(" ")).join(" "), /40%/);
+const report = coach(master, { entries: inbox.entries.slice(2, 3), applied: [] }, new Date("2027-03-01"));
+assert.ok(report.findings.some((f) => f.level === "fix" && /days/.test(f.msg)), "stale master is flagged");
+assert.ok(report.findings.some((f) => /Waiting for your approval/.test(f.msg)));
+assert.ok(report.moves.length > 0 && report.moves.length <= 5);
+ok("coach flags weak wording and stale data; only approved entries reach the résumé; inputs are never mutated");
+
 console.log(`\n${n} groups passed`);

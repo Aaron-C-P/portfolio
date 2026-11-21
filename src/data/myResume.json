@@ -1,0 +1,117 @@
+{
+  "updated": "2026-11-21",
+  "name": "Aaron Prince",
+  "location": "Mandeville, Jamaica",
+  "email": "aaron7prince@gmail.com",
+  "phone": "876-790-2268",
+  "links": "linkedin.com/in/aaron-prince-b912b1210 | github.com/Aaron-C-P | aaronprince.vercel.app",
+  "defaultFocus": "web",
+  "focuses": {
+    "web": {
+      "label": "Web developer",
+      "blurb": "React, TypeScript, Node.js and databases",
+      "title": "Web Developer - React, TypeScript, Node.js, Databases",
+      "summary": "Web developer and Computer Science graduate (BSc) based in Mandeville, building and supporting live systems that real people use every day. Works full-stack in React, TypeScript and Node.js over PostgreSQL and MySQL, designs the database schemas underneath, and keeps what ships running after launch, including diagnosing and fixing a production concurrency failure on a live client ordering platform. Builds validation, duplicate controls and audit trails in at the point of capture rather than patching them later.",
+      "keywords": ["react", "typescript", "javascript", "node", "nodejs", "frontend", "front-end", "backend", "full-stack", "fullstack", "api", "rest", "css", "html", "tailwind", "web", "developer", "software", "engineer", "next", "express", "git", "deploy", "responsive"]
+    },
+    "data": {
+      "label": "Data and BI analyst",
+      "blurb": "Power BI, DAX, SQL and dashboards",
+      "title": "Data and BI Analyst - Power BI, DAX, SQL, Dashboards",
+      "summary": "Data and BI analyst with a Computer Science degree (BSc), building dashboards and reporting that people actually use to make decisions. Writes SQL across PostgreSQL, MySQL and SQL Server, designs the relational model underneath, and turns raw operational data into KPI views, trend analysis and written summaries. Currently working through the Microsoft Power BI Data Analyst certification. Native English speaker based in Jamaica on permanent UTC-5, with full working-day overlap with North and South American hours all year.",
+      "keywords": ["data", "analyst", "analytics", "power", "bi", "dax", "sql", "dashboard", "dashboards", "report", "reporting", "kpi", "excel", "visualisation", "visualization", "tableau", "pandas", "python", "insights", "modelling", "modeling", "warehouse", "etl"]
+    },
+    "network": {
+      "label": "Network and infrastructure",
+      "blurb": "CCNA, branch systems and Security+",
+      "title": "Network Analyst - CCNA, Banking Infrastructure, Security+",
+      "summary": "Network analyst and Computer Science graduate (BSc) with three years inside a commercial bank, supporting branch network and systems infrastructure under service-level agreements. Installs, configures and maintains branch systems, ATMs, printers and connected devices; resolves incidents under time-sensitive service standards; and coordinates across departments to close problems permanently rather than repeatedly. Holds CompTIA Security+ 701 and builds confidentiality, availability and integrity into the systems worked on by design.",
+      "keywords": ["network", "networking", "ccna", "cisco", "routing", "switching", "vlan", "tcp", "infrastructure", "support", "helpdesk", "sla", "incident", "troubleshooting", "atm", "branch", "windows", "endpoint", "sysadmin", "administrator", "it"]
+    },
+    "systems": {
+      "label": "Systems analyst and security",
+      "blurb": "Requirements, testing and secure systems",
+      "title": "Systems Analyst - Security+, Banking Technology, Testing",
+      "summary": "Systems analyst and Computer Science graduate (BSc), currently inside the bank as an Operation Support Officer and already working to its policies, controls and confidentiality standards. Analyses requirements and builds the system that meets them: coding and modifying applications to written specification, writing the unit-test strategy and running it, then producing the implementation, back-out and user documentation that goes with the release. CompTIA Security+ 701 certified, with data protection, audit logging and access control designed into the systems built.",
+      "keywords": ["systems", "analyst", "requirements", "specification", "testing", "test", "qa", "quality", "security", "cyber", "risk", "audit", "compliance", "documentation", "bank", "banking", "controls", "access", "owasp", "regression", "uat"]
+    }
+  },
+  "highlights": [
+    { "id": "h-cake", "w": 3, "tags": ["web", "systems", "network"], "text": "Ships and supports live client systems: a seasonal ordering platform for a local bakery, built in React and TypeScript and still maintained in production. When real customers ordered at the same moment and some were turned away, I diagnosed the concurrency bottleneck, reproduced it in a simulation first, and fixed it. In simulation a 40-customer burst went from 9 failures to zero, and 406 automated tests pass." },
+    { "id": "h-db", "w": 3, "tags": ["web", "data", "systems"], "text": "Builds the database, not just the front end: designed a full relational schema with role-based access control, stored procedures for transactional operations and SQL-injection safeguards, and wrote and optimised SQL and schema changes against a production PostgreSQL database during a professional internship." },
+    { "id": "h-paper", "w": 3, "tags": ["web", "data", "systems", "network"], "text": "Automates manual work without being asked: replaced a daily paper process at a local branch with a structured web application, with standardised capture, duplicate-submission controls and automated management summaries. Deployed it, documented it and trained colleagues on it. The initiative was my own, not assigned." },
+    { "id": "h-report", "w": 3, "tags": ["data"], "text": "Builds reporting that explains itself: a live order dashboard where KPIs recalculate on every change, then the system writes its own plain-English summary covering best seller, busiest day, delivery versus collection split and a sell-out forecast from the current run rate." },
+    { "id": "h-model", "w": 2, "tags": ["data"], "text": "Designs the model, not just the visual: relational schema design across three database engines, with stored procedures, aggregation queries and indexing for query performance." },
+    { "id": "h-infra", "w": 3, "tags": ["network"], "text": "Three years supporting infrastructure inside a bank: branch systems, ATMs, printers and connected devices installed, configured and maintained, with access and account administration alongside. Service is restored under SLA pressure, and the banking-procedure knowledge comes from doing the job, not from a course." },
+    { "id": "h-rootcause", "w": 2, "tags": ["network", "systems"], "text": "Finds the cause, then removes it permanently: isolated a live system fault to a single contention point, reproduced it in a controlled simulation before changing anything in production, then re-engineered the handling with fallbacks and safe retries. Root cause and preventive action documented for review." },
+    { "id": "h-secure", "w": 3, "tags": ["systems", "network"], "text": "Builds for confidentiality, availability and integrity: CompTIA Security+ 701 certified, handling confidential customer records daily under bank data-handling standards, and designing audit logging, duplicate controls and tamper-evident records into the systems built." },
+    { "id": "h-docs", "w": 2, "tags": ["systems", "web", "network"], "text": "Documents so the next person does not have to ask: procedures, exception records, test plans and management summaries written for the people who use them, with colleagues trained on the systems delivered." },
+    { "id": "h-design", "w": 1, "tags": ["web"], "text": "Designs as well as develops: responsive interfaces, posters, presentations and social graphics, so a small team gets both the build and the look from one person." }
+  ],
+  "jobs": [
+    {
+      "id": "larvation", "org": "Larvation Web LLC | Remote", "role": "Web Development Intern", "dates": "March 2026 - June 2026", "max": 4, "focusMax": { "data": 2, "network": 2, "systems": 3 },
+      "bullets": [
+        { "w": 3, "tags": ["web"], "text": "Built and deployed production-grade full-stack applications using React, TypeScript, Node.js and PostgreSQL, taking features from requirements through design, testing and release." },
+        { "w": 2, "tags": ["web"], "text": "Designed and consumed RESTful APIs, integrated third-party services and configured authentication flows." },
+        { "w": 3, "tags": ["web", "data", "systems"], "text": "Wrote, tested and optimised SQL queries and schema changes against a production PostgreSQL database." },
+        { "w": 2, "tags": ["web", "systems"], "text": "Worked an Agile cycle with Git branching, pull requests and peer code review, alongside CI/CD pipelines and technical documentation." },
+        { "w": 2, "tags": ["web", "systems"], "text": "Debugged defects across the frontend, backend services and database layers of live, cloud-hosted applications." }
+      ]
+    },
+    {
+      "id": "scotia", "org": "Bank of Nova Scotia (Scotiabank) | Mandeville, Jamaica", "role": "Operation Support Officer", "dates": "May 2023 - Present", "max": 5, "only": ["data", "network", "systems"], "lead": ["data", "network", "systems"],
+      "bullets": [
+        { "w": 3, "tags": ["data", "systems"], "text": "Identified a daily branch process still being run on paper and built an internal application to replace it, with structured capture, validation at entry, duplicate controls and automated summaries by item, day and department delivered straight to management. The manual tallying step was removed, not reduced." },
+        { "w": 3, "tags": ["network"], "text": "Install, configure and maintain branch systems, peripherals and connected devices including ATMs and printers, keeping branch services available to staff and customers through the working day." },
+        { "w": 3, "tags": ["network", "systems"], "text": "Deliver day-to-day operational and technical support to branch staff, diagnosing faults and restoring service under time-sensitive service standards, and escalating where a fault sits outside branch scope." },
+        { "w": 2, "tags": ["network", "systems"], "text": "Support access and account administration processes, applying bank controls on who holds which permissions." },
+        { "w": 2, "tags": ["network", "systems", "data"], "text": "Coordinate across multiple departments in a pressured, deadline-driven environment, following each incident through to proper closure rather than handing it on." },
+        { "w": 2, "tags": ["data", "systems"], "text": "Produce and maintain operational records, exception reporting and documentation that management and audit rely on, working to bank data-handling standards." },
+        { "w": 2, "tags": ["systems", "data", "network"], "text": "Handle confidential customer records daily under strict bank confidentiality and data-handling standards." },
+        { "w": 2, "tags": ["data", "network", "systems"], "text": "Received recognition for Exceptional Contributions and a 'Most Support Staff' award across three consecutive quarters, out of the full branch support team." }
+      ]
+    },
+    {
+      "id": "freelance", "org": "Freelance and client work | Mandeville, Jamaica", "role": "Web Developer and Designer", "dates": "2024 - Present", "max": 3,
+      "bullets": [
+        { "w": 3, "tags": ["web"], "text": "Build and maintain web applications for local clients, including a live seasonal ordering platform still in production use." },
+        { "w": 1, "tags": ["web"], "text": "Deliver the visual side as well: posters, presentations, social media graphics and portfolio sites." },
+        { "w": 2, "tags": ["web", "data"], "text": "Support students and small businesses with project work, from database design through to deployment." }
+      ]
+    }
+  ],
+  "projects": [
+    { "id": "p-cake", "w": 3, "tags": ["web", "systems", "network"], "title": "Christmas Cake Order Platform", "stack": "React, TypeScript, Apps Script (live client system)", "text": "Seasonal ordering platform for a local bakery, in production use. Traced a system-busy error to a single global lock, reproduced it in a simulation running the real client and server code, then added fallbacks, jittered-backoff retries and idempotency keys so a retried order can never be placed twice. 406 automated tests pass. Simulation figures use modelled latency, not live measurement." },
+    { "id": "p-dash", "w": 3, "tags": ["data"], "title": "Order Dashboard: reporting that writes itself", "stack": "Apps Script (KPIs, narrative output, alerts)", "text": "Reporting layer that recalculates KPIs on every order change, then writes its own plain-English summary and surfaces only what needs attention that day." },
+    { "id": "p-sales", "w": 2, "tags": ["data"], "title": "Sales Performance Dashboard", "stack": "KPI tiles, trend analysis, seasonality", "text": "Executive-style KPI dashboard over a 90-day dataset with revenue trend, seven-day moving average, day-of-week seasonality and live filters. Built as a self-directed exercise on illustrative data, and labelled as such." },
+    { "id": "p-orbita", "w": 2, "tags": ["web", "data", "systems"], "title": "Orbita: e-commerce platform", "stack": "MySQL, PHP (schema, stored procedures, access control)", "text": "Full relational schema designed from scratch with role-based access control, stored procedures for transactional operations, aggregation queries and safeguards against SQL injection." },
+    { "id": "p-egzit", "w": 2, "tags": ["web", "data", "network"], "title": "EGZIT: logistics platform", "stack": "React, Node.js, PostgreSQL, Python, Google Maps API", "text": "Full-stack logistics platform with AI-assisted inventory management, QR-based tracking and Python route-optimisation routines over a PostgreSQL backend, deployed to cloud infrastructure." },
+    { "id": "p-site", "w": 2, "tags": ["web"], "title": "Personal portfolio and Resume Studio", "stack": "React 19, TypeScript, Vite, Tailwind, Vercel", "text": "Designed and built my own portfolio site with an AI assistant that answers questions about my work, responsive layout and light and dark themes, plus an ATS-safe resume builder." }
+  ],
+  "skills": [
+    { "name": "React", "tags": ["web"] }, { "name": "TypeScript", "tags": ["web"] }, { "name": "JavaScript", "tags": ["web"] },
+    { "name": "Node.js", "tags": ["web"] }, { "name": "Express", "tags": ["web"] }, { "name": "REST APIs", "tags": ["web", "systems"] },
+    { "name": "HTML", "tags": ["web"] }, { "name": "CSS", "tags": ["web"] }, { "name": "Tailwind", "tags": ["web"] }, { "name": "Responsive design", "tags": ["web"] },
+    { "name": "PostgreSQL", "tags": ["web", "data", "systems"] }, { "name": "MySQL", "tags": ["web", "data", "systems"] }, { "name": "SQL Server", "tags": ["data", "systems"] }, { "name": "SQLite", "tags": ["web"] },
+    { "name": "SQL", "tags": ["data", "systems", "web"] }, { "name": "Database design", "tags": ["web", "data", "systems"] }, { "name": "Stored procedures", "tags": ["data", "systems"] },
+    { "name": "Power BI", "tags": ["data"] }, { "name": "DAX", "tags": ["data"] }, { "name": "Data visualisation", "tags": ["data"] }, { "name": "KPI design", "tags": ["data"] }, { "name": "Microsoft Excel", "tags": ["data"] }, { "name": "Python", "tags": ["data", "web", "systems"] }, { "name": "pandas", "tags": ["data"] },
+    { "name": "Routing and switching", "tags": ["network"] }, { "name": "TCP/IP and subnetting", "tags": ["network"] }, { "name": "VLANs", "tags": ["network"] }, { "name": "Network troubleshooting", "tags": ["network"] }, { "name": "Windows and endpoint administration", "tags": ["network"] }, { "name": "Branch systems and ATMs", "tags": ["network"] },
+    { "name": "Security+ fundamentals", "tags": ["systems", "network"] }, { "name": "Secure coding", "tags": ["systems", "web"] }, { "name": "OWASP and SQL injection prevention", "tags": ["systems", "web"] }, { "name": "Access control", "tags": ["systems", "network"] },
+    { "name": "Requirements analysis", "tags": ["systems"] }, { "name": "Unit and regression testing", "tags": ["systems", "web"] }, { "name": "Automated testing", "tags": ["web", "systems"] }, { "name": "Technical documentation", "tags": ["systems", "web", "network"] },
+    { "name": "Git and GitHub", "tags": ["web", "systems"] }, { "name": "CI/CD", "tags": ["web", "systems"] }, { "name": "Vercel deployment", "tags": ["web"] }, { "name": "Debugging", "tags": ["web", "systems", "network"] },
+    { "name": "Client communication", "tags": ["web", "data", "systems", "network"] }, { "name": "UI and graphic design", "tags": ["web"] }
+  ],
+  "certs": [
+    { "what": "CompTIA Security+ 701", "who": "CompTIA", "year": "2025", "tags": ["systems", "network", "web"], "w": 3 },
+    { "what": "CCNA: Introduction to Networks", "who": "Cisco", "year": "2026", "tags": ["network"], "w": 3 },
+    { "what": "Cisco CCNA (in progress)", "who": "Cisco", "year": "", "tags": ["network"], "w": 2 },
+    { "what": "Microsoft Power BI Data Analyst (in progress)", "who": "Microsoft", "year": "", "tags": ["data"], "w": 3 },
+    { "what": "Node.js Master Class", "who": "", "year": "2026", "tags": ["web"], "w": 2 },
+    { "what": "Front End Development", "who": "Simplilearn", "year": "2024", "tags": ["web"], "w": 2 },
+    { "what": "CompTIA A+ Core 1 (exam prep complete)", "who": "CompTIA", "year": "2026", "tags": ["network"], "w": 1 }
+  ],
+  "education": { "school": "Northern Caribbean University, Jamaica", "what": "Bachelor of Science in Computer Science, GPA 3.5", "dates": "" },
+  "awards": "Honor Roll; Top Student in Software Engineering; Leadership Recognition Award",
+  "extras": "Co-author, Madden et al. (2025), GenAI, future role and professionalization of foreign language teachers. Articles published in the Jamaica Gleaner and Jamaica Observer. Volunteer SBA workshop facilitator."
+}

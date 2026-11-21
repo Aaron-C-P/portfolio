@@ -36,6 +36,19 @@ export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Re
   const rx = useSpring(useMotionValue(0), { stiffness: 90, damping: 14 });
   const ry = useSpring(useMotionValue(0), { stiffness: 90, damping: 14 });
   const t = templateById(templateId);
+  const textRef = useRef<HTMLDivElement>(null);
+  const [pageH, setPageH] = useState(PAGE_H); // grows by whole pages when the résumé runs onto a second page
+  const pages = Math.round(pageH / PAGE_H);
+
+  useEffect(() => {
+    const el = textRef.current;
+    if (!el) return;
+    const measure = () => setPageH(Math.max(PAGE_H, Math.ceil(el.offsetHeight / PAGE_H) * PAGE_H));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = box.current;
@@ -66,11 +79,18 @@ export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Re
 
   return (
     <div>
-      <div ref={box} id={id} onPointerMove={aim} onPointerLeave={rest} className="relative mx-auto w-full max-w-[560px] select-none" style={{ perspective: 1500, height: PAGE_H * scale + 30, touchAction: "pan-y" }} aria-label={`Live 3D preview of the ${t.name} template. Move the pointer to tilt it.`} role="img">
+      <div ref={box} id={id} onPointerMove={aim} onPointerLeave={rest} className="relative mx-auto w-full max-w-[560px] select-none" style={{ perspective: 1500, height: pageH * scale + 30, touchAction: "pan-y" }} aria-label={`Live 3D preview of the ${t.name} template. Move the pointer to tilt it.`} role="img">
         <div aria-hidden="true" className="absolute inset-x-8 bottom-0 h-6 rounded-[50%] bg-black/40 blur-xl" />
-        <motion.div style={{ position: "relative", width: PAGE_W, height: PAGE_H, rotateX: rx, rotateY: ry, scale, transformStyle: "preserve-3d", transformOrigin: "top center", marginLeft: "50%", x: "-50%" }} className={reduce ? "" : "rs-float"}>
-          <div style={{ ...layer(z.art), boxShadow: "0 30px 60px rgba(0,0,0,.35)" }}><ResumeDoc r={r} templateId={templateId} variant={variant} locked={locked} layer="art" /></div>
-          <div style={layer(z.text)}><ResumeDoc id="resume-preview" r={r} templateId={templateId} variant={variant} locked={locked} layer="text" /></div>
+        <motion.div style={{ position: "relative", width: PAGE_W, height: pageH, rotateX: rx, rotateY: ry, scale, transformStyle: "preserve-3d", transformOrigin: "top center", marginLeft: "50%", x: "-50%" }} className={reduce ? "" : "rs-float"}>
+          <div style={{ ...layer(z.art), boxShadow: "0 30px 60px rgba(0,0,0,.35)" }}>
+            <ResumeDoc r={r} templateId={templateId} variant={variant} locked={locked} layer="art" minH={pageH} />
+            {Array.from({ length: pages - 1 }, (_, k) => (
+              <div key={k} aria-hidden="true" className="absolute inset-x-0 border-t-2 border-dashed border-black/25" style={{ top: PAGE_H * (k + 1) }}>
+                <span className="absolute right-3 top-1 text-[22px] font-semibold text-black/40">Page {k + 2} starts about here</span>
+              </div>
+            ))}
+          </div>
+          <div ref={textRef} style={{ ...layer(z.text), inset: "auto", top: 0, left: 0, width: PAGE_W }}><ResumeDoc id="resume-preview" r={r} templateId={templateId} variant={variant} locked={locked} layer="text" minH={PAGE_H} /></div>
           <div style={{ ...layer(z.ats), opacity: xray ? 1 : 0, pointerEvents: "none" }}><AtsReading r={r} locked={locked} /></div>
         </motion.div>
         {explode && (

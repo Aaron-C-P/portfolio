@@ -33,7 +33,7 @@ export const Fit = ({ children }: { children: ReactNode }) => {
  * The art is SVG drawn from the same shapes the PDF uses, behind the text. When `locked`, the body text is NOT in the
  * page at all: it is drawn as grey bars, so copying or a screenshot gets structure only. Names and headings stay.
  */
-export const ResumeDoc = ({ r, templateId, locked, id, variant = 0, layer = "all" }: { r: Resume; templateId: string; locked: boolean; id?: string; variant?: number; layer?: "all" | "art" | "text" }) => {
+export const ResumeDoc = ({ r, templateId, locked, id, variant = 0, layer = "all", minH = PAGE_H }: { r: Resume; templateId: string; locked: boolean; id?: string; variant?: number; layer?: "all" | "art" | "text"; minH?: number }) => {
   const t = templateById(templateId);
   const shapes = useMemo(() => (layer === "text" ? [] : artFor(t, r.name, variant)), [t, r.name, variant, layer]);
   const pt = (n: number) => `${n}pt`;
@@ -72,7 +72,7 @@ export const ResumeDoc = ({ r, templateId, locked, id, variant = 0, layer = "all
   };
 
   return (
-    <div id={id} onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative overflow-hidden text-black ${layer === "text" ? "" : "bg-white"} ${locked ? "select-none" : ""}`} style={{ width: PAGE_W, minHeight: PAGE_H, padding: pt(t.band ? 44 : 54), paddingBottom: pt(54), paddingLeft: pt(54), paddingRight: pt(54), fontFamily: family, boxSizing: "border-box" }}>
+    <div id={id} onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative overflow-hidden text-black ${layer === "text" ? "" : "bg-white"} ${locked ? "select-none" : ""}`} style={{ width: PAGE_W, minHeight: minH, padding: pt(t.band ? 44 : 54), paddingBottom: pt(54), paddingLeft: pt(54), paddingRight: pt(54), fontFamily: family, boxSizing: "border-box" }}>
       {shapes.length > 0 && (
         <svg aria-hidden="true" focusable="false" viewBox={`0 0 ${PT_W} ${PT_H}`} width={PAGE_W} height={PAGE_H} className="pointer-events-none absolute left-0 top-0">
           {shapes.map((s, i) => {

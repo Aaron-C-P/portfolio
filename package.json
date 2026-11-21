@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "resume:coach": "node scripts/resume/coach.mjs",
+    "resume:apply": "node scripts/resume/coach.mjs --apply",
+    "resume:test": "node scripts/resume/webhook.test.mjs"
   },
   "keywords": [],
   "author": "",
