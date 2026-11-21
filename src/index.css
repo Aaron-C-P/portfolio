@@ -174,3 +174,26 @@ body, header, section, .glass { transition: background-color 0.3s, color 0.3s, b
 .tutor-md ol { list-style: decimal; padding-left: 1.25rem; }
 .tutor-md li + li { margin-top: 0.25rem; }
 .tutor-md .katex-display { margin: 0.6rem 0; overflow-x: auto; overflow-y: hidden; }
+
+/* Dark mode: opt-in with the header toggle (the site opens in light). */
+html[data-theme="dark"] {
+  --c-ink: 10 10 12;
+  --c-panel: 19 19 22;
+  --c-raise: 33 33 38;
+  --c-fg: 232 229 244;
+  --c-soft: 168 166 184;
+  --c-cream: 254 238 175;
+  --c-violet-light: 167 139 250;
+  --c-line: 255 255 255;
+  --c-tint: 255 255 255;
+  --border: 240 4% 20%;
+  color-scheme: dark;
+}
+html[data-theme="dark"] .glass { background-color: rgb(255 255 255 / 0.05); }
+html[data-theme="dark"] .text-emerald-300 { color: #6ee7b7; }
+html[data-theme="dark"] .text-sky-300 { color: #7dd3fc; }
+html[data-theme="dark"] .text-amber-200 { color: #fde68a; }
+html[data-theme="dark"] .text-amber-100 { color: #fef3c7; }
+html[data-theme="dark"] .text-pink-200 { color: #fbcfe8; }
+html[data-theme="dark"] .text-red-400\/80 { color: rgb(248 113 113 / 0.8); }
+html[data-theme="dark"] ::selection { background: rgba(118, 71, 235, 0.55); }

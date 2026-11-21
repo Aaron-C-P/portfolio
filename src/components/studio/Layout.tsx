@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import { Menu, X, Github, Linkedin, Lock, Mail, Phone, ChevronDown } from "lucide-react";
+import { Menu, X, Github, Linkedin, Lock, Mail, Phone, ChevronDown, Sun, Moon } from "lucide-react";
 import { Spider } from "@/components/studio/Spider";
 import { ResumeStudioIcon } from "@/components/studio/AppIcon";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
@@ -11,6 +11,7 @@ import { Assistant } from "@/components/studio/Assistant";
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 import { useLite } from "@/lib/lite";
+import { useTheme } from "@/lib/theme";
 
 const mainNav: { to: string; label: string; end?: boolean; spider?: boolean; doc?: boolean }[] = [
   { to: "/", label: "Home", end: true },
@@ -48,6 +49,7 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
   const { pathname } = useLocation();
+  const { theme, toggle } = useTheme();
 
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
@@ -112,6 +114,9 @@ const Header = () => {
           <Link to="/contact" className="btn-primary hidden whitespace-nowrap min-[1400px]:inline-flex">
             Start a conversation
           </Link>
+          <button onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} title={theme === "dark" ? "Light mode" : "Dark mode"} className="inline-flex rounded-lg p-2 text-soft transition hover:text-violet-light">
+            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
           <Link to="/admin" aria-label="Admin login" title="Admin login" className="inline-flex rounded-lg p-2 text-soft transition hover:text-violet-light">
             <Lock className="h-5 w-5" />
           </Link>
