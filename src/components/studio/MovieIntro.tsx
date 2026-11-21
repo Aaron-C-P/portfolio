@@ -23,7 +23,8 @@ const SCENES: Scene[] = [
   { key: "content", ms: 3400, kicker: "02 · Content creation", title: "Stories that get seen", lines: ["Brand films", "Writing for real audiences", "A feed that shows the work"] },
   { key: "tech", ms: 3400, kicker: "03 · Technology", title: "Built to last", lines: ["Fast on a phone", "Clear for the people using it", "Yours to own and update"] },
   { key: "brand", ms: 3400, kicker: "04 · Branding", title: "Brand the person, too", lines: ["Your story", "Your look", "One place that proves it"] },
-  { key: "resume", ms: 6000, kicker: "05 · The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
+  { key: "siteforge", ms: 4000, kicker: "05 · SiteForge", title: "Describe it. Get a site.", lines: ["My own AI website builder", "Edit any word or photo yourself", "Built Help Hamster Haven"] },
+  { key: "resume", ms: 6000, kicker: "06 · The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
 ];
 
 /** The résumé as three layers drifting apart: art, words, and the plain text an ATS reads. */
@@ -56,7 +57,7 @@ const LayersReel = () => {
 };
 
 /**
- * The opening film on the home page: six short scenes flying through a 3D grid, ending on the live résumé studio.
+ * The opening film on the home page: seven short scenes flying through a 3D grid, ending on the live résumé studio.
  * It plays once per browser session, can be skipped at any time (button or Esc), is skipped entirely for people who
  * ask their device for reduced motion, and can be replayed from the home page. Plain CSS 3D, no WebGL.
  */
