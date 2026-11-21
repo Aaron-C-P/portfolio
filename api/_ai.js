@@ -17,7 +17,7 @@ const DEFAULT_MODELS = [
 const ANTHROPIC_MODEL = process.env.AI_MODEL || "claude-haiku-4-5-20251001";
 const MAX_TRIES = Number(process.env.OPENROUTER_MAX_ATTEMPTS || 4);
 
-export const aiConfigured = () => !!(process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY);
+export const aiConfigured = () => !!(process.env.OPENROUTER_API_KEY || process.env.AI_FALLBACK_API_KEY || process.env.ANTHROPIC_API_KEY);
 
 const models = () => {
   const own = (process.env.OPENROUTER_MODELS || "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -27,16 +27,16 @@ const models = () => {
 // Some free models wrap their answer in reasoning tags. Remove them.
 const tidy = (t) => String(t || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
-async function openRouter({ system, messages, maxTokens }) {
+async function openAiCompatible({ base, key, list, system, messages, maxTokens }) {
   let lastErr = "no reply";
-  for (const model of models().slice(0, MAX_TRIES)) {
+  for (const model of list.slice(0, MAX_TRIES)) {
     try {
-      const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const r = await fetch(`${base}/chat/completions`, {
         method: "POST",
         signal: AbortSignal.timeout(Number(process.env.OPENROUTER_TIMEOUT_MS || 25000)),
         headers: {
           "content-type": "application/json",
-          authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          authorization: `Bearer ${key}`,
           "http-referer": process.env.SITE_URL || "https://aaronprince.dev",
           "x-title": "Aaron Prince portfolio",
         },
@@ -54,7 +54,7 @@ async function openRouter({ system, messages, maxTokens }) {
       lastErr = `${model} ${e?.name === "TimeoutError" ? "timeout" : e?.message}`;
     }
   }
-  throw new Error(`All free models failed (${lastErr})`);
+  throw new Error(`All models failed (${lastErr})`);
 }
 
 async function anthropic({ system, messages, maxTokens }) {
@@ -69,16 +69,32 @@ async function anthropic({ system, messages, maxTokens }) {
   return { text, model: ANTHROPIC_MODEL };
 }
 
-/** Returns { text, model }, or null when no AI key is configured. Throws if the provider fails. */
+/** Returns { text, model }, or null when no AI key is configured. Throws if every provider fails.
+ *  Order: OpenRouter free models, then a second OpenAI-compatible router (AI_FALLBACK_*), then Anthropic. */
 export async function complete({ system, messages, maxTokens = 500 }) {
+  const errors = [];
   if (process.env.OPENROUTER_API_KEY) {
     try {
-      return await openRouter({ system, messages, maxTokens });
+      return await openAiCompatible({ base: "https://openrouter.ai/api/v1", key: process.env.OPENROUTER_API_KEY, list: models(), system, messages, maxTokens });
     } catch (e) {
-      if (!process.env.ANTHROPIC_API_KEY) throw e;
-      console.error("OpenRouter failed, using Anthropic:", e.message);
+      errors.push(e.message);
     }
   }
-  if (process.env.ANTHROPIC_API_KEY) return anthropic({ system, messages, maxTokens });
+  if (process.env.AI_FALLBACK_API_KEY && process.env.AI_FALLBACK_BASE_URL && process.env.AI_FALLBACK_MODEL) {
+    try {
+      const base = process.env.AI_FALLBACK_BASE_URL.replace(/\/+$/, "");
+      return await openAiCompatible({ base, key: process.env.AI_FALLBACK_API_KEY, list: process.env.AI_FALLBACK_MODEL.split(",").map((s) => s.trim()).filter(Boolean), system, messages, maxTokens });
+    } catch (e) {
+      errors.push(e.message);
+    }
+  }
+  if (process.env.ANTHROPIC_API_KEY) {
+    try {
+      return await anthropic({ system, messages, maxTokens });
+    } catch (e) {
+      errors.push(e.message);
+    }
+  }
+  if (errors.length) throw new Error(errors.join(" | "));
   return null;
 }

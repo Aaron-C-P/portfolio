@@ -9,6 +9,7 @@ import {
   basicChecks, bulletTips, emptyResume, exampleResume, extractKeywords, matchScore, type Resume,
 } from "@/lib/resumeEngine";
 import { atsChecks, atsText } from "@/lib/resumeFormat";
+import { BulletCoach } from "@/components/studio/BulletCoach";
 import { Fit, ResumeDoc } from "@/components/studio/ResumeDoc";
 import { TemplateGallery } from "@/components/studio/TemplateGallery";
 import { samples } from "@/data/resumeSamples";
@@ -271,6 +272,7 @@ const ResumeStudio = () => {
                   <li key={i} className="rounded-xl border border-line bg-panel p-3 text-sm">
                     <p>{t.text}</p>
                     <p className={`mt-1 ${t.strength > 0.7 ? "text-emerald-300" : "text-amber-200"}`}><Sparkles className="mr-1 inline h-3.5 w-3.5" />{t.tip}</p>
+                    <BulletCoach bullet={t.text} posting={s.posting} onUse={(text) => setR({ experience: r.experience.map((j) => { let done = false; return { ...j, bullets: j.bullets.map((b) => (!done && b === t.text ? ((done = true), text) : b)) }; }) })} />
                   </li>
                 ))}
               </ul>

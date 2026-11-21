@@ -22,7 +22,7 @@ test("falls through busy and empty free models and strips <think> blocks", async
 
 test("throws when every free model fails, and returns null with no key", async () => {
   globalThis.fetch = async () => new Response("no", { status: 500 });
-  await assert.rejects(() => complete({ system: "s", messages: [] }), /All free models failed/);
+  await assert.rejects(() => complete({ system: "s", messages: [] }), /All models failed/);
   delete process.env.OPENROUTER_API_KEY;
   assert.equal(await complete({ system: "s", messages: [] }), null);
 });

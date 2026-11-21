@@ -1,4 +1,5 @@
 import { localReply } from "@/lib/localReply";
+import { apiUrl } from "@/lib/apiBase";
 
 export type Msg = { role: "user" | "assistant"; content: string };
 
@@ -70,7 +71,7 @@ export async function askAI(history: Msg[], page: string): Promise<string | null
   try {
     const turns = [...history];
     while (turns.length && turns[0].role === "assistant") turns.shift();
-    const r = await fetch("/api/chat", {
+    const r = await fetch(apiUrl("/api/chat"), {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ messages: turns, page }),

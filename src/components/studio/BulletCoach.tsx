@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
+import { apiUrl } from "@/lib/apiBase";
 
 /** Free AI rewrite of one résumé bullet (via /api/resume-ai). Never invents numbers: gaps come back as [placeholders]. */
 export const BulletCoach = ({ bullet, posting, onUse }: { bullet: string; posting: string; onUse: (text: string) => void }) => {
@@ -11,7 +12,7 @@ export const BulletCoach = ({ bullet, posting, onUse }: { bullet: string; postin
     setState("busy");
     setError("");
     try {
-      const res = await fetch("/api/resume-ai", {
+      const res = await fetch(apiUrl("/api/resume-ai"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "bullet", bullet, posting }),

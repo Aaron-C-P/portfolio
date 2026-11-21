@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { localReply } from "@/lib/localReply";
 import profilePhoto from "@/assets/portfolio/aaron-hero.png";
+import { apiUrl } from "@/lib/apiBase";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -51,7 +52,7 @@ export const AICloneChat = () => {
         // History must start with a user message.
         const history = [...next];
         while (history.length && history[0].role === "assistant") history.shift();
-        const r = await fetch("/api/chat", {
+        const r = await fetch(apiUrl("/api/chat"), {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ messages: history }),

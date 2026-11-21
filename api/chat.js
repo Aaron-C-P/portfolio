@@ -6,9 +6,7 @@
 // Without that key the site still works — the chat falls back to a built-in
 // offline responder on the front end.
 
-// Cheapest capable model — great for a portfolio chat. Swap to
-// "claude-sonnet-4-6" for richer, longer answers (costs a bit more).
-const MODEL = "claude-haiku-4-5-20251001";
+import { complete, aiConfigured } from "./_ai.js";
 
 const SYSTEM_PROMPT = `You are the AI clone of Aaron Prince, speaking AS Aaron in first person ("I", "my"). A visitor on Aaron's portfolio site is chatting with you. Be warm, grounded, and concise — usually 2-4 sentences. Sound like a sharp, humble young engineer, not a marketing bot. A little Jamaican warmth is fine; never caricature.
 
@@ -66,15 +64,20 @@ export default async function handler(req, res) {
 
   if (tooMany(req)) return res.status(429).json({ error: "Too many questions, try again in a few minutes." });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  if (!aiConfigured()) {
     // No key configured — tell the client so it can use its offline fallback.
     return res.status(503).json({ error: "AI not configured" });
   }
 
   try {
     let body = req.body;
-    if (typeof body === "string") body = JSON.parse(body || "{}");
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body || "{}");
+      } catch {
+        return res.status(400).json({ error: "Bad request" });
+      }
+    }
     const incoming = Array.isArray(body?.messages) ? body.messages : [];
     // Which page the visitor is on, so answers can fit it. Only a plain path is accepted.
     const page = typeof body?.page === "string" ? body.page.replace(/[^\w/-]/g, "").slice(0, 80) : "";

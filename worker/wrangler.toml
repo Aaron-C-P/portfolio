@@ -1,0 +1,8 @@
+name = "aaron-ai"
+main = "index.js"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Your site(s) allowed to call this Worker. Use "*" while testing.
+ALLOWED_ORIGINS = "*"

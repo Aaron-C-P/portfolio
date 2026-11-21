@@ -5,6 +5,7 @@ import rehypeKatex from "rehype-katex";
 import { BookOpen, Send, ShieldCheck } from "lucide-react";
 import "katex/dist/katex.min.css";
 import { retrieve, subjects, type TutorNote } from "@/lib/tutorKb";
+import { apiUrl } from "@/lib/apiBase";
 
 type Msg = { role: "user" | "assistant"; content: string; sources?: string[]; offline?: boolean };
 type Mode = "steps" | "hints" | "quiz";
@@ -80,7 +81,7 @@ export const TutorChat = () => {
     if (live) {
       try {
         const history = next.map(({ role, content }) => ({ role, content })).filter((_, i, a) => a.slice(0, i + 1).some((m) => m.role === "user"));
-        const r = await fetch("/api/tutor", {
+        const r = await fetch(apiUrl("/api/tutor"), {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ messages: history, subject, mode, notes: found.map(({ title, body }) => ({ title, body })) }),

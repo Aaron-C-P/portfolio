@@ -41,7 +41,13 @@ export default async function handler(req, res) {
 
   try {
     let body = req.body;
-    if (typeof body === "string") body = JSON.parse(body || "{}");
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body || "{}");
+      } catch {
+        return res.status(400).json({ error: "Bad request" });
+      }
+    }
 
     const messages = (Array.isArray(body?.messages) ? body.messages : [])
       .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
