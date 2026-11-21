@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useLite } from "@/lib/lite";
 import type { Project, Status } from "@/data/studio";
 
 export const usePageTitle = (title?: string) => {
@@ -12,7 +13,7 @@ export const usePageTitle = (title?: string) => {
 };
 
 export const Reveal = ({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) => {
-  const calm = useReducedMotion();
+  const calm = useReducedMotion() || useLite();
   // Safety net: if the scroll trigger never fires (print, screenshots, odd browsers) show the content anyway, so a section is never blank.
   const [late, setLate] = useState(false);
   useEffect(() => {

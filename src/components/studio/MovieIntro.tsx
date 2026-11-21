@@ -84,11 +84,11 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
   }, []);
 
   useEffect(() => {
-    if (!open || reduce) return;
+    if (!open) return;
     if (i >= SCENES.length - 1) return; // the last scene waits for the viewer
     const t = setTimeout(() => setI((x) => x + 1), SCENES[i].ms);
     return () => clearTimeout(t);
-  }, [open, i, reduce]);
+  }, [open, i]);
 
   useEffect(() => {
     if (!open) return;
@@ -102,9 +102,9 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
     };
   }, [open, close]);
 
-  const stars = useMemo(() => Array.from({ length: 36 }, (_, n) => ({ n, x: (n * 53) % 100, y: (n * 37) % 100, d: 2 + ((n * 7) % 5), s: 1 + (n % 3) })), []);
+  const stars = useMemo(() => Array.from({ length: typeof window !== "undefined" && window.innerWidth < 768 ? 14 : 36 }, (_, n) => ({ n, x: (n * 53) % 100, y: (n * 37) % 100, d: 2 + ((n * 7) % 5), s: 1 + (n % 3) })), []);
 
-  if (!open || reduce) return null;
+  if (!open) return null;
   const sc = SCENES[i];
   const last = i === SCENES.length - 1;
 
@@ -117,9 +117,9 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
         .mv-grid{background-image:linear-gradient(rgba(167,139,250,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(167,139,250,.55) 1px,transparent 1px);background-size:80px 80px;animation:mvgrid 1.6s linear infinite}
       `}</style>
       <div className="absolute inset-0" style={{ perspective: 700 }} aria-hidden="true">
-        <div className="mv-grid absolute left-[-50%] top-[55%] h-[160%] w-[200%] opacity-60" style={{ transform: "rotateX(72deg)", transformOrigin: "top", maskImage: "linear-gradient(to bottom,black,transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom,black,transparent 80%)" }} />
+        <div className={`${reduce ? "" : "mv-grid "}absolute left-[-50%] top-[55%] h-[160%] w-[200%] opacity-60`} style={{ transform: "rotateX(72deg)", transformOrigin: "top", maskImage: "linear-gradient(to bottom,black,transparent 80%)", WebkitMaskImage: "linear-gradient(to bottom,black,transparent 80%)" }} />
         <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
-          {stars.map((s) => (
+          {(reduce ? [] : stars).map((s) => (
             <span key={s.n} className="absolute rounded-full bg-white" style={{ left: `${s.x}%`, top: `${s.y * 0.7}%`, width: s.s, height: s.s, animation: `mvstar ${s.d}s linear ${-s.n * 0.3}s infinite` }} />
           ))}
         </div>

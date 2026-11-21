@@ -10,6 +10,7 @@ import { brand } from "@/data/studio";
 import { Assistant } from "@/components/studio/Assistant";
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
+import { useLite } from "@/lib/lite";
 
 const mainNav: { to: string; label: string; end?: boolean; spider?: boolean; doc?: boolean }[] = [
   { to: "/", label: "Home", end: true },
@@ -245,7 +246,9 @@ const Footer = () => {
 const PageStage = () => {
   const { pathname } = useLocation();
   const calm = useReducedMotion();
+  const lite = useLite();
   if (calm) return <Outlet />;
+  if (lite) return <motion.div key={pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}><Outlet /></motion.div>;
   return (
     <div style={{ perspective: 1400 }}>
       <motion.div

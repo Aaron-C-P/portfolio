@@ -61,6 +61,12 @@
   }
 }
 
+/* Phones: blurred or blended layers are the main cause of scroll jank, so drop them. */
+@media (max-width: 767px), (pointer: coarse) {
+  [class*="backdrop-blur"], .glass { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  [class*="blur-3xl"], [class*="blur-xl"] { animation: none !important; }
+}
+
 @layer components {
   .glass {
     @apply border border-line bg-white/[0.04] backdrop-blur-md;
