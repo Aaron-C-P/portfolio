@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, FastForward, Play } from "lucide-react";
 import { Spider } from "@/components/studio/Spider";
 import { ResumeDoc } from "@/components/studio/ResumeDoc";
 import { samples } from "@/data/resumeSamples";
-import { brand, services } from "@/data/studio";
+import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
+import { brand, projects, services } from "@/data/studio";
+
+const WEBBER_URL = "https://webber-beryl.vercel.app/";
+const shown = projects.filter((p) => p.image).slice(0, 4);
 
 const SEEN = "intro-seen-v1";
 
@@ -20,12 +23,13 @@ interface Scene {
 
 const SCENES: Scene[] = [
   { key: "title", ms: 3600, kicker: "A short film", title: brand.name, lines: ["Technology and digital solutions", "Built in Jamaica for the world"] },
-  { key: "services", ms: 3800, kicker: "01 · Services", title: "Things people can buy", lines: services.slice(0, 4).map((s) => s.title).concat(["Ordering systems · Data · Automation"]) },
-  { key: "content", ms: 3400, kicker: "02 · Content creation", title: "Stories that get seen", lines: ["Brand films", "Writing for real audiences", "A feed that shows the work"] },
-  { key: "tech", ms: 3400, kicker: "03 · Technology", title: "Built to last", lines: ["Fast on a phone", "Clear for the people using it", "Yours to own and update"] },
-  { key: "brand", ms: 3400, kicker: "04 · Branding", title: "Brand the person, too", lines: ["Your story", "Your look", "One place that proves it"] },
-  { key: "webber", ms: 4400, kicker: "05 · The Webber", title: "Let’s web you in.", lines: ["An automated website maker", "Clients edit their own site, or switch it off", "One fee, powered by free AI models"] },
-  { key: "resume", ms: 6000, kicker: "06 · The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
+  { key: "services", ms: 3800, kicker: "Services", title: "Things people can buy", lines: services.slice(0, 4).map((s) => s.title).concat(["Ordering systems · Data · Automation"]) },
+  { key: "projects", ms: 4200, kicker: "Real projects", title: "Built and shipped", lines: shown.map((p) => p.name) },
+  { key: "content", ms: 3200, kicker: "Content creation", title: "Stories that get seen", lines: ["Brand films", "Writing for real audiences", "A feed that shows the work"] },
+  { key: "tech", ms: 3200, kicker: "Technology", title: "Built to last", lines: ["Fast on a phone", "Clear for the people using it", "Yours to own and update"] },
+  { key: "new", ms: 4800, kicker: "What’s new", title: "Fresh off the build", lines: ["Résumé Studio: a living résumé you design in 3D", "Help Hamster Haven: student help, made friendly", "The Webber: websites made in minutes"] },
+  { key: "resume", ms: 5200, kicker: "The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
+  { key: "webber", ms: 4400, kicker: "Now live · The Webber", title: "Let’s web you in.", lines: ["Describe a business, get a website", "Clients edit their own site, or switch it off", "One simple monthly fee"] },
 ];
 
 /** The résumé as three layers drifting apart: art, words, and the plain text an ATS reads. */
@@ -131,6 +135,25 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
           <motion.div key={sc.key} initial={{ opacity: 0, z: -700, rotateY: -35 }} animate={{ opacity: 1, z: 0, rotateY: 0, transition: { duration: 0.8, delay: 0.2, ease: [0.2, 0.8, 0.2, 1] } }} exit={{ opacity: 0, z: 500, rotateY: 25, scale: 1.2, transition: { duration: 0.5 } }} style={{ transformStyle: "preserve-3d" }} className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.4em] text-violet-300">{sc.kicker}</p>
             <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl">{sc.title}</h2>
+            {sc.key === "projects" && (
+              <div className="mx-auto mt-6 grid grid-cols-4 gap-2 sm:gap-3" style={{ perspective: 800 }}>
+                {shown.map((p, n) => (
+                  <motion.img key={p.slug} src={p.image ?? ""} alt="" initial={{ opacity: 0, y: 60, rotateY: -50, z: -200 }} animate={{ opacity: 1, y: 0, rotateY: 0, z: 0 }} transition={{ delay: 0.4 + n * 0.28, type: "spring", stiffness: 70, damping: 12 }} className="aspect-[4/5] w-full rounded-xl border border-white/20 object-cover object-top shadow-2xl" />
+                ))}
+              </div>
+            )}
+            {sc.key === "new" && (
+              <div className="mx-auto mt-6 flex items-center justify-center gap-5">
+                {[<ResumeStudioIcon key="r" className="h-10 w-10 text-white" />, <Spider key="w" className="h-10 w-10" />].map((ic, n) => (
+                  <motion.div key={n} initial={{ scale: 0, rotate: -40, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 160, damping: 9, delay: 0.4 + n * 0.35 }}>
+                    <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 2.2, repeat: Infinity, delay: n * 0.4 }}>
+                      <AppTile tone={n === 0 ? "violet" : "amber"} size="h-20 w-20">{ic}</AppTile>
+                    </motion.div>
+                  </motion.div>
+                ))}
+                <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.3 }} className="rounded-full bg-fuchsia-500 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">New</motion.span>
+              </div>
+            )}
             {sc.key === "webber" && (
               <motion.div initial={{ opacity: 0, y: -80 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 60, damping: 8, delay: 0.3 }} className="mx-auto mt-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-amber-300 text-[#12141a] shadow-[0_0_60px_rgba(251,191,36,.45)]"><Spider className="h-16 w-16" /></motion.div>
             )}
@@ -143,7 +166,7 @@ export const MovieIntro = ({ force }: { force: boolean }) => {
             {last && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mt-8 flex flex-wrap justify-center gap-3">
                 <button onClick={close} autoFocus className="btn-primary"><Play className="h-4 w-4" /> Enter the site</button>
-                <Link to="/resume-builder" onClick={close} className="btn-ghost">Design my résumé <ArrowRight className="h-4 w-4" /></Link>
+                <a href={WEBBER_URL} target="_blank" rel="noopener noreferrer" onClick={close} className="btn-ghost">Try The Webber <ArrowRight className="h-4 w-4" /></a>
               </motion.div>
             )}
           </motion.div>

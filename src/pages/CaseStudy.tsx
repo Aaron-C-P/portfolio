@@ -59,7 +59,7 @@ const CaseStudy = () => {
         <p className="mt-4 max-w-2xl text-xl text-soft">{project.oneLiner}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           {project.slug === "the-webber" && (
-          <Link to="/webber" className="btn-primary">Try the working Webber</Link>
+          <a href="https://webber-beryl.vercel.app/" target="_blank" rel="noopener noreferrer" className="btn-primary">Try the working Webber</a>
         )}
         {project.live && (
             <a href={project.live} target="_blank" rel="noopener noreferrer" className="btn-primary">

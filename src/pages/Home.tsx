@@ -200,7 +200,7 @@ const Home = () => {
             </span>
             <span className="btn-primary mt-5 self-start">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </Link>
-          <Link to="/webber" className="group flex flex-col rounded-3xl border border-amber-300/40 bg-gradient-to-br from-amber-300/15 via-panel to-panel p-6 transition hover:border-amber-300 md:p-7">
+          <a href="https://webber-beryl.vercel.app/" target="_blank" rel="noopener noreferrer" className="group flex flex-col rounded-3xl border border-amber-300/40 bg-gradient-to-br from-amber-300/15 via-panel to-panel p-6 transition hover:border-amber-300 md:p-7">
             <span className="flex items-center gap-4">
               <AppTile tone="amber"><Spider className="h-10 w-10" /></AppTile>
               <span>
@@ -211,7 +211,7 @@ const Home = () => {
             <span className="mt-4 block text-lg font-semibold">Let’s web you in.</span>
             <span className="mt-1 block text-soft">Describe a business and it spins the site. The owner edits it, switches it off or cancels any time, for one monthly fee.</span>
             <span className="btn-primary mt-5 self-start">Try The Webber <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-          </Link>
+          </a>
         </div>
         <p className="mt-3 text-right"><ReplayIntro onReplay={() => setPlays((n) => n + 1)} /></p>
       </section>

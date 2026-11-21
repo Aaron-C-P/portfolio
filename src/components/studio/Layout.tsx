@@ -18,8 +18,6 @@ const mainNav: { to: string; label: string; end?: boolean; spider?: boolean; doc
   { to: "/work", label: "Work" },
   { to: "/services", label: "Services" },
   { to: "/assignment-help", label: "Student Help" },
-  { to: "/resume-builder", label: "Résumé Studio", doc: true },
-  { to: "/webber", label: "The Webber", spider: true },
   { to: "/about", label: "About" },
 ];
 const moreNav: { to: string; label: string }[] = [
