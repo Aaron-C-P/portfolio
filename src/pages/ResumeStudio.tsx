@@ -10,6 +10,7 @@ import {
 } from "@/lib/resumeEngine";
 import { atsChecks, atsText } from "@/lib/resumeFormat";
 import { Stage3D } from "@/components/studio/Stage3D";
+import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
 import { BulletCoach } from "@/components/studio/BulletCoach";
 import { TemplateGallery } from "@/components/studio/TemplateGallery";
 import { samples } from "@/data/resumeSamples";
@@ -169,7 +170,10 @@ const ResumeStudio = () => {
   return (
     <div className="mx-auto max-w-5xl px-5 pb-24 pt-32">
       <style>{`@media print{#resume-preview,#resume-stage{display:none!important}}`}</style>
-      <Note>{studio.name}</Note>
+      <div className="flex items-center gap-3">
+        <AppTile tone="violet" size="h-12 w-12"><ResumeStudioIcon className="h-7 w-7" /></AppTile>
+        <Note>{studio.name}</Note>
+      </div>
       <h1 className="h-section mt-1 md:text-5xl">A résumé built for the job you want.</h1>
       <p className="mt-3 max-w-2xl text-lg text-soft">Paste the job, add your details, and the app shows how well you match and what to sharpen, in a format applicant tracking systems read. Build and preview free. A clean download is {priceLabel}.</p>
 
