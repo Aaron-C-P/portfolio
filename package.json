@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "resume:coach": "node scripts/resume/coach.mjs",
     "resume:apply": "node scripts/resume/coach.mjs --apply",
-    "resume:test": "node scripts/resume/webhook.test.mjs"
+    "resume:test": "node scripts/resume/webhook.test.mjs",
+    "resume:code": "node scripts/resume/make-code.mjs"
   },
   "keywords": [],
   "author": "",

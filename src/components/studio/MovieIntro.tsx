@@ -9,7 +9,7 @@ import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
 import { brand, projects, services } from "@/data/studio";
 
 const WEBBER_URL = "https://webber-beryl.vercel.app/";
-const shown = projects.filter((p) => p.image).slice(0, 4);
+const shown = ["chef-hudsons-christmas-cakes", "errands", "egzit", "the-webber"].map((s) => projects.find((p) => p.slug === s)).filter((p): p is (typeof projects)[number] => !!p && !!p.image);
 
 const SEEN = "intro-seen-v1";
 

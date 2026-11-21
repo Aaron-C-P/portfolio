@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, CalendarCheck, Pause, Play, RotateCcw } from "lucide-react";
 import hero from "@/assets/portfolio/aaron-hero.png";
 import egzit from "@/assets/portfolio/egzit-mockup.png";
-import bns from "@/assets/portfolio/bns-preorder.png";
+import webberHome from "@/assets/work/webber-home.jpg";
 import { brand } from "@/data/studio";
 
 /**
@@ -67,12 +67,12 @@ const scenes: Scene[] = [
           <ul className="mt-3 space-y-3 text-xl font-bold md:text-2xl">
             <li>Cake ordering platform: a 40-customer burst went from 9 errors to 0 <span className="text-sm font-semibold text-white/70">(simulation)</span></li>
             <li>EGZIT marketplace: 14-table database with row-level security</li>
-            <li>Staff lunch pre-order tool, live over Google Sheets</li>
+            <li>The Webber: describe a business, get a website, live now</li>
           </ul>
         </div>
         <div className="hidden gap-3 md:grid">
           <img src={egzit} alt="" className="max-h-32 w-full rounded-2xl object-cover" />
-          <img src={bns} alt="" className="max-h-32 w-full rounded-2xl object-cover" />
+          <img src={webberHome} alt="" className="max-h-32 w-full rounded-2xl object-cover" />
         </div>
       </div>
     ),
@@ -146,7 +146,7 @@ export const BrandAd = ({ showTitle = true, pageTitle = false }: { showTitle?: b
 
   return (
     <div>
-      {showTitle && <Title className="mb-5 text-3xl font-extrabold md:text-5xl">Watch the 30-second version.</Title>}
+      {showTitle && <Title className="mb-5 text-3xl font-extrabold md:text-5xl">Now live: The Webber.</Title>}
       <div ref={box} role="region" aria-label="Brand ad, 30 seconds. Use the controls to pause or choose a scene." className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1b0f3d] via-violet to-[#3b1d99] p-6 text-white shadow-2xl sm:aspect-video md:p-12">
         <motion.div aria-hidden="true" className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-fuchsia-500/30 blur-3xl" animate={reduced ? undefined : { x: [0, -40, 0], y: [0, 30, 0] }} transition={{ duration: 12, repeat: Infinity }} />
         <AnimatePresence mode="wait">

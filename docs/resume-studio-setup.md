@@ -65,3 +65,13 @@ Open the Apps Script project, paste in the latest `docs/apps-script/Code.gs`, th
 | "Unlocking is not switched on yet" | `RESUME_CODE_SECRET` missing |
 | Sheet shows nothing | Apps Script not redeployed as a New version |
 | Download says "Could not build the PDF" | Check the Vercel function log for `/api/resume-pdf` |
+
+## Paying by bank transfer or WiPay (no Lemon Squeezy)
+
+If a customer pays you directly, make their unlock code yourself. No redeploy is needed:
+
+```
+$env:RESUME_CODE_SECRET="<the same value you set on Vercel>"; npm run resume:code -- RS-THEIR-REFERENCE
+```
+
+Email them the code it prints. The Get it page tells them where to type it. Codes last 90 days.

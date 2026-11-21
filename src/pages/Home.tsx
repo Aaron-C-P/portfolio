@@ -5,6 +5,7 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { MovieIntro, ReplayIntro } from "@/components/studio/MovieIntro";
+import { WhatsNew } from "@/components/studio/WhatsNew";
 import { Spider } from "@/components/studio/Spider";
 import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
@@ -117,6 +118,7 @@ const Home = () => {
   return (
     <>
       <MovieIntro key={plays} force={plays > 0 || params.get("intro") === "1"} />
+      <WhatsNew />
       <section className="relative isolate overflow-hidden pt-28">
         <div className="absolute inset-0 -z-10">
           <motion.img

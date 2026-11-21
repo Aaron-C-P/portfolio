@@ -27,7 +27,7 @@ const AtsReading = ({ r, locked }: { r: Resume; locked: boolean }) => (
  * tracking system reads. Move the pointer to tilt it; "Explode" pulls the layers apart so you can see the idea:
  * the art is decoration, the text is the product. Everything is CSS 3D, no WebGL, so it works on any phone.
  */
-export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Resume; templateId: string; variant: number; locked: boolean; onRemix?: () => void; id?: string }) => {
+export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Resume; templateId: string; variant: number; locked: boolean; onRemix?: (dir?: 1 | -1) => void; id?: string }) => {
   const reduce = useReducedMotion();
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.55);
@@ -83,7 +83,7 @@ export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Re
         <div aria-hidden="true" className="absolute inset-x-8 bottom-0 h-6 rounded-[50%] bg-black/40 blur-xl" />
         <motion.div style={{ position: "relative", width: PAGE_W, height: pageH, rotateX: rx, rotateY: ry, scale, transformStyle: "preserve-3d", transformOrigin: "top center", marginLeft: "50%", x: "-50%" }} className={reduce ? "" : "rs-float"}>
           <div style={{ ...layer(z.art), boxShadow: "0 30px 60px rgba(0,0,0,.35)" }}>
-            <ResumeDoc r={r} templateId={templateId} variant={variant} locked={locked} layer="art" minH={pageH} />
+            <motion.div key={`${templateId}-${variant}`} initial={reduce ? { opacity: 0 } : { opacity: 0, rotateY: 22, scale: 0.96 }} animate={{ opacity: 1, rotateY: 0, scale: 1 }} transition={{ duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }} style={{ position: "absolute", inset: 0, transformOrigin: "left center" }}><ResumeDoc r={r} templateId={templateId} variant={variant} locked={locked} layer="art" minH={pageH} /></motion.div>
             {Array.from({ length: pages - 1 }, (_, k) => (
               <div key={k} aria-hidden="true" className="absolute inset-x-0 border-t-2 border-dashed border-black/25" style={{ top: PAGE_H * (k + 1) }}>
                 <span className="absolute right-3 top-1 text-[22px] font-semibold text-black/40">Page {k + 2} starts about here</span>
@@ -105,7 +105,13 @@ export const Stage3D = ({ r, templateId, variant, locked, onRemix, id }: { r: Re
       <div className="mt-3 flex flex-wrap justify-center gap-2">
         <button type="button" onClick={() => setExplode((v) => !v)} aria-pressed={explode} className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm ${explode ? "border-violet-light bg-violet/30 text-cream" : "border-line text-soft hover:text-fg"}`}><Layers className="h-4 w-4" /> Explode layers</button>
         <button type="button" onClick={() => setXray((v) => !v)} aria-pressed={xray} className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm ${xray ? "border-emerald-300 bg-emerald-400/15 text-emerald-100" : "border-line text-soft hover:text-fg"}`}><ScanText className="h-4 w-4" /> ATS X-ray</button>
-        {onRemix && <button type="button" onClick={onRemix} className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-1.5 text-sm text-soft hover:text-fg"><Shuffle className="h-4 w-4" /> Remix the art</button>}
+        {onRemix && (
+          <span className="inline-flex items-center gap-1">
+            <button type="button" onClick={() => onRemix(-1)} aria-label="Previous remix" className="rounded-full border border-line px-3 py-1.5 text-sm text-soft hover:text-fg">‹</button>
+            <button type="button" onClick={() => onRemix(1)} className="inline-flex items-center gap-1.5 rounded-full border border-violet-light bg-violet/20 px-4 py-1.5 text-sm text-cream hover:bg-violet/30"><Shuffle className="h-4 w-4" /> Remix the art <span className="font-mono text-xs text-soft">#{variant + 1}</span></button>
+            <button type="button" onClick={() => onRemix(1)} aria-label="Next remix" className="rounded-full border border-line px-3 py-1.5 text-sm text-soft hover:text-fg">›</button>
+          </span>
+        )}
       </div>
     </div>
   );

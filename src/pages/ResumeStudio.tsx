@@ -113,6 +113,27 @@ const ResumeStudio = () => {
     setBusy(false);
   };
 
+  const saveDraft = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(s)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "resume-studio-draft.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const loadDraft = async (file?: File) => {
+    if (!file) return;
+    try {
+      const d = JSON.parse(await file.text()) as Partial<Saved>;
+      if (!d || typeof d !== "object" || !d.resume || !Array.isArray(d.resume.experience)) throw new Error("not a draft");
+      setS({ ...initial(), ...d, resume: { ...emptyResume(), ...d.resume } });
+      setMsg("");
+    } catch {
+      setMsg("That file is not a Résumé Studio draft.");
+    }
+  };
+
   const go = (step: number) => {
     setMsg("");
     patch({ step });
@@ -126,6 +147,8 @@ const ResumeStudio = () => {
     if (!lead.agree) return setMsg("Please tick the box so I can contact you about your order.");
     if (!lead.name.trim() || !/\S+@\S+\.\S+/.test(lead.email)) return setMsg("Please add your name and a valid email.");
     setBusy(true);
+    // Open the payment tab straight away (before any waiting) so the browser's popup blocker does not stop it.
+    const pay = studio.checkoutUrl ? window.open("about:blank", "_blank") : null;
     const data = new FormData();
     data.set("name", lead.name);
     data.set("email", lead.email);
@@ -134,7 +157,13 @@ const ResumeStudio = () => {
     await collect("builder", data);
     setBusy(false);
     patch({ ordered: true });
-    if (studio.checkoutUrl) window.open(`${studio.checkoutUrl}${studio.checkoutUrl.includes("?") ? "&" : "?"}checkout[custom][ref]=${s.ref}`, "_blank", "noopener");
+    if (studio.checkoutUrl) {
+      // Prefill the buyer's email and name so the unlock code is emailed to the address they just gave.
+      const q = `checkout[custom][ref]=${encodeURIComponent(s.ref)}&checkout[email]=${encodeURIComponent(lead.email)}&checkout[name]=${encodeURIComponent(lead.name)}`;
+      const url = `${studio.checkoutUrl}${studio.checkoutUrl.includes("?") ? "&" : "?"}${q}`;
+      if (pay) pay.location.href = url;
+      else window.open(url, "_blank", "noopener");
+    }
   };
 
   const unlock = async () => {
@@ -195,6 +224,8 @@ const ResumeStudio = () => {
         <section className="mt-8">
           <h2 className="text-2xl font-bold">Which job are you going for?</h2>
           <p className="mt-1 text-soft">Paste the job posting. The app finds the words the employer cares about and checks your résumé against them. You can skip this and add it later.</p>
+          <p className="mt-3 text-sm text-soft">Have a saved draft? <label className="cursor-pointer text-violet-light underline">Load it<input type="file" accept="application/json,.json" className="sr-only" onChange={(e) => void loadDraft(e.target.files?.[0])} /></label></p>
+          {msg && s.step === 0 && <p role="alert" className="mt-2 text-sm text-red-300">{msg}</p>}
           <label className="mt-4 block text-sm font-semibold">Job title you are applying for<input className={field} value={r.title} onChange={(e) => setR({ title: e.target.value })} placeholder="e.g. Customer Support Representative" /></label>
           <label className="mt-4 block text-sm font-semibold">Job posting (paste the whole thing)<textarea className={`${field} min-h-48`} value={s.posting} onChange={(e) => patch({ posting: e.target.value })} placeholder="Paste the job description here" /></label>
           {keywords.length > 0 && <p className="mt-3 text-sm text-soft">Found {keywords.length} key terms, such as: {keywords.slice(0, 6).map((k) => k.term).join(", ")}.</p>}
@@ -208,7 +239,7 @@ const ResumeStudio = () => {
                 <button key={x.id} role="tab" aria-selected={x.id === sample.id} onClick={() => setSampleId(x.id)} className={`rounded-full border px-4 py-1.5 text-sm ${x.id === sample.id ? "border-violet-light bg-violet/30 text-cream" : "border-line text-soft"}`}>{x.label}</button>
               ))}
             </div>
-            <div className="mt-5"><Stage3D id="resume-stage" r={sample.resume} templateId={s.template} variant={s.variant} locked={false} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
+            <div className="mt-5"><Stage3D id="resume-stage" r={sample.resume} templateId={s.template} variant={s.variant} locked={false} onRemix={(d = 1) => patch({ variant: (s.variant + d + 100) % 100, template: s.template === "classic" ? "aurora" : s.template })} /></div>
             <div className="mt-5"><TemplateGallery r={sample.resume} selected={s.template} onSelect={(id) => patch({ template: id })} locked={false} variant={s.variant} /></div>
             <p className="mt-3 text-sm text-soft">Selected: <b className="text-fg">{templateById(s.template).name}</b>. You can change it any time before you download.</p>
             <button className="mt-2 text-sm text-violet-light underline" onClick={() => patch({ resume: sample.resume })}>Start from this sample ({sample.label}) and edit it into yours</button>
@@ -316,7 +347,7 @@ const ResumeStudio = () => {
         <section className="mt-8">
           <h2 className="text-2xl font-bold">Design your résumé live</h2>
           <p className="mt-1 text-soft">This is your résumé in 3D. Move over it to tilt it, pull the layers apart, or switch on the ATS X-ray to see exactly what a tracking system reads: your words, in order, with the art ignored. Your text stays hidden in previews until you unlock the download.</p>
-          <div className="mt-5"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
+          <div className="mt-5"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={(d = 1) => patch({ variant: (s.variant + d + 100) % 100, template: s.template === "classic" ? "aurora" : s.template })} /></div>
           <p className="mt-3 text-center text-sm text-soft">{templateById(s.template).name}: {templateById(s.template).note}</p>
           <h3 className="mt-8 text-lg font-bold">Pick a style</h3>
           <div className="mt-3"><TemplateGallery r={r} selected={s.template} onSelect={(id) => patch({ template: id })} locked={!unlocked} variant={s.variant} /></div>
@@ -328,7 +359,12 @@ const ResumeStudio = () => {
         <section className="mt-8">
           <h2 className="text-2xl font-bold">{unlocked ? "Your résumé is ready" : "Your résumé preview"}</h2>
           <p className="mt-1 text-sm text-soft">Template: <b className="text-fg">{templateById(s.template).name}</b> <button className="ml-2 text-violet-light underline" onClick={() => go(3)}>Change</button></p>
-          <div className="mt-4"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
+          <div className="mt-4"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={(d = 1) => patch({ variant: (s.variant + d + 100) % 100, template: s.template === "classic" ? "aurora" : s.template })} /></div>
+
+          {(!r.name.trim() || !/S+@S+.S+/.test(r.email) || !r.experience.some((j) => j.bullets.some((b) => b.trim()))) && (
+            <p role="status" className="mt-4 rounded-xl border border-amber-400/50 bg-amber-400/10 p-3 text-sm">Your résumé is missing something employers look for: {[!r.name.trim() && "your name", !/S+@S+.S+/.test(r.email) && "a valid email", !r.experience.some((j) => j.bullets.some((b) => b.trim())) && "at least one experience bullet"].filter(Boolean).join(", ")}. <button className="underline" onClick={() => go(1)}>Fix it</button> before you pay.</p>
+          )}
+          <p className="mt-3 text-sm text-soft">Switching device or clearing your browser would lose your draft. <button className="text-violet-light underline" onClick={saveDraft}>Save a copy of my draft</button></p>
 
           {unlocked ? (
             <div className="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-5">
@@ -360,7 +396,7 @@ const ResumeStudio = () => {
                   <div className="mt-4 space-y-3 text-sm">
                     <p className="rounded-xl bg-raise p-3">Order reference: <b className="font-mono">{s.ref}</b></p>
                     {studio.checkoutUrl ? (
-                      <p className="text-soft">A secure payment page opened in a new tab. <a className="text-violet-light underline" href={studio.checkoutUrl} target="_blank" rel="noopener noreferrer">Open it again</a>. Card details are entered there, never on this site.</p>
+                      <p className="text-soft">A secure payment page opened in a new tab. <a className="text-violet-light underline" href={`${studio.checkoutUrl}${studio.checkoutUrl.includes("?") ? "&" : "?"}checkout[custom][ref]=${encodeURIComponent(s.ref)}&checkout[email]=${encodeURIComponent(lead.email)}&checkout[name]=${encodeURIComponent(lead.name)}`} target="_blank" rel="noopener noreferrer">Open it again</a>. Card details are entered there, never on this site.</p>
                     ) : bankReady ? (
                       <div className="text-soft"><p>Send {priceLabel} by bank transfer and use <b>{s.ref}</b> as the reference:</p><p className="mt-1">{bank.accountName}, {bank.bank}, account {bank.accountNumber}, branch {bank.branch}.</p></div>
                     ) : (
