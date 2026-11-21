@@ -373,13 +373,38 @@ function bindSlug(input, statusEl, current) {
   return check;
 }
 
-function viewNew() {
+// ---- AI model picker (free OpenRouter models) ----
+let MODELS = null;
+async function loadModels() {
+  if (!ME.aiEnabled || ME.aiProvider !== 'openrouter') return null;
+  if (!MODELS) {
+    try { MODELS = await api('/ai/models'); } catch { MODELS = { models: [], daily: null }; }
+  }
+  return MODELS;
+}
+const chosenModel = () => { try { return localStorage.getItem('aiModel') || ''; } catch { return ''; } };
+function modelPicker(m) {
+  if (!m || !m.models.length) return '';
+  const cur = chosenModel();
+  const left = m.daily ? `<span class="small muted">${m.daily.left} of ${m.daily.limit} free AI requests left today</span>` : '';
+  return `<label class="field">AI model
+    <select class="input" name="model" data-model>${m.models.map((x, i) => `<option value="${esc(x.id)}" ${(cur ? cur === x.id : i === 0) ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+    <span class="small muted">Free models. If one is busy, the next is tried automatically.</span> ${left}</label>`;
+}
+function bindModel(root) {
+  const sel = $('[data-model]', root);
+  if (sel) sel.onchange = () => { try { localStorage.setItem('aiModel', sel.value); } catch {} };
+}
+
+async function viewNew() {
+  const models = await loadModels();
   app.innerHTML = shell('sites', `
     <div class="wizard">
       ${accountBanner()}
       <div class="page-head"><div><h1>Build a new website</h1><p class="muted">The more you tell us, the better your site. Everything can be changed later.</p></div></div>
       <form class="card stack" novalidate>
         ${briefFields()}
+        ${modelPicker(models)}
         <div class="section-title">Your web address</div>
         <div class="slug-field"><input name="slug" placeholder="your-business" autocapitalize="off" autocomplete="off" spellcheck="false"><span>.${esc(ME.siteDomain)}</span></div>
         <p class="slug-status" data-slug-status></p>
@@ -390,6 +415,7 @@ function viewNew() {
   bindShell();
   const form = $('form');
   bindChips(form);
+  bindModel(form);
   let slugTouched = false;
   const check = bindSlug(form.slug, $('[data-slug-status]'));
   form.slug.addEventListener('input', () => (slugTouched = true));
@@ -407,7 +433,7 @@ function viewNew() {
     btn.disabled = true;
     $('[data-err]').textContent = '';
     try {
-      const { site, jobId } = await api('/sites', { method: 'POST', body: { brief, slug: slugify(form.slug.value) || undefined } });
+      const { site, jobId } = await api('/sites', { method: 'POST', body: { brief, slug: slugify(form.slug.value) || undefined, model: chosenModel() || undefined } });
       try {
         await runJob(jobId, `Building ${brief.name}`);
       } catch (err) {
@@ -710,13 +736,15 @@ async function viewBuilder(id) {
     return renderAI();
   }
 
-  function renderAI() {
+  async function renderAI() {
     const L = ME.limits;
+    const models = await loadModels();
     panel.innerHTML = `
       ${ME.aiEnabled ? '' : `<div class="notice">AI changes aren’t switched on yet. Use <b>✎ Edit</b> to change words and photos directly on your site.</div>`}
       <form class="ask stack" data-ask>
         <label class="field">What would you like to change?
           <textarea class="input" name="instruction" maxlength="2000" placeholder="e.g. Add a price list: haircut $1500, beard trim $800, kids cut $1000" ${ME.aiEnabled ? '' : 'disabled'}></textarea></label>
+        ${modelPicker(models)}
         <button class="btn btn-dark" ${ME.aiEnabled ? '' : 'disabled'}>✨ Make the change</button>
         ${ME.aiEnabled ? `<p class="small muted">${L.aiUsed} of ${L.aiPerMonth} AI changes used this month</p>` : ''}
       </form>
@@ -725,6 +753,7 @@ async function viewBuilder(id) {
       <div><p class="small muted" style="margin-bottom:8px">Recent changes</p>
         <div class="feed">${versions.slice(0, 5).map((v) => `<div class="item"><span>${esc(v.note || 'Change')}</span><span class="small muted">${timeAgo(v.created_at)}</span></div>`).join('') || '<p class="small muted">Nothing yet.</p>'}</div></div>`;
     const form = $('[data-ask]', panel);
+    bindModel(form);
     $$('.suggest button', panel).forEach((b) => (b.onclick = () => {
       form.instruction.value = b.textContent;
       form.instruction.focus();
@@ -735,7 +764,7 @@ async function viewBuilder(id) {
       if (!instruction) return form.instruction.focus();
       if (editing) return toast('Save or cancel your edits first.', true);
       try {
-        const { jobId } = await api(`/sites/${site.id}/ai-edit`, { method: 'POST', body: { instruction } });
+        const { jobId } = await api(`/sites/${site.id}/ai-edit`, { method: 'POST', body: { instruction, model: chosenModel() || undefined } });
         const job = await runJob(jobId, 'Making your change');
         await loadMe();
         await refresh();
@@ -837,7 +866,7 @@ async function viewBuilder(id) {
     $('[data-rebuild]', panel)?.addEventListener('click', async () => {
       if (!confirm('Create a brand-new design? Your current version stays in History.')) return;
       try {
-        const { jobId } = await api(`/sites/${site.id}/regenerate`, { method: 'POST', body: { brief: readBrief(bf) } });
+        const { jobId } = await api(`/sites/${site.id}/regenerate`, { method: 'POST', body: { brief: readBrief(bf), model: chosenModel() || undefined } });
         await runJob(jobId, 'Redesigning your site');
         await loadMe();
         await refresh();

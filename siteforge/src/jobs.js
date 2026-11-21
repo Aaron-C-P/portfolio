@@ -15,6 +15,7 @@ export function startJob({ userId, siteId, kind }, work) {
   );
   let last = 0;
   const update = (progress, message) => {
+    if (progress == null) progress = last; // message-only update keeps the bar where it is
     if (progress - last < 1 && !message) return;
     last = progress;
     q.run('UPDATE jobs SET progress = ?, message = COALESCE(?, message) WHERE id = ?', Math.round(progress), message || null, id);

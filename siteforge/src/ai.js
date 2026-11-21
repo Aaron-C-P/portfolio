@@ -1,10 +1,12 @@
-// AI website generation and editing (Anthropic Claude API, streamed).
-// If no ANTHROPIC_API_KEY is set, new sites are built from the built-in template instead,
-// so you can demo the whole product for free.
+// AI website generation and editing, streamed.
+// Providers: OpenRouter (free models, with automatic fallback between them) or Anthropic Claude.
+// With no key at all, new sites are built from the built-in template, so the whole product
+// can be demoed for free.
 import { config } from './config.js';
 import { templateSite } from './templates.js';
+import { listModels, resolveModelChain, dailyBudget, recordCall, providerName } from './models.js';
 
-export const aiEnabled = () => !!config.ai.apiKey;
+export const aiEnabled = () => providerName() !== 'none';
 
 const SHARED_RULES = `
 - Mobile-first and fully responsive: most visitors are on phones.
@@ -59,6 +61,66 @@ function briefToText(b) {
     .join('\n');
 }
 
+// ---------------------------------------------------------------------------------------
+// Transport
+// ---------------------------------------------------------------------------------------
+
+const RETRYABLE = new Set([402, 404, 408, 409, 425, 429, 500, 502, 503, 504, 520, 524, 529]);
+
+export class AiError extends Error {
+  constructor(message, { retryable = false, status } = {}) {
+    super(message);
+    this.retryable = retryable;
+    this.status = status;
+  }
+}
+
+// Reads a server-sent-events body and calls onData(json) for every "data:" event.
+async function readSse(res, onData) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+    let i;
+    while ((i = buf.indexOf('\n\n')) >= 0) {
+      const chunk = buf.slice(0, i);
+      buf = buf.slice(i + 2);
+      const data = chunk
+        .split('\n')
+        .filter((l) => l.startsWith('data:'))
+        .map((l) => l.slice(5).trim())
+        .join('');
+      if (!data || data === '[DONE]') continue;
+      let ev;
+      try {
+        ev = JSON.parse(data);
+      } catch {
+        continue;
+      }
+      onData(ev);
+    }
+  }
+}
+
+async function httpError(res, who) {
+  const body = await res.text().catch(() => '');
+  let detail = body.slice(0, 200);
+  try {
+    const j = JSON.parse(body);
+    detail = j.error?.message || j.message || detail;
+  } catch {}
+  const msg =
+    res.status === 429
+      ? `${who} is busy right now (rate limited).`
+      : res.status === 402
+        ? `${who} needs credits or has hit its free limit.`
+        : `${who} returned an error (${res.status}). ${detail}`;
+  return new AiError(msg, { retryable: RETRYABLE.has(res.status), status: res.status });
+}
+
 async function streamClaude({ system, user, onChars }) {
   const res = await fetch(`${config.ai.baseUrl}/v1/messages`, {
     method: 'POST',
@@ -75,56 +137,125 @@ async function streamClaude({ system, user, onChars }) {
       stream: true,
     }),
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`The AI service returned an error (${res.status}). ${body.slice(0, 200)}`);
-  }
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buf = '';
+  if (!res.ok) throw await httpError(res, 'The AI service');
   let text = '';
   let stopReason = null;
   const usage = { input_tokens: 0, output_tokens: 0 };
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
-    let i;
-    while ((i = buf.indexOf('\n\n')) >= 0) {
-      const chunk = buf.slice(0, i);
-      buf = buf.slice(i + 2);
-      const data = chunk
-        .split('\n')
-        .filter((l) => l.startsWith('data:'))
-        .map((l) => l.slice(5).trim())
-        .join('');
-      if (!data) continue;
-      let ev;
-      try {
-        ev = JSON.parse(data);
-      } catch {
-        continue;
-      }
-      if (ev.type === 'message_start') usage.input_tokens = ev.message?.usage?.input_tokens || 0;
-      else if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') {
-        text += ev.delta.text;
-        onChars?.(text.length);
-      } else if (ev.type === 'message_delta') {
-        if (ev.usage?.output_tokens != null) usage.output_tokens = ev.usage.output_tokens;
-        stopReason = ev.delta?.stop_reason || stopReason;
-      } else if (ev.type === 'error') {
-        throw new Error(`AI error: ${ev.error?.message || 'unknown'}`);
-      }
+  await readSse(res, (ev) => {
+    if (ev.type === 'message_start') usage.input_tokens = ev.message?.usage?.input_tokens || 0;
+    else if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') {
+      text += ev.delta.text;
+      onChars?.(text.length);
+    } else if (ev.type === 'message_delta') {
+      if (ev.usage?.output_tokens != null) usage.output_tokens = ev.usage.output_tokens;
+      stopReason = ev.delta?.stop_reason || stopReason;
+    } else if (ev.type === 'error') {
+      throw new AiError(`AI error: ${ev.error?.message || 'unknown'}`, { retryable: true });
+    }
+  });
+  if (stopReason === 'max_tokens') throw new AiError('The AI ran out of room before finishing. Try a shorter request.');
+  return { text, usage, model: config.ai.model };
+}
+
+// One streamed request to one OpenRouter model (OpenAI-compatible chat completions).
+async function streamOpenRouter({ model, system, user, onChars, signal }) {
+  const or = config.ai.openrouter;
+  const res = await fetch(`${or.baseUrl}/chat/completions`, {
+    method: 'POST',
+    signal,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${or.apiKey}`,
+      'http-referer': or.referer || config.appUrl,
+      'x-title': or.title || config.brand,
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: or.maxTokens,
+      temperature: 0.7,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      stream: true,
+      usage: { include: true },
+    }),
+  });
+  if (!res.ok) throw await httpError(res, 'OpenRouter');
+  let text = '';
+  let finish = null;
+  const usage = { input_tokens: 0, output_tokens: 0 };
+  await readSse(res, (ev) => {
+    if (ev.error) throw new AiError(`${model}: ${ev.error.message || 'stream error'}`, { retryable: true });
+    const choice = ev.choices?.[0];
+    const piece = choice?.delta?.content;
+    if (piece) {
+      text += piece;
+      onChars?.(text.length);
+    }
+    if (choice?.finish_reason) finish = choice.finish_reason;
+    if (ev.usage) {
+      usage.input_tokens = ev.usage.prompt_tokens || 0;
+      usage.output_tokens = ev.usage.completion_tokens || 0;
+    }
+  });
+  if (!text.trim()) throw new AiError(`${model} returned nothing.`, { retryable: true });
+  if (finish === 'length') throw new AiError(`${model} ran out of room before finishing.`, { retryable: true });
+  return { text, usage, model };
+}
+
+// Runs the request on the chosen free model, falling through to the next free models when one
+// is busy, rate limited, returns junk, or cuts off. `parse` validates the reply, so a model that
+// answers without a real web page also counts as a failure and the next one is tried.
+async function runOpenRouter({ system, user, onChars, onProgress, model, parse }) {
+  const budget = dailyBudget();
+  if (budget.left <= 0)
+    throw new AiError(
+      `The daily free AI limit (${budget.limit} requests) has been reached. It resets at 00:00 UTC. You can still edit text and photos yourself.`,
+    );
+  const chain = await resolveModelChain(model);
+  let lastErr;
+  let tried = 0;
+  for (const m of chain) {
+    if (dailyBudget().left <= 0 || tried >= config.ai.openrouter.maxAttempts) break;
+    tried++;
+    if (tried > 1) onProgress?.(null, 'That model is busy, trying another…');
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), config.ai.openrouter.timeoutMs);
+    try {
+      const r = await streamOpenRouter({ model: m, system, user, onChars, signal: ctrl.signal });
+      const parsed = parse(r.text);
+      recordCall(m, true);
+      return { ...r, parsed };
+    } catch (e) {
+      recordCall(m, false);
+      lastErr = e;
+      const timedOut = e?.name === 'AbortError';
+      const retry = timedOut || e.retryable || /did not contain a full web page/.test(e.message);
+      console.warn(`[ai] ${m} failed: ${timedOut ? 'timed out' : e.message}`);
+      if (!retry) throw e;
+    } finally {
+      clearTimeout(timer);
     }
   }
-  if (stopReason === 'max_tokens') throw new Error('The AI ran out of room before finishing. Try a shorter request.');
-  return { text, usage };
+  throw new AiError(`The free AI models are busy right now. Please try again in a minute. (${lastErr?.message || 'no reply'})`);
 }
+
+// Provider dispatch. Returns { text, usage, model, parsed }.
+async function complete({ system, user, onChars, onProgress, model, parse }) {
+  if (providerName() === 'openrouter') return runOpenRouter({ system, user, onChars, onProgress, model, parse });
+  const r = await streamClaude({ system, user, onChars });
+  return { ...r, parsed: parse(r.text) };
+}
+
+// ---------------------------------------------------------------------------------------
+// HTML helpers
+// ---------------------------------------------------------------------------------------
 
 export function extractHtml(text) {
   const start = text.search(/<!doctype html|<html[\s>]/i);
   const end = text.toLowerCase().lastIndexOf('</html>');
-  if (start < 0 || end < 0 || end < start) throw new Error('The AI reply did not contain a full web page. Please try again.');
+  if (start < 0 || end < 0 || end < start) throw new AiError('The AI reply did not contain a full web page. Please try again.', { retryable: true });
   return text.slice(start, end + 7);
 }
 
@@ -138,32 +269,42 @@ export function cleanHtml(html) {
 
 const progressFrom = (chars, expected) => Math.min(95, 8 + Math.round((chars / expected) * 87));
 
-export async function generateSite(brief, onProgress = () => {}) {
+export async function generateSite(brief, onProgress = () => {}, { model } = {}) {
   if (!aiEnabled()) {
     onProgress(60, 'Designing your site…');
     await new Promise((r) => setTimeout(r, 600));
-    return { html: templateSite(brief), usage: null };
+    return { html: templateSite(brief), usage: null, model: null };
   }
   onProgress(5, 'Planning the layout…');
-  const { text, usage } = await streamClaude({
+  const r = await complete({
     system: GENERATE_SYSTEM,
     user: `Build the website for this business:\n\n${briefToText(brief)}`,
-    onChars: (n) => onProgress(progressFrom(n, 28000), n < 3000 ? 'Choosing fonts and colours…' : n < 14000 ? 'Writing your pages…' : 'Adding the finishing touches…'),
+    model,
+    onProgress,
+    onChars: (n) =>
+      onProgress(progressFrom(n, 28000), n < 3000 ? 'Choosing fonts and colours…' : n < 14000 ? 'Writing your pages…' : 'Adding the finishing touches…'),
+    parse: (text) => cleanHtml(extractHtml(text)),
   });
-  return { html: cleanHtml(extractHtml(text)), usage };
+  return { html: r.parsed, usage: r.usage, model: r.model };
 }
 
-export async function editSite(html, instruction, brief, onProgress = () => {}) {
+export async function editSite(html, instruction, brief, onProgress = () => {}, { model } = {}) {
   if (!aiEnabled())
     throw new Error('AI editing is not switched on yet. You can still change text and photos with "Edit text & photos".');
   onProgress(5, 'Reading your site…');
-  const { text, usage } = await streamClaude({
+  const r = await complete({
     system: EDIT_SYSTEM,
     user: `Business details:\n${briefToText(brief || {})}\n\nCurrent website:\n${html}\n\nOwner's request: ${instruction}`,
+    model,
+    onProgress,
     onChars: (n) => onProgress(progressFrom(n, html.length + 500), 'Making your changes…'),
+    parse: (text) => {
+      const prefix = text.slice(0, Math.max(0, text.search(/<!doctype html|<html[\s>]/i)));
+      const m = prefix.match(/SUMMARY:\s*(.+)/i);
+      return { html: cleanHtml(extractHtml(text)), summary: m ? m[1].trim().slice(0, 300) : 'Updated your site.' };
+    },
   });
-  const prefix = text.slice(0, Math.max(0, text.search(/<!doctype html|<html[\s>]/i)));
-  const m = prefix.match(/SUMMARY:\s*(.+)/i);
-  const summary = m ? m[1].trim().slice(0, 300) : 'Updated your site.';
-  return { html: cleanHtml(extractHtml(text)), usage, summary };
+  return { html: r.parsed.html, summary: r.parsed.summary, usage: r.usage, model: r.model };
 }
+
+export { listModels };

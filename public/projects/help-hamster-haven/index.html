@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Help Hamster Haven</title>
+<meta name="description" content="A rescue and rehoming service for hamsters, with care guides, adoption support and supplies advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#ea580c;--ink:#14161c;--muted:#5b6170;--bg:#fbfaf7;--card:#fff;--line:#e8e5de;--radius:28px;--head:'Fredoka',system-ui,sans-serif;--body:'Nunito',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--bg);line-height:1.6;font-size:1.0625rem}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+.wrap{width:min(1120px,92%);margin:0 auto}
+h1,h2,h3{font-family:var(--head);font-weight:600;line-height:1.1;letter-spacing:-.01em}
+.nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 0}
+.logo{font-family:var(--head);font-weight:600;font-size:1.25rem;text-decoration:none;display:flex;align-items:center;gap:.5rem}
+.logo i{width:.75rem;height:.75rem;border-radius:50%;background:var(--brand);display:inline-block}
+.links{display:flex;gap:1.5rem;font-size:.95rem}
+.links a{text-decoration:none;color:var(--muted)}
+.links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.4rem;border-radius:var(--radius);font-weight:700;text-decoration:none;transition:transform .15s,box-shadow .15s;font-size:1rem}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 10px 24px -10px var(--brand)}
+.btn-ghost{border:2px solid var(--ink);color:var(--ink)}
+.nav .btn{padding:.55rem 1rem;font-size:.9rem}
+.hero{padding:4.5rem 0 3.5rem;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-40% -20% auto auto;width:60vw;height:60vw;background:radial-gradient(circle,color-mix(in srgb,var(--brand) 22%,transparent),transparent 65%);z-index:-1}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center}
+.eyebrow{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:1rem}
+.hero h1{font-size:clamp(2.6rem,6vw,4.6rem);margin-bottom:1.2rem}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:34rem;margin-bottom:2rem}
+.ctas{display:flex;flex-wrap:wrap;gap:.8rem}
+.hero-img{border-radius:calc(var(--radius) * 1.6);overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.45);transform:rotate(1.5deg)}
+.hero-img img{width:100%;aspect-ratio:4/5;object-fit:cover}
+section{padding:4.5rem 0}
+.head{max-width:40rem;margin-bottom:2.5rem}
+.head h2{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:.6rem}
+.head p{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.75rem;position:relative}
+.card b{display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:50%;background:color-mix(in srgb,var(--brand) 14%,#fff);color:var(--brand);font-family:var(--head);margin-bottom:1rem}
+.card h3{font-size:1.3rem;margin-bottom:.4rem}
+.card p{color:var(--muted)}
+.about .wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.about img{border-radius:calc(var(--radius) * 1.4);width:100%;aspect-ratio:4/3;object-fit:cover}
+.about p{color:var(--muted);margin-bottom:1rem}
+.gallery{background:var(--ink);color:#fff}
+.gallery .head p{color:#b9bcc6}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius)}
+.grid img:nth-child(2){margin-top:2rem}.grid img:nth-child(4){margin-top:2rem}
+.quotes{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+blockquote{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:var(--radius);padding:1.6rem;font-size:1.1rem}
+blockquote cite{display:block;margin-top:.8rem;font-style:normal;font-weight:700;color:var(--muted);font-size:.95rem}
+.contact-box{background:var(--brand);color:#fff;border-radius:calc(var(--radius) * 1.6);padding:clamp(2rem,5vw,3.5rem);display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.contact-box h2{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:.8rem}
+.contact-box .btn-primary{background:#fff;color:var(--ink);box-shadow:none}
+.contact-box ul{list-style:none;display:grid;gap:1rem}
+.contact-box li span{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;opacity:.8}
+.contact-box li a,.contact-box li p{font-weight:700;font-size:1.1rem;text-decoration:none}
+footer{padding:2rem 0 3rem;color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+@media (max-width:860px){
+  .links{display:none}
+  .hero{padding-top:2.5rem}
+  .hero .wrap,.about .wrap,.contact-box,.quotes{grid-template-columns:1fr}
+  .hero-img{transform:none}
+  .hero-img img{aspect-ratio:4/3}
+  .cards{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr}
+  .grid img:nth-child(n){margin-top:0}
+  section{padding:3.2rem 0}
+}
+@media (max-width:600px){
+  .nav .btn{display:none}
+  .logo{font-size:1.1rem}
+  .hero h1{font-size:2.5rem}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#home"><i></i>Help Hamster Haven</a>
+    <nav class="links"><a href="#services">Services</a><a href="#about">About</a><a href="#gallery">Gallery</a><a href="#contact">Contact</a></nav>
+    <a class="btn btn-primary" href="#contact">Get in touch</a>
+  </div>
+</header>
+
+<section id="home" class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Small-pet rescue and care</span>
+      <h1>Help Hamster Haven</h1>
+      <p>A rescue and rehoming service for hamsters, with care guides, adoption support and supplies advice.</p>
+      <div class="ctas"><a class="btn btn-primary" href="#contact">Get in touch</a><a class="btn btn-ghost" href="#services">See what we offer</a></div>
+    </div>
+    <div class="hero-img"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTEwMCIgdmlld0JveD0iMCAwIDkwMCAxMTAwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZWE1ODBjIiBzdG9wLW9wYWNpdHk9Ii45NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuNTUiLz48L2xpbmVhckdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InIiIGN4PSIuOCIgY3k9Ii4yIiByPSIuOCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii4zNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYjFkMjQiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNyKSIvPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NTAgNTAwKSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utb3BhY2l0eT0iLjg1IiBzdHJva2Utd2lkdGg9IjYuMjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cmVjdCB4PSItNjUiIHk9Ii00NSIgd2lkdGg9IjEzMCIgaGVpZ2h0PSI5NSIgcng9IjE1Ii8+PGNpcmNsZSByPSIyNy41MDAwMDAwMDAwMDAwMDQiIGN5PSIyLjUiLz48cGF0aCBkPSJNLTI1IC00NSBsMTAgLTE3LjUgaDMwIGwxMCAxNy41Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjYzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjUwIiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii45Ij5tYWluIHBob3RvPC90ZXh0Pgo8L3N2Zz4=" alt="Help Hamster Haven — main photo"></div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="head"><h2>What we offer</h2><p>Everything you need, done properly. Ask us about anything you don’t see here.</p></div>
+    <div class="cards">
+      <article class="card"><b>1</b><h3>What we do</h3><p>Describe your main service here in a sentence or two.</p></article>
+      <article class="card"><b>2</b><h3>How we work</h3><p>Tell customers what working with you is like.</p></article>
+      <article class="card"><b>3</b><h3>Why choose us</h3><p>Share what makes your business the right choice.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="about">
+  <div class="wrap">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAwIiBoZWlnaHQ9Ijc1MCIgdmlld0JveD0iMCAwIDEwMDAgNzUwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZWE1ODBjIiBzdG9wLW9wYWNpdHk9Ii45NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuNTUiLz48L2xpbmVhckdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InIiIGN4PSIuOCIgY3k9Ii4yIiByPSIuOCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii4zNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYjFkMjQiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNyKSIvPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1MDAgMzMzKSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utb3BhY2l0eT0iLjg1IiBzdHJva2Utd2lkdGg9IjUuMjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cmVjdCB4PSItNTQuNiIgeT0iLTM3LjgwMDAwMDAwMDAwMDAwNCIgd2lkdGg9IjEwOS4yIiBoZWlnaHQ9Ijc5LjgiIHJ4PSIxMi42Ii8+PGNpcmNsZSByPSIyMy4xIiBjeT0iMi4xIi8+PHBhdGggZD0iTS0yMSAtMzcuODAwMDAwMDAwMDAwMDA0IGw4LjQgLTE0LjcgaDI1LjIgbDguNCAxNC43Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjQ0Mi4yIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDIiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkiPmFib3V0IHVzPC90ZXh0Pgo8L3N2Zz4=" alt="Inside Help Hamster Haven">
+    <div>
+      <span class="eyebrow">About us</span>
+      <div class="head" style="margin-bottom:1rem"><h2>Built on care and good work</h2></div>
+      <p>A rescue and rehoming service for hamsters, with care guides, adoption support and supplies advice.</p>
+      <p>Tell your story here: how you started, who you serve, and what customers can count on when they choose Help Hamster Haven.</p>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" class="gallery">
+  <div class="wrap">
+    <div class="head"><h2>Take a look</h2><p>A few photos of our work. Replace these with your own.</p></div>
+    <div class="grid">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuOTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYTU4MGMiIHN0b3Atb3BhY2l0eT0iLjU1Ii8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyIiBjeD0iLjgiIGN5PSIuMiIgcj0iLjgiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuMzUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWIxZDI0Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcikiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwIDI2NykiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii44NSIgc3Ryb2tlLXdpZHRoPSI0LjEyNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxyZWN0IHg9Ii00Mi45IiB5PSItMjkuNyIgd2lkdGg9Ijg1LjgiIGhlaWdodD0iNjIuNjk5OTk5OTk5OTk5OTk2IiByeD0iOS45Ii8+PGNpcmNsZSByPSIxOC4xNTAwMDAwMDAwMDAwMDIiIGN5PSIxLjY1MDAwMDAwMDAwMDAwMDEiLz48cGF0aCBkPSJNLTE2LjUgLTI5LjcgbDYuNjAwMDAwMDAwMDAwMDAwNSAtMTEuNTQ5OTk5OTk5OTk5OTk5IGgxOS44IGw2LjYwMDAwMDAwMDAwMDAwMDUgMTEuNTQ5OTk5OTk5OTk5OTk5Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjM1Mi44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzMiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkiPmdhbGxlcnkgMTwvdGV4dD4KPC9zdmc+" alt="Gallery photo 1">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuOTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYTU4MGMiIHN0b3Atb3BhY2l0eT0iLjU1Ii8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyIiBjeD0iLjgiIGN5PSIuMiIgcj0iLjgiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuMzUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWIxZDI0Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcikiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwIDI2NykiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii44NSIgc3Ryb2tlLXdpZHRoPSI0LjEyNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxyZWN0IHg9Ii00Mi45IiB5PSItMjkuNyIgd2lkdGg9Ijg1LjgiIGhlaWdodD0iNjIuNjk5OTk5OTk5OTk5OTk2IiByeD0iOS45Ii8+PGNpcmNsZSByPSIxOC4xNTAwMDAwMDAwMDAwMDIiIGN5PSIxLjY1MDAwMDAwMDAwMDAwMDEiLz48cGF0aCBkPSJNLTE2LjUgLTI5LjcgbDYuNjAwMDAwMDAwMDAwMDAwNSAtMTEuNTQ5OTk5OTk5OTk5OTk5IGgxOS44IGw2LjYwMDAwMDAwMDAwMDAwMDUgMTEuNTQ5OTk5OTk5OTk5OTk5Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjM1Mi44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzMiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkiPmdhbGxlcnkgMjwvdGV4dD4KPC9zdmc+" alt="Gallery photo 2">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuOTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYTU4MGMiIHN0b3Atb3BhY2l0eT0iLjU1Ii8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyIiBjeD0iLjgiIGN5PSIuMiIgcj0iLjgiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuMzUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWIxZDI0Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcikiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwIDI2NykiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii44NSIgc3Ryb2tlLXdpZHRoPSI0LjEyNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxyZWN0IHg9Ii00Mi45IiB5PSItMjkuNyIgd2lkdGg9Ijg1LjgiIGhlaWdodD0iNjIuNjk5OTk5OTk5OTk5OTk2IiByeD0iOS45Ii8+PGNpcmNsZSByPSIxOC4xNTAwMDAwMDAwMDAwMDIiIGN5PSIxLjY1MDAwMDAwMDAwMDAwMDEiLz48cGF0aCBkPSJNLTE2LjUgLTI5LjcgbDYuNjAwMDAwMDAwMDAwMDAwNSAtMTEuNTQ5OTk5OTk5OTk5OTk5IGgxOS44IGw2LjYwMDAwMDAwMDAwMDAwMDUgMTEuNTQ5OTk5OTk5OTk5OTk5Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjM1Mi44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzMiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkiPmdhbGxlcnkgMzwvdGV4dD4KPC9zdmc+" alt="Gallery photo 3">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VhNTgwYyIgc3RvcC1vcGFjaXR5PSIuOTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYTU4MGMiIHN0b3Atb3BhY2l0eT0iLjU1Ii8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyIiBjeD0iLjgiIGN5PSIuMiIgcj0iLjgiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuMzUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWIxZDI0Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcikiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwIDI2NykiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii44NSIgc3Ryb2tlLXdpZHRoPSI0LjEyNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxyZWN0IHg9Ii00Mi45IiB5PSItMjkuNyIgd2lkdGg9Ijg1LjgiIGhlaWdodD0iNjIuNjk5OTk5OTk5OTk5OTk2IiByeD0iOS45Ii8+PGNpcmNsZSByPSIxOC4xNTAwMDAwMDAwMDAwMDIiIGN5PSIxLjY1MDAwMDAwMDAwMDAwMDEiLz48cGF0aCBkPSJNLTE2LjUgLTI5LjcgbDYuNjAwMDAwMDAwMDAwMDAwNSAtMTEuNTQ5OTk5OTk5OTk5OTk5IGgxOS44IGw2LjYwMDAwMDAwMDAwMDAwMDUgMTEuNTQ5OTk5OTk5OTk5OTk5Ii8+PC9nPgo8dGV4dCB4PSI1MCUiIHk9IjM1Mi44IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzMiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkiPmdhbGxlcnkgNDwvdGV4dD4KPC9zdmc+" alt="Gallery photo 4">
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <div class="head"><h2>What our customers say</h2></div>
+    <div class="quotes">
+      <blockquote>Add a real customer review here.<cite>— Customer name</cite></blockquote>
+      <blockquote>Add another review here — screenshots from WhatsApp or Google work great.<cite>— Customer name</cite></blockquote>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-box">
+      <div>
+        <h2>Ready when you are</h2>
+        <p style="margin-bottom:1.5rem;opacity:.9">Message us, call, or stop by — we’d love to hear from you.</p>
+        <a class="btn btn-primary" href="#contact">Get in touch</a>
+      </div>
+      <ul>
+          <li><span>Hours</span><p>Add your opening hours</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><span>© 2026 Help Hamster Haven</span><span></span></div>
+</footer>
+<a href="http://localhost:3055/?ref=help-hamster-haven" target="_blank" rel="noopener" style="position:fixed;right:12px;bottom:12px;z-index:2147483647;font:600 12px/1 system-ui,sans-serif;background:#111;color:#fff;padding:9px 13px;border-radius:999px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:.92">⚡ Made with SiteCraft</a></body>
+</html>

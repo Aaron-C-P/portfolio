@@ -39,8 +39,12 @@ To see the admin panel, put your email in `ADMIN_EMAILS` in `.env`, restart, sig
 email, then go to **http://localhost:3000/admin**.
 
 Without an AI key, new sites are built from the built-in template, so you can demo everything
-for free. To switch on real AI, get an API key at console.anthropic.com and set
-`ANTHROPIC_API_KEY` in `.env`.
+for free. To switch on real AI cheaply, use **OpenRouter free models**: buy $10 of credits once at
+openrouter.ai (this lifts the free-model cap from 50 to 1000 requests/day), create a key and set
+`OPENROUTER_API_KEY` in `.env`. SiteForge lists the free models, lets the user pick one, falls
+back to the next free model when one is busy or returns junk, counts every request against
+`OPENROUTER_DAILY_LIMIT` and stops cleanly at the limit. If every model fails, new sites still
+get the built-in design. Prefer Claude? Set `AI_PROVIDER=anthropic` and `ANTHROPIC_API_KEY`.
 
 Run the tests with `npm test`.
 

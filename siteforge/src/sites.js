@@ -8,7 +8,9 @@ import {
   createUser, startSession, endSession, verifyPassword, requireUser, limitsFor, publicUser, tooManyAttempts,
 } from './auth.js';
 import { storage, invalidate, UPLOAD_TYPES, contentTypeFor } from './storage/index.js';
-import { generateSite, editSite, aiEnabled } from './ai.js';
+import { generateSite, editSite, aiEnabled, listModels } from './ai.js';
+import { providerName, dailyBudget, isAllowedModel } from './models.js';
+import { templateSite } from './templates.js';
 import { startJob, getJob } from './jobs.js';
 import { checkoutAvailable } from './billing.js';
 
@@ -91,16 +93,28 @@ export function saveDraft(siteId, html, note, source) {
   );
 }
 
+const pickModel = (v) => {
+  const m = String(v || '').trim().slice(0, 120);
+  return isAllowedModel(m) ? m : '';
+};
+
 function recordUsage(userId, kind, usage) {
   if (!usage) return; // template builds cost nothing
   q.run('INSERT INTO ai_usage (user_id, kind, input_tokens, output_tokens, created_at) VALUES (?, ?, ?, ?, ?)',
     userId, kind, usage.input_tokens, usage.output_tokens, now());
 }
 
-function aiAllowed(user, res) {
+function aiAllowed(user, res, { allowDailyFallback = false } = {}) {
   const lim = limitsFor(user);
   if (!lim.state.active) {
     res.status(402).json({ error: 'Your plan has ended. Choose a plan to keep building.', code: 'inactive' });
+    return false;
+  }
+  if (!allowDailyFallback && providerName() === 'openrouter' && dailyBudget().left <= 0) {
+    res.status(429).json({
+      error: 'The free AI limit for today has been reached. It resets at 00:00 UTC. You can still edit text and photos yourself.',
+      code: 'ai_daily',
+    });
     return false;
   }
   if (aiEnabled() && lim.aiUsed >= lim.aiPerMonth) {
@@ -170,7 +184,20 @@ api.get('/me', (req, res) => {
     limits: { maxSites: lim.maxSites, aiPerMonth: lim.aiPerMonth, aiUsed: lim.aiUsed },
     plans: ['starter', 'business'].map((id) => ({ ...PLANS[id], checkout: checkoutAvailable(id) })),
     aiEnabled: aiEnabled(),
+    aiProvider: providerName(),
+    aiDaily: providerName() === 'openrouter' ? dailyBudget() : null,
     contact: config.contact,
+  });
+});
+
+// ---------- AI models (free OpenRouter models, with today's request budget) ----------
+api.get('/ai/models', requireUser, async (_req, res) => {
+  const models = await listModels();
+  res.json({
+    provider: providerName(),
+    models,
+    default: models[0]?.id || null,
+    daily: providerName() === 'openrouter' ? dailyBudget() : null,
   });
 });
 
@@ -189,7 +216,7 @@ api.get('/slug-check', requireUser, (req, res) => {
 
 api.post('/sites', (req, res) => {
   const lim = limitsFor(req.user);
-  if (!aiAllowed(req.user, res)) return;
+  if (!aiAllowed(req.user, res, { allowDailyFallback: true })) return;
   const count = q.get('SELECT COUNT(*) AS n FROM sites WHERE user_id = ?', req.user.id).n;
   if (count >= lim.maxSites)
     return res.status(402).json({ error: `Your plan allows ${lim.maxSites} website${lim.maxSites === 1 ? '' : 's'}. Upgrade to add more.`, code: 'site_limit' });
@@ -207,11 +234,19 @@ api.post('/sites', (req, res) => {
     id, req.user.id, slug, brief.name, JSON.stringify(brief), t, t,
   );
   const userId = req.user.id;
+  const model = pickModel(req.body?.model);
   const jobId = startJob({ userId, siteId: id, kind: 'generate' }, async (update) => {
-    const { html, usage } = await generateSite(brief, update);
-    recordUsage(userId, 'generate', usage);
-    saveDraft(id, html, 'AI built your site', 'ai');
-    return { message: 'Your site is ready!' };
+    try {
+      const { html, usage } = await generateSite(brief, update, { model });
+      recordUsage(userId, 'generate', usage);
+      saveDraft(id, html, 'AI built your site', 'ai');
+      return { message: 'Your site is ready!' };
+    } catch (e) {
+      // Never leave a new customer with an empty site: fall back to the built-in design.
+      console.warn('[generate] AI failed, using template:', e.message);
+      saveDraft(id, templateSite(brief), 'Built from the starter design (AI was busy)', 'template');
+      return { message: 'Your site is ready! (The AI was busy, so we used our starter design. Use “Redesign with AI” in a minute.)' };
+    }
   });
   res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', id)), jobId });
 });
@@ -258,9 +293,10 @@ api.post('/sites/:id/ai-edit', (req, res) => {
   if (!s.draft_html) return res.status(400).json({ error: 'This site has no page yet.' });
   if (!aiAllowed(req.user, res)) return;
   const userId = req.user.id;
+  const model = pickModel(req.body?.model);
   const jobId = startJob({ userId, siteId: s.id, kind: 'edit' }, async (update) => {
     const fresh = q.get('SELECT draft_html, brief FROM sites WHERE id = ?', s.id);
-    const { html, usage, summary } = await editSite(fresh.draft_html, instruction, JSON.parse(fresh.brief || '{}'), update);
+    const { html, usage, summary } = await editSite(fresh.draft_html, instruction, JSON.parse(fresh.brief || '{}'), update, { model });
     recordUsage(userId, 'edit', usage);
     saveDraft(s.id, html, `AI: ${summary}`.slice(0, 200), 'ai');
     return { message: summary };
@@ -275,8 +311,9 @@ api.post('/sites/:id/regenerate', (req, res) => {
   const brief = cleanBrief({ ...JSON.parse(s.brief || '{}'), ...(req.body?.brief || {}) });
   q.run('UPDATE sites SET brief = ?, name = ? WHERE id = ?', JSON.stringify(brief), brief.name || s.name, s.id);
   const userId = req.user.id;
+  const model = pickModel(req.body?.model);
   const jobId = startJob({ userId, siteId: s.id, kind: 'generate' }, async (update) => {
-    const { html, usage } = await generateSite(brief, update);
+    const { html, usage } = await generateSite(brief, update, { model });
     recordUsage(userId, 'generate', usage);
     saveDraft(s.id, html, 'AI rebuilt your site', 'ai');
     return { message: 'Fresh design ready!' };

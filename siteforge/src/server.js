@@ -12,6 +12,7 @@ import { admin } from './admin.js';
 import { billing } from './billing.js';
 import { serveSite, placeholder, renderPage } from './serve.js';
 import { storage } from './storage/index.js';
+import { providerName, dailyBudget } from './models.js';
 
 if (config.adminEmails.length) {
   for (const email of config.adminEmails) q.run('UPDATE users SET is_admin = 1 WHERE email = ?', email);
@@ -120,6 +121,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.join(ROOT, 'src', 
     console.log(`  Dashboard:   ${config.appUrl}/app`);
     console.log(`  Client site: ${config.appProtocol}//<name>.${config.rootDomain}${port}`);
     console.log(`  Storage:     ${config.storage.driver}${config.storage.driver === 's3' ? ` (${config.storage.bucket})` : ''}`);
-    console.log(`  AI:          ${config.ai.apiKey ? config.ai.model : 'template mode (set ANTHROPIC_API_KEY to use AI)'}\n`);
+    const ai = providerName() === 'openrouter' ? `OpenRouter free models (${dailyBudget().left}/${dailyBudget().limit} requests left today)` : providerName() === 'anthropic' ? config.ai.model : 'template mode (set OPENROUTER_API_KEY to use AI)';
+    console.log(`  AI:          ${ai}
+`);
   });
 }

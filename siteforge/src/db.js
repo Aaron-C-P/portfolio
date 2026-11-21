@@ -86,6 +86,14 @@ CREATE TABLE IF NOT EXISTS ai_usage (
 );
 CREATE INDEX IF NOT EXISTS idx_usage_user ON ai_usage(user_id, created_at);
 
+CREATE TABLE IF NOT EXISTS ai_calls (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  model       TEXT,
+  ok          INTEGER NOT NULL DEFAULT 1,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_calls_time ON ai_calls(created_at);
+
 CREATE TABLE IF NOT EXISTS billing_events (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   provider    TEXT,

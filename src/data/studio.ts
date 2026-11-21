@@ -476,6 +476,33 @@ export const projects: Project[] = [
     featured: false,
     services: ["custom-applications"],
   },
+  {
+    slug: "help-hamster-haven",
+    name: "Help Hamster Haven",
+    kind: "Website built with my own site builder",
+    status: "Working prototype",
+    oneLiner: "A friendly one-page site for a hamster rescue and care service, generated and published by SiteForge.",
+    purpose: "Give a small-pet rescue a clear home online: what they do, how to adopt, and how to get in touch.",
+    problem: "Small rescues rarely have a web designer or a budget. They need a page that works on a phone and that the owner can edit without code.",
+    solution:
+      "I described the rescue to SiteForge, my site builder, which wrote the page from a short brief, published it as plain static HTML and gave it its own address. The owner can change words and photos by tapping them, or ask the AI for bigger changes.",
+    role: "Built SiteForge (accounts, background AI jobs, editor, version history, publishing) and used it to produce this site.",
+    tech: ["Node.js", "Express", "SQLite", "OpenRouter free models", "Static HTML and CSS"],
+    verified: [
+      "The site was created and published through SiteForge's own sign-up, build and publish flow",
+      "SiteForge falls back between several free OpenRouter models and stops cleanly at a daily request limit (covered by automated tests against a mock of the service)",
+      "The page is plain static HTML and CSS with no scripts",
+    ],
+    conceptual: [
+      "Photos are placeholders until the rescue supplies real ones",
+      "SiteForge is not open for public sign-ups yet",
+    ],
+    image: null,
+    live: "/projects/help-hamster-haven/",
+    repo: null,
+    featured: false,
+    services: ["web-development", "custom-applications"],
+  },
 ];
 
 export const findProject = (slug?: string) => projects.find((p) => p.slug === slug);

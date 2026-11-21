@@ -53,6 +53,21 @@ export const config = {
     secretAccessKey: env.S3_SECRET_ACCESS_KEY || '',
   },
   ai: {
+    // "openrouter" (free models), "anthropic" (Claude) or "auto" (OpenRouter if its key is set).
+    provider: (env.AI_PROVIDER || (env.OPENROUTER_API_KEY ? 'openrouter' : 'anthropic')).toLowerCase(),
+    openrouter: {
+      apiKey: env.OPENROUTER_API_KEY || '',
+      baseUrl: (env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, ''),
+      // Comma-separated, best first. Empty = built-in list of strong free models.
+      models: (env.OPENROUTER_MODELS || '').split(',').map((s) => s.trim()).filter(Boolean),
+      // 1000/day after a one-time $10 credit purchase, 50/day before. Counted per day (UTC).
+      dailyLimit: Number(env.OPENROUTER_DAILY_LIMIT || 1000),
+      maxAttempts: Number(env.OPENROUTER_MAX_ATTEMPTS || 4), // models tried per request
+      maxTokens: Number(env.OPENROUTER_MAX_TOKENS || 16000),
+      timeoutMs: Number(env.OPENROUTER_TIMEOUT_MS || 240000),
+      referer: env.OPENROUTER_REFERER || '',
+      title: env.OPENROUTER_TITLE || '',
+    },
     apiKey: env.ANTHROPIC_API_KEY || '',
     model: env.AI_MODEL || 'claude-sonnet-5-5',
     baseUrl: (env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/+$/, ''),
