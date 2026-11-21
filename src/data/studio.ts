@@ -477,6 +477,35 @@ export const projects: Project[] = [
     services: ["custom-applications"],
   },
   {
+    slug: "siteforge",
+    name: "SiteForge",
+    kind: "AI website builder and hosting platform",
+    status: "Working prototype",
+    oneLiner: "Describe a business, get a published website, then edit any word or photo yourself. Runs on free AI models.",
+    purpose: "Let a small business owner get a real website in about a minute and keep it up to date without hiring a developer.",
+    problem: "Small businesses need a site that works on a phone and that they can change themselves. Most builders are either too generic or too complicated, and AI builders can be expensive to run.",
+    solution:
+      "Owners sign up, describe their business and the AI writes a one-page site. They tap text to edit it, replace photos, ask the AI for bigger changes, undo any change from a version history and publish to their own address. The AI runs on OpenRouter free models: the app lists them, lets the owner pick one, tries the next model automatically when one is busy or returns junk, and stops cleanly at a daily request limit. If every model fails, the owner still gets a site from the built-in design.",
+    role: "Designed and built the whole platform: accounts, background AI jobs, editor, version history, publishing, admin and billing hooks.",
+    tech: ["Node.js", "Express", "SQLite", "OpenRouter free models", "Vanilla JS front end", "Static HTML and CSS output"],
+    verified: [
+      "Automated tests cover the model fallback, the daily limit, billing webhooks and the page-extraction rules (11 passing)",
+      "A load test had 25 users sign up, build, AI-edit and publish at the same time against a mock of the AI service, with 24 of 25 AI edits succeeding and the other ending in a clean error",
+      "Help Hamster Haven (see Work) was created and published through it",
+    ],
+    conceptual: [
+      "Live AI calls depend on an OpenRouter key being added, so they are not switched on for visitors yet",
+      "Card payments, custom domains and public sign-ups are built but not launched",
+    ],
+    story:
+      "The interesting part is the failure handling. Free models are busy, rate limited or sometimes answer with something that is not a web page, so every request is built to fall through to the next model and still leave the customer with a site.",
+    image: null,
+    live: null,
+    repo: "https://github.com/Aaron-C-P/portfolio/tree/main/siteforge",
+    featured: false,
+    services: ["custom-applications", "web-development", "workflow-automation"],
+  },
+  {
     slug: "help-hamster-haven",
     name: "Help Hamster Haven",
     kind: "Website built with my own site builder",
