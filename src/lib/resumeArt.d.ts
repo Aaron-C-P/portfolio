@@ -18,4 +18,5 @@ export interface Shape {
 export const PAGE_W: number;
 export const PAGE_H: number;
 export function hashSeed(s: string | undefined | null): number;
-export function artFor(template: Template, name: string | undefined | null): Shape[];
+export function artFor(template: Template, name: string | undefined | null, variant?: number): Shape[];
+export function cleanVariant(v: unknown): number;

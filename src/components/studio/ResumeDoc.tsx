@@ -33,9 +33,9 @@ export const Fit = ({ children }: { children: ReactNode }) => {
  * The art is SVG drawn from the same shapes the PDF uses, behind the text. When `locked`, the body text is NOT in the
  * page at all: it is drawn as grey bars, so copying or a screenshot gets structure only. Names and headings stay.
  */
-export const ResumeDoc = ({ r, templateId, locked, id }: { r: Resume; templateId: string; locked: boolean; id?: string }) => {
+export const ResumeDoc = ({ r, templateId, locked, id, variant = 0, layer = "all" }: { r: Resume; templateId: string; locked: boolean; id?: string; variant?: number; layer?: "all" | "art" | "text" }) => {
   const t = templateById(templateId);
-  const shapes = useMemo(() => artFor(t, r.name), [t, r.name]);
+  const shapes = useMemo(() => (layer === "text" ? [] : artFor(t, r.name, variant)), [t, r.name, variant, layer]);
   const pt = (n: number) => `${n}pt`;
   const family = t.font === "times" ? '"Times New Roman", Times, serif' : "Helvetica, Arial, sans-serif";
   const align = (a: string) => (a === "center" ? ("center" as const) : ("left" as const));
@@ -72,7 +72,7 @@ export const ResumeDoc = ({ r, templateId, locked, id }: { r: Resume; templateId
   };
 
   return (
-    <div id={id} onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative overflow-hidden bg-white text-black ${locked ? "select-none" : ""}`} style={{ width: PAGE_W, minHeight: PAGE_H, padding: pt(t.band ? 44 : 54), paddingBottom: pt(54), paddingLeft: pt(54), paddingRight: pt(54), fontFamily: family, boxSizing: "border-box" }}>
+    <div id={id} onContextMenu={locked ? (e) => e.preventDefault() : undefined} className={`relative overflow-hidden text-black ${layer === "text" ? "" : "bg-white"} ${locked ? "select-none" : ""}`} style={{ width: PAGE_W, minHeight: PAGE_H, padding: pt(t.band ? 44 : 54), paddingBottom: pt(54), paddingLeft: pt(54), paddingRight: pt(54), fontFamily: family, boxSizing: "border-box" }}>
       {shapes.length > 0 && (
         <svg aria-hidden="true" focusable="false" viewBox={`0 0 ${PT_W} ${PT_H}`} width={PAGE_W} height={PAGE_H} className="pointer-events-none absolute left-0 top-0">
           {shapes.map((s, i) => {
@@ -85,13 +85,13 @@ export const ResumeDoc = ({ r, templateId, locked, id }: { r: Resume; templateId
           })}
         </svg>
       )}
-      <div className="relative">
+      <div className="relative" style={layer === "art" ? { visibility: "hidden" } : undefined}>
         {headerEnd > 0 ? (
           <div style={{ color: "#fff", minHeight: pt(t.bandH - 44 - t.gap + 4) }}>{blocks.slice(0, headerEnd).map((b, i) => one(b, i, true))}</div>
         ) : null}
         {blocks.slice(headerEnd).map((b, i) => one(b, i + headerEnd, false))}
       </div>
-      {locked && (
+      {locked && layer !== "art" && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <span style={{ transform: "rotate(-30deg)", fontSize: 72, fontWeight: 900, letterSpacing: "0.1em", color: "rgba(0,0,0,0.12)" }} className="select-none">PREVIEW</span>
         </div>

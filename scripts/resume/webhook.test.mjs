@@ -192,4 +192,22 @@ const midnight = buildResumePdf(jsPDF, sanitizeResume(resume), "midnight", false
 assert.ok(/\n1\.? g\n/.test(midnight), "white header text on the band");
 ok("art is personal, different per template, vector only, and keeps the text readable");
 
+// 12. Remix: same number gives the same art (preview == PDF); a new number changes it; junk input is ignored
+const { cleanVariant } = await import("../../src/lib/resumeArt.js");
+const aur = templateById("aurora");
+assert.equal(JSON.stringify(artFor(aur, "Jordan Brown", 3)), JSON.stringify(artFor(aur, "Jordan Brown", 3)));
+assert.notEqual(JSON.stringify(artFor(aur, "Jordan Brown", 1)), JSON.stringify(artFor(aur, "Jordan Brown", 2)));
+assert.equal(JSON.stringify(artFor(aur, "Jordan Brown", 0)), JSON.stringify(artFor(aur, "Jordan Brown")));
+assert.deepEqual([cleanVariant(5), cleanVariant(-1), cleanVariant(100), cleanVariant("7"), cleanVariant(1.5), cleanVariant(null)], [5, 0, 0, 0, 0, 0]);
+for (const t of artTs) for (const v of [1, 2, 3]) for (const s of artFor(t, "Jordan Brown", v)) {
+  if (s.edge || t.band) continue;
+  assert.ok(contrast(s.c, [0, 0, 0]) >= 7, `${t.id} remix ${v}: text still readable`);
+}
+const v1 = buildResumePdf(jsPDF, sanitizeResume(resume), "aurora", false, 1).output();
+const v2 = buildResumePdf(jsPDF, sanitizeResume(resume), "aurora", false, 2).output();
+assert.notEqual(v1, v2, "remix changes the PDF drawing");
+assert.equal((await run(pdf, { body: { code: makeCode("7003"), resume, template: "aurora", variant: 7 } })).status, 200);
+assert.equal((await run(pdf, { body: { code: makeCode("7004"), resume, template: "aurora", variant: "<x>" } })).status, 200);
+ok("art remix is repeatable, keeps text readable, changes the PDF, and bad input is ignored");
+
 console.log(`\n${n} groups passed`);

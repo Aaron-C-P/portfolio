@@ -4,6 +4,7 @@ import { ArrowRight, Play, Sparkles, Briefcase, Check, Compass, Store, Code2, Ba
 import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { MovieIntro, ReplayIntro } from "@/components/studio/MovieIntro";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
 import { AdminStrip } from "@/components/studio/AdminStrip";
 import { HomeDoors } from "@/components/studio/HomeDoors";
@@ -109,9 +110,11 @@ const Home = () => {
   const [params] = useSearchParams();
   const season = seasonFor(new Date(), params.get("season"));
   const featured = projects.filter((p) => p.featured).slice(0, 3);
+  const [plays, setPlays] = useState(0); // each press of "Replay the intro" remounts the film
 
   return (
     <>
+      <MovieIntro key={plays} force={plays > 0 || params.get("intro") === "1"} />
       <section className="relative isolate overflow-hidden pt-28">
         <div className="absolute inset-0 -z-10">
           <motion.img
@@ -184,11 +187,12 @@ const Home = () => {
             <span className="mt-1 block text-2xl font-bold md:text-3xl">Résumé Studio: a résumé built for the exact job.</span>
             <span className="mt-2 block text-soft">Paste the job posting, add your details, and see how well you match and what to sharpen. Build and preview free. The clean PDF is $10.</span>
             <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
-              <span>✓ Match score against the job</span><span>✓ Bullet-by-bullet feedback</span><span>✓ Layout that fits you</span>
+              <span>✓ Match score against the job</span><span>✓ Live 3D designer with art built in</span><span>✓ ATS-readable text, always</span>
             </span>
           </span>
           <span className="btn-primary justify-self-start whitespace-nowrap">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
         </Link>
+        <p className="mt-3 text-right"><ReplayIntro onReplay={() => setPlays((n) => n + 1)} /></p>
       </section>
 
       <HomeDoors />

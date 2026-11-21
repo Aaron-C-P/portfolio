@@ -9,8 +9,8 @@ import {
   basicChecks, bulletTips, emptyResume, exampleResume, extractKeywords, matchScore, type Resume,
 } from "@/lib/resumeEngine";
 import { atsChecks, atsText } from "@/lib/resumeFormat";
+import { Stage3D } from "@/components/studio/Stage3D";
 import { BulletCoach } from "@/components/studio/BulletCoach";
-import { Fit, ResumeDoc } from "@/components/studio/ResumeDoc";
 import { TemplateGallery } from "@/components/studio/TemplateGallery";
 import { samples } from "@/data/resumeSamples";
 import { templateById } from "@/lib/resumeTemplates.js";
@@ -28,10 +28,21 @@ interface Saved {
   ordered: boolean;
   reported: boolean;
   template: string;
+  /** Art remix number, 0 to 99. Same number gives the same art in the preview and the PDF. */
+  variant: number;
 }
 
+/** The journey told as chapters, so each step has a reason and a result. */
+const STORY = [
+  { title: "Aim", line: "Every strong résumé is aimed at one job. Show the app what you are going for." },
+  { title: "Facts", line: "Your real story, in plain words. No tricks, just the facts an employer needs." },
+  { title: "Sharpen", line: "See how well you match and which lines would make a hiring manager stop." },
+  { title: "Design", line: "Now make it yours. Spin it, pull the layers apart, remix the art. The text stays machine-readable." },
+  { title: "Launch", line: "Download a real-text PDF with your art built in, ready to send." },
+] as const;
+
 const newRef = () => `RS-${Array.from({ length: 5 }, () => "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 31)]).join("")}`;
-const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, code: "", ref: newRef(), ordered: false, reported: false, template: "classic" });
+const initial = (): Saved => ({ resume: emptyResume(), posting: "", step: 0, code: "", ref: newRef(), ordered: false, reported: false, template: "classic", variant: 0 });
 const load = (): Saved => {
   try {
     const raw = localStorage.getItem(KEY);
@@ -82,7 +93,7 @@ const ResumeStudio = () => {
     setBusy(true);
     setMsg("");
     try {
-      const res = await fetch("/api/resume-pdf", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: s.code, resume: r, template: s.template }) });
+      const res = await fetch("/api/resume-pdf", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: s.code, resume: r, template: s.template, variant: s.variant }) });
       if (!res.ok || !(res.headers.get("content-type") || "").includes("pdf")) {
         const why = res.status === 401 ? ((await res.json().catch(() => ({}))) as { reason?: string }).reason : res.status === 429 ? "limit" : "error";
         if (why === "expired" || why === "revoked" || why === "invalid") patch({ code: "" });
@@ -157,7 +168,7 @@ const ResumeStudio = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-5 pb-24 pt-32">
-      <style>{`@media print{#resume-preview{display:none!important}}`}</style>
+      <style>{`@media print{#resume-preview,#resume-stage{display:none!important}}`}</style>
       <Note>{studio.name}</Note>
       <h1 className="h-section mt-1 md:text-5xl">A résumé built for the job you want.</h1>
       <p className="mt-3 max-w-2xl text-lg text-soft">Paste the job, add your details, and the app shows how well you match and what to sharpen, in a format applicant tracking systems read. Build and preview free. A clean download is {priceLabel}.</p>
@@ -172,6 +183,9 @@ const ResumeStudio = () => {
           </li>
         ))}
       </ol>
+
+      <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-violet-light">Chapter {s.step + 1} of {STEPS.length} · {STORY[s.step].title}</p>
+      <p className="mt-1 max-w-2xl text-sm text-soft">{STORY[s.step].line}</p>
 
       {s.step === 0 && (
         <section className="mt-8">
@@ -190,7 +204,8 @@ const ResumeStudio = () => {
                 <button key={x.id} role="tab" aria-selected={x.id === sample.id} onClick={() => setSampleId(x.id)} className={`rounded-full border px-4 py-1.5 text-sm ${x.id === sample.id ? "border-violet-light bg-violet/30 text-cream" : "border-line text-soft"}`}>{x.label}</button>
               ))}
             </div>
-            <div className="mt-4"><TemplateGallery r={sample.resume} selected={s.template} onSelect={(id) => patch({ template: id })} locked={false} /></div>
+            <div className="mt-5"><Stage3D id="resume-stage" r={sample.resume} templateId={s.template} variant={s.variant} locked={false} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
+            <div className="mt-5"><TemplateGallery r={sample.resume} selected={s.template} onSelect={(id) => patch({ template: id })} locked={false} variant={s.variant} /></div>
             <p className="mt-3 text-sm text-soft">Selected: <b className="text-fg">{templateById(s.template).name}</b>. You can change it any time before you download.</p>
             <button className="mt-2 text-sm text-violet-light underline" onClick={() => patch({ resume: sample.resume })}>Start from this sample ({sample.label}) and edit it into yours</button>
           </div>
@@ -295,9 +310,12 @@ const ResumeStudio = () => {
 
       {s.step === 3 && (
         <section className="mt-8">
-          <h2 className="text-2xl font-bold">Choose a template</h2>
-          <p className="mt-1 text-soft">All ten read the same way to an applicant tracking system. Pick the look you like. Your text is hidden in these previews until you unlock the download.</p>
-          <div className="mt-5"><TemplateGallery r={r} selected={s.template} onSelect={(id) => patch({ template: id })} locked={!unlocked} /></div>
+          <h2 className="text-2xl font-bold">Design your résumé live</h2>
+          <p className="mt-1 text-soft">This is your résumé in 3D. Move over it to tilt it, pull the layers apart, or switch on the ATS X-ray to see exactly what a tracking system reads: your words, in order, with the art ignored. Your text stays hidden in previews until you unlock the download.</p>
+          <div className="mt-5"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
+          <p className="mt-3 text-center text-sm text-soft">{templateById(s.template).name}: {templateById(s.template).note}</p>
+          <h3 className="mt-8 text-lg font-bold">Pick a style</h3>
+          <div className="mt-3"><TemplateGallery r={r} selected={s.template} onSelect={(id) => patch({ template: id })} locked={!unlocked} variant={s.variant} /></div>
           <Nav back={2} next={() => go(4)} nextLabel="Preview and get it" />
         </section>
       )}
@@ -306,7 +324,7 @@ const ResumeStudio = () => {
         <section className="mt-8">
           <h2 className="text-2xl font-bold">{unlocked ? "Your résumé is ready" : "Your résumé preview"}</h2>
           <p className="mt-1 text-sm text-soft">Template: <b className="text-fg">{templateById(s.template).name}</b> <button className="ml-2 text-violet-light underline" onClick={() => go(3)}>Change</button></p>
-          <div className="mx-auto mt-4 max-w-[760px] overflow-hidden rounded-lg shadow-xl"><Fit><ResumeDoc id="resume-preview" r={r} templateId={s.template} locked={!unlocked} /></Fit></div>
+          <div className="mt-4"><Stage3D id="resume-stage" r={r} templateId={s.template} variant={s.variant} locked={!unlocked} onRemix={() => patch({ variant: (s.variant + 1) % 100 })} /></div>
 
           {unlocked ? (
             <div className="mt-6 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-5">

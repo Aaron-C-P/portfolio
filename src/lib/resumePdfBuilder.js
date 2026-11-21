@@ -5,7 +5,7 @@ import { resumeBlocks } from "./resumeBlocks.js";
 import { templateById } from "./resumeTemplates.js";
 import { artFor } from "./resumeArt.js";
 
-export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true) {
+export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true, variant = 0) {
   const t = templateById(templateId);
   const doc = new jsPDF({ unit: "pt", format: "letter", compress });
   const W = doc.internal.pageSize.getWidth();
@@ -15,7 +15,7 @@ export function buildResumePdf(jsPDF, r, templateId = "classic", compress = true
   let y = M;
 
   // The art is vector shapes only (no images), drawn first so the text sits on top of it.
-  const art = artFor(t, r.name);
+  const art = artFor(t, r.name, variant);
   const paint = (shapes) => {
     for (const s of shapes) {
       const style = s.fill ? "F" : "S";

@@ -123,8 +123,14 @@ const GENERATORS = {
 };
 
 /** The decoration for a template and a name: a flat list of vector shapes. Empty for a plain template. */
-export function artFor(template, name) {
+export function artFor(template, name, variant = 0) {
   const gen = GENERATORS[template.art];
   if (!gen) return [];
-  return gen(prng(hashSeed(`${name}|${template.id}`)), template.pal, template);
+  const v = Number.isInteger(variant) && variant > 0 ? variant % 100 : 0;
+  // A remix reseeds the shapes and rotates which colour goes where. The dark band keeps its own colours.
+  const pal = template.band || !v ? template.pal : template.pal.map((_, i, a) => a[(i + v) % a.length]);
+  return gen(prng(hashSeed(`${name}|${template.id}|${v}`)), pal, template);
 }
+
+/** Accepts a remix number from untrusted input: a whole number 0 to 99, else 0. */
+export const cleanVariant = (v) => (Number.isInteger(v) && v >= 0 && v < 100 ? v : 0);
