@@ -209,10 +209,7 @@ const Home = () => {
               </span>
             </span>
             <span className="mt-4 block text-lg font-semibold">Let’s web you in.</span>
-            <span className="mt-1 block text-soft">Describe a business and it spins the site. The owner edits it, switches it off or cancels any time, for one monthly fee. Running on free AI models.</span>
-            <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
-              <span>✓ Site live on its own link</span><span>✓ Owner edits it with AI</span><span>✓ Switch off or cancel any time</span>
-            </span>
+            <span className="mt-1 block text-soft">Describe a business and it spins the site. The owner edits it, switches it off or cancels any time, for one monthly fee.</span>
             <span className="btn-primary mt-5 self-start">Try The Webber <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </Link>
         </div>
