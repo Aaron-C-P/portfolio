@@ -19,6 +19,7 @@ if (config.adminEmails.length) {
 }
 
 export const app = express();
+export default app; // Vercel runs the exported Express app
 app.disable('x-powered-by');
 app.set('trust proxy', true);
 

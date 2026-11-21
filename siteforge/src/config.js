@@ -38,7 +38,8 @@ export const config = {
     .split(',')
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean),
-  dataDir: path.resolve(env.DATA_DIR || path.join(ROOT, 'data')),
+  // Vercel's project folder is read-only; /tmp is the only writable place (and is wiped between cold starts).
+  dataDir: path.resolve(env.DATA_DIR || (env.VERCEL ? '/tmp/webber-data' : path.join(ROOT, 'data'))),
   contact: {
     // Shown to clients when card payments are not set up, or for manual payment.
     whatsapp: env.CONTACT_WHATSAPP || '',
