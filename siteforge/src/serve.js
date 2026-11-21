@@ -81,7 +81,7 @@ export function renderPage(file) {
     YEAR: String(new Date().getFullYear()),
     AI_STARTER: String(PLANS.starter.aiPerMonth),
     AI_BUSINESS: String(PLANS.business.aiPerMonth),
-    SITES_BUSINESS: String(PLANS.business.sites),
+    SITES_BUSINESS: String(PLANS.starter.sites),
   };
   const out = raw.replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => vars[k] ?? m);
   pageCache.set(file, out);

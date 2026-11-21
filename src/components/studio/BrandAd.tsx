@@ -111,7 +111,8 @@ const scenes: Scene[] = [
 
 const total = scenes.reduce((n, s) => n + s.seconds, 0);
 
-export const BrandAd = ({ showTitle = true }: { showTitle?: boolean }) => {
+export const BrandAd = ({ showTitle = true, pageTitle = false }: { showTitle?: boolean; pageTitle?: boolean }) => {
+  const Title = pageTitle ? "h1" : "h2";
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [t, setT] = useState(0); // seconds elapsed
   const [playing, setPlaying] = useState(false);
@@ -145,7 +146,7 @@ export const BrandAd = ({ showTitle = true }: { showTitle?: boolean }) => {
 
   return (
     <div>
-      {showTitle && <h2 className="mb-5 text-3xl font-extrabold md:text-5xl">Watch the 30-second version.</h2>}
+      {showTitle && <Title className="mb-5 text-3xl font-extrabold md:text-5xl">Watch the 30-second version.</Title>}
       <div ref={box} role="region" aria-label="Brand ad, 30 seconds. Use the controls to pause or choose a scene." className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1b0f3d] via-violet to-[#3b1d99] p-6 text-white shadow-2xl sm:aspect-video md:p-12">
         <motion.div aria-hidden="true" className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-fuchsia-500/30 blur-3xl" animate={reduced ? undefined : { x: [0, -40, 0], y: [0, 30, 0] }} transition={{ duration: 12, repeat: Infinity }} />
         <AnimatePresence mode="wait">

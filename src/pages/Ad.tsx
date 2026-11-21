@@ -6,7 +6,7 @@ const Ad = () => {
   usePageTitle("Watch");
   return (
     <div className="mx-auto max-w-5xl px-5 pb-24 pt-32">
-      <BrandAd />
+      <BrandAd pageTitle />
     </div>
   );
 };

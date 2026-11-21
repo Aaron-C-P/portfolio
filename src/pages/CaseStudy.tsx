@@ -5,7 +5,7 @@ import { findProject, projects, services } from "@/data/studio";
 import {
   BrowserFrame,
   FlowDiagram,
-  MediaNeeded,
+  IdeaVisual,
   Note,
   Reveal,
   SimComparison,
@@ -14,9 +14,11 @@ import {
 } from "@/components/studio/parts";
 
 const Block = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <Reveal className="grid gap-4 border-t border-line py-10 md:grid-cols-[200px_1fr] md:gap-10">
-    <h2 className="font-hand text-3xl text-violet-light">{title}</h2>
-    <div className="space-y-4 text-lg leading-relaxed text-fg/90">{children}</div>
+  <Reveal className="border-t border-line py-10">
+    <div className="grid gap-4 md:grid-cols-[200px_minmax(0,1fr)] md:gap-10">
+      <h2 className="font-hand text-3xl text-violet-light">{title}</h2>
+      <div className="space-y-4 text-lg leading-relaxed text-fg/90">{children}</div>
+    </div>
   </Reveal>
 );
 
@@ -74,7 +76,15 @@ const CaseStudy = () => {
       </div>
 
       <div className="mt-8">
-        {project.image ? <BrowserFrame src={project.image} alt={project.imageAlt ?? project.name} url={project.live} /> : <MediaNeeded name={project.name} />}
+        {project.image ? (
+          project.photo ? (
+            <img src={project.image} alt={project.imageAlt ?? project.name} className="block w-full rounded-3xl border border-line object-cover shadow-2xl shadow-violet/10" />
+          ) : (
+            <BrowserFrame src={project.image} alt={project.imageAlt ?? project.name} url={project.live} />
+          )
+        ) : (
+          <div className="aspect-[16/9] overflow-hidden rounded-3xl border border-line"><IdeaVisual project={project} large /></div>
+        )}
       </div>
 
       <div className="mt-8">

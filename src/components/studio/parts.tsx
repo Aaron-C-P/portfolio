@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
@@ -13,11 +13,19 @@ export const usePageTitle = (title?: string) => {
 
 export const Reveal = ({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) => {
   const calm = useReducedMotion();
+  // Safety net: if the scroll trigger never fires (print, screenshots, odd browsers) show the content anyway, so a section is never blank.
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLate(true), 2200);
+    return () => clearTimeout(t);
+  }, []);
+  const shown = calm ? { opacity: 1 } : { opacity: 1, y: 0, rotateX: 0, z: 0 };
   return (
     <div style={{ perspective: 900 }} className={className}>
       <motion.div
         initial={calm ? { opacity: 0 } : { opacity: 0, y: 36, rotateX: 16, z: -60, transformOrigin: "50% 100%" }}
-        whileInView={calm ? { opacity: 1 } : { opacity: 1, y: 0, rotateX: 0, z: 0 }}
+        animate={late ? shown : undefined}
+        whileInView={shown}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
       >
@@ -121,11 +129,22 @@ export const BrowserFrame = ({ src, alt, url }: { src: string; alt: string; url?
   </div>
 );
 
-/** Honest placeholder for work whose real screenshots have not been captured yet. */
-export const MediaNeeded = ({ name }: { name: string }) => (
-  <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-white/[0.03] p-8 text-center">
-    <Note className="text-3xl">{name}</Note>
-    <p className="mt-2 max-w-xs text-sm text-soft">Real screenshots and a walkthrough are being captured for this project.</p>
+/** For work that has no screenshot yet: a designed card built from the project's real facts, never a blank box. */
+export const IdeaVisual = ({ project, large = false }: { project: Project; large?: boolean }) => (
+  <div
+    className={`relative flex h-full w-full flex-col justify-between overflow-hidden text-white ${large ? "p-8 md:p-12" : "p-5"}`}
+    style={{ backgroundColor: "#1b1233", backgroundImage: "radial-gradient(circle at 85% 15%, rgba(167,139,250,.38), transparent 45%), radial-gradient(circle at 10% 90%, rgba(251,191,36,.14), transparent 40%), linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)", backgroundSize: "auto, auto, 28px 28px, 28px 28px" }}
+  >
+    <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-violet-200">{project.kind}</span>
+    <div>
+      <p className={`font-hand leading-none text-amber-100 ${large ? "text-5xl md:text-6xl" : "text-3xl"}`}>{project.name}</p>
+      {large && <p className="mt-4 max-w-xl text-base text-white/80">{project.purpose}</p>}
+    </div>
+    <ul className="flex flex-wrap gap-1.5" aria-label="Built with">
+      {project.tech.slice(0, large ? 8 : 4).map((t) => (
+        <li key={t} className="rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-xs text-white/85">{t}</li>
+      ))}
+    </ul>
   </div>
 );
 
@@ -145,9 +164,7 @@ export const ProjectCard = ({ project, index = 0 }: { project: Project; index?: 
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-violet/40 to-raise p-6">
-            <span className="text-center font-hand text-4xl text-cream">{project.name}</span>
-          </div>
+          <IdeaVisual project={project} />
         )}
       </div>
       <div className="flex flex-1 flex-col p-6">

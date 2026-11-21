@@ -5,6 +5,8 @@ import heroPhoto from "@/assets/portfolio/aaron-hero.png";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { MovieIntro, ReplayIntro } from "@/components/studio/MovieIntro";
+import { Spider } from "@/components/studio/Spider";
+import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
 import { SeasonalBackdrop } from "@/components/studio/SeasonalBackdrop";
 import { AdminStrip } from "@/components/studio/AdminStrip";
 import { HomeDoors } from "@/components/studio/HomeDoors";
@@ -180,18 +182,40 @@ const Home = () => {
         </div>
       </section>
 
-      <section aria-label="Résumé Studio" className="mx-auto max-w-6xl px-5 pt-8">
-        <Link to="/resume-builder" className="group grid items-center gap-5 rounded-3xl border border-violet-light/50 bg-gradient-to-br from-violet/40 via-panel to-panel p-6 transition hover:border-violet-light md:grid-cols-[1fr_auto] md:p-8">
-          <span>
-            <span className="font-hand text-2xl text-violet-light">New app</span>
-            <span className="mt-1 block text-2xl font-bold md:text-3xl">Résumé Studio: a résumé built for the exact job.</span>
-            <span className="mt-2 block text-soft">Paste the job posting, add your details, and see how well you match and what to sharpen. Build and preview free. The clean PDF is $10.</span>
+      <section aria-labelledby="new-apps" className="mx-auto max-w-6xl px-5 pt-8">
+        <h2 id="new-apps" className="font-hand text-3xl text-violet-light">New apps</h2>
+        <div className="mt-3 grid gap-4 md:grid-cols-[repeat(2,minmax(0,1fr))]">
+          <Link to="/resume-builder" className="group flex flex-col rounded-3xl border border-violet-light/50 bg-gradient-to-br from-violet/40 via-panel to-panel p-6 transition hover:border-violet-light md:p-7">
+            <span className="flex items-center gap-4">
+              <AppTile tone="violet"><ResumeStudioIcon className="h-10 w-10" /></AppTile>
+              <span>
+                <span className="block text-xs font-semibold uppercase tracking-widest text-violet-light">App · live</span>
+                <span className="block text-2xl font-bold">Résumé Studio</span>
+              </span>
+            </span>
+            <span className="mt-4 block text-lg font-semibold">A résumé built for the exact job.</span>
+            <span className="mt-1 block text-soft">Paste the job posting, add your details, and see how well you match and what to sharpen. Build and preview free. The clean PDF is $10.</span>
             <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
               <span>✓ Match score against the job</span><span>✓ Live 3D designer with art built in</span><span>✓ ATS-readable text, always</span>
             </span>
-          </span>
-          <span className="btn-primary justify-self-start whitespace-nowrap">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-        </Link>
+            <span className="btn-primary mt-5 self-start">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </Link>
+          <Link to="/work/the-webber" className="group flex flex-col rounded-3xl border border-amber-300/40 bg-gradient-to-br from-amber-300/15 via-panel to-panel p-6 transition hover:border-amber-300 md:p-7">
+            <span className="flex items-center gap-4">
+              <AppTile tone="amber"><Spider className="h-10 w-10" /></AppTile>
+              <span>
+                <span className="block text-xs font-semibold uppercase tracking-widest text-amber-600">App · working prototype</span>
+                <span className="block text-2xl font-bold">The Webber</span>
+              </span>
+            </span>
+            <span className="mt-4 block text-lg font-semibold">Let’s web you in.</span>
+            <span className="mt-1 block text-soft">Describe a business and it spins the site. The owner edits it, switches it off or cancels any time, for one monthly fee. Running on free AI models.</span>
+            <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
+              <span>✓ Site live on its own link</span><span>✓ Owner edits it with AI</span><span>✓ Switch off or cancel any time</span>
+            </span>
+            <span className="btn-ghost mt-5 self-start">See how it works <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </Link>
+        </div>
         <p className="mt-3 text-right"><ReplayIntro onReplay={() => setPlays((n) => n + 1)} /></p>
       </section>
 
@@ -202,17 +226,6 @@ const Home = () => {
       <AdminStrip />
 
       {season.key === "christmas" && <ChristmasBanner />}
-
-      <section aria-label="SiteForge" className="mx-auto max-w-6xl px-5 pt-4">
-        <Link to="/work/siteforge" className="group flex items-center gap-4 rounded-3xl border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-panel px-6 py-5 transition hover:border-amber-300">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-300 text-ink"><Sparkles className="h-5 w-5" aria-hidden="true" /></span>
-          <span>
-            <span className="block text-lg font-bold">SiteForge: a working prototype</span>
-            <span className="block text-sm text-soft">A website builder where owners edit their own site, powered by free AI models. It built Help Hamster Haven. Not open to sign-ups yet.</span>
-          </span>
-          <ArrowRight className="ml-auto h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden="true" />
-        </Link>
-      </section>
 
       <section aria-label="Watch the brand video" className="mx-auto max-w-6xl px-5 pt-8">
         <Link to="/watch" className="group flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-violet-light/40 bg-gradient-to-r from-violet/30 to-panel px-6 py-5 transition hover:border-violet-light">

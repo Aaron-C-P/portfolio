@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { useLate } from "@/hooks/useLate";
 
 const INK = "#2a2438";
 const VIO = "#6a3fe0";
@@ -7,7 +8,9 @@ const AMB = "#c2780a";
 const GRN = "#1d8a5a";
 
 /** A line that draws itself when the card scrolls into view. */
-const Draw = ({ d, c = INK, w = 2, dash, delay = 0 }: { d: string; c?: string; w?: number; dash?: string; delay?: number }) => (
+const Draw = ({ d, c = INK, w = 2, dash, delay = 0 }: { d: string; c?: string; w?: number; dash?: string; delay?: number }) => {
+  const late = useLate();
+  return (
   <motion.path
     d={d}
     fill="none"
@@ -17,11 +20,31 @@ const Draw = ({ d, c = INK, w = 2, dash, delay = 0 }: { d: string; c?: string; w
     strokeLinejoin="round"
     strokeDasharray={dash}
     initial={{ pathLength: 0 }}
+    animate={late ? { pathLength: 1 } : undefined}
     whileInView={{ pathLength: 1 }}
     viewport={{ once: true }}
     transition={{ duration: 1.1, delay }}
   />
-);
+  );
+};
+
+const Bar = ({ x, h, i }: { x: number; h: number; i: number }) => {
+  const late = useLate();
+  return (
+    <motion.rect
+      x={x}
+      width="14"
+      rx="2"
+      fill={VIO}
+      opacity={0.8}
+      initial={{ height: 0, y: 130 }}
+      animate={late ? { height: h, y: 130 - h } : undefined}
+      whileInView={{ height: h, y: 130 - h }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: i * 0.08 }}
+    />
+  );
+};
 
 const T = ({ x, y, children, c = INK, s = 13 }: { x: number; y: number; children: ReactNode; c?: string; s?: number }) => (
   <text x={x} y={y} fill={c} fontSize={s} fontFamily="Caveat, cursive" fontWeight={700}>
@@ -136,18 +159,7 @@ const cards: { title: string; note: string; rot: number; art: ReactNode }[] = [
     art: (
       <Frame>
         {[40, 62, 50, 88, 74, 104].map((h, i) => (
-          <motion.rect
-            key={i}
-            x={20 + i * 22}
-            width="14"
-            rx="2"
-            fill={VIO}
-            opacity={0.8}
-            initial={{ height: 0, y: 130 }}
-            whileInView={{ height: h, y: 130 - h }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.08 }}
-          />
+          <Bar key={i} x={20 + i * 22} h={h} i={i} />
         ))}
         <Draw d="M25 100 L47 84 L69 92 L91 62 L113 70 L135 40" c={AMB} w={2.5} delay={0.5} />
         <T x={160} y={50} c={AMB} s={15}>7-day avg</T>
@@ -206,13 +218,16 @@ const cards: { title: string; note: string; rot: number; art: ReactNode }[] = [
 ];
 
 /** A hand-drawn study wall in the spirit of a sketchnote board: concepts from my own projects and learning. */
-export const NotesBoard = () => (
+export const NotesBoard = () => {
+  const late = useLate();
+  return (
   <div className="rounded-[2rem] border border-line bg-raise p-4 md:p-8">
     <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {cards.map((c, i) => (
         <motion.li
           key={c.title}
           initial={{ opacity: 0, y: 30, rotate: 0 }}
+          animate={late ? { opacity: 1, y: 0, rotate: c.rot } : undefined}
           whileInView={{ opacity: 1, y: 0, rotate: c.rot }}
           whileHover={{ rotate: 0, scale: 1.03 }}
           viewport={{ once: true, margin: "-40px" }}
@@ -227,4 +242,5 @@ export const NotesBoard = () => (
       ))}
     </ul>
   </div>
-);
+  );
+};

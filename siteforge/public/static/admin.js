@@ -47,7 +47,7 @@ async function load() {
     ${clients.map((c) => `<tr data-id="${c.id}">
       <td><b>${esc(c.name || '—')}</b><br><span class="muted small">${esc(c.email)}</span></td>
       <td>${stateLabel(c)}</td>
-      <td><select class="input" data-plan>${['trial', 'starter', 'business'].map((p) => `<option value="${p}" ${c.plan === p ? 'selected' : ''}>${esc(plans[p].name)}</option>`).join('')}</select></td>
+      <td><select class="input" data-plan>${['trial', 'starter'].map((p) => `<option value="${p}" ${c.plan === p ? 'selected' : ''}>${esc(plans[p].name)}</option>`).join('')}</select></td>
       <td><input class="input" type="date" data-paid value="${day(c.paidUntil)}"></td>
       <td>${c.live} live / ${c.sites}</td>
       <td class="muted">${nice(c.createdAt)}</td>

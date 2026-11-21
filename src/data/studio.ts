@@ -28,6 +28,13 @@ import cribSheet from "@/assets/crib/crib-design-sheet.jpg";
 import eggFarm3d from "@/assets/portfolio/egg-farm-3d.png";
 import eggFarmSheet from "@/assets/portfolio/egg-farm-sheet.png";
 import eggFarmThermal from "@/assets/portfolio/egg-farm-thermal.png";
+import webberHome from "@/assets/work/webber-home.jpg";
+import webberDashboard from "@/assets/work/webber-dashboard.jpg";
+import webberBuilder from "@/assets/work/webber-builder.jpg";
+import webberNew from "@/assets/work/webber-new.jpg";
+import hamsterHaven from "@/assets/work/hamster-haven.png";
+
+export { hamsterHaven };
 
 export { profilePhoto };
 
@@ -78,6 +85,8 @@ export interface Project {
   story?: string;
   image: string | null;
   imageAlt?: string;
+  /** true when the image is a photo of a physical thing, not a screenshot (shown without a browser frame). */
+  photo?: boolean;
   live: string | null;
   repo: string | null;
   featured: boolean;
@@ -477,60 +486,68 @@ export const projects: Project[] = [
     services: ["custom-applications"],
   },
   {
-    slug: "siteforge",
-    name: "SiteForge",
-    kind: "AI website builder and hosting platform",
+    slug: "the-webber",
+    name: "The Webber",
+    kind: "Let's web you in: automated website maker",
     status: "Working prototype",
-    oneLiner: "Describe a business, get a published website, then edit any word or photo yourself. Runs on free AI models.",
-    purpose: "Let a small business owner get a real website in about a minute and keep it up to date without hiring a developer.",
-    problem: "Small businesses need a site that works on a phone and that they can change themselves. Most builders are either too generic or too complicated, and AI builders can be expensive to run.",
+    oneLiner: "Describe a business and The Webber spins a website, publishes it on its own link, and lets the owner edit, switch it off or cancel whenever they like.",
+    purpose: "A website service that runs itself: one fee, and the owner can come back at any time to change words, photos and prices without ever needing a developer.",
+    problem: "Small businesses need a site that works on a phone and that they can keep up to date. Builders are either too generic or too fiddly, and AI builders are costly to run. A service that needs the builder to step in for every change cannot earn while its owner sleeps.",
     solution:
-      "Owners sign up, describe their business and the AI writes a one-page site. They tap text to edit it, replace photos, ask the AI for bigger changes, undo any change from a version history and publish to their own address. The AI runs on OpenRouter free models: the app lists them, lets the owner pick one, tries the next model automatically when one is busy or returns junk, and stops cleanly at a daily request limit. If every model fails, the owner still gets a site from the built-in design.",
-    role: "Designed and built the whole platform: accounts, background AI jobs, editor, version history, publishing, admin and billing hooks.",
-    tech: ["Node.js", "Express", "SQLite", "OpenRouter free models", "Vanilla JS front end", "Static HTML and CSS output"],
+      "The owner signs up, describes the business and AI writes a one-page site. The site files go into a storage bucket and get their own link. The owner taps text to edit it, swaps photos, asks the AI for bigger changes, undoes any change from version history and publishes or takes the site offline. If they stop paying the site goes quiet and nothing is deleted. The AI runs on OpenRouter free models: the app lists them, lets the owner pick one, tries the next when one is busy or answers with junk, and stops cleanly at a daily request limit. If every model fails, the owner still gets a site from the built-in design.",
+    role: "Designed and built the whole platform: accounts, background AI jobs, the editor, version history, publishing to a bucket, admin and billing hooks, a single monthly fee.",
+    tech: ["Node.js", "Express", "SQLite", "OpenRouter free models", "S3-compatible bucket", "Vanilla JS front end", "Static HTML and CSS output"],
     verified: [
-      "Automated tests cover the model fallback, the daily limit, billing webhooks and the page-extraction rules (11 passing)",
-      "A load test had 25 users sign up, build, AI-edit and publish at the same time against a mock of the AI service, with 24 of 25 AI edits succeeding and the other ending in a clean error",
-      "Help Hamster Haven (see Work) was created and published through it",
+      "The screenshots on this page are the running app, using demo businesses (not real customers)",
+      "Automated tests cover the model fallback, the daily limit, billing webhooks and page extraction (11 passing)",
+      "A load test had 25 users sign up, build, AI-edit and publish at the same time against a mock of the AI service: 24 of 25 AI edits succeeded and the other ended in a clean error",
+      "One fee covers everything: up to three sites and 250 AI changes a month",
     ],
     conceptual: [
-      "Live AI calls depend on an OpenRouter key being added, so they are not switched on for visitors yet",
+      "Live AI calls need an OpenRouter key, so they are not switched on for visitors yet",
       "Card payments, custom domains and public sign-ups are built but not launched",
     ],
     story:
-      "The interesting part is the failure handling. Free models are busy, rate limited or sometimes answer with something that is not a web page, so every request is built to fall through to the next model and still leave the customer with a site.",
-    image: null,
+      "The idea came from a simple question: how do I offer something I can leave online that earns without me working daily? A site that clients edit themselves, stored as plain files in a bucket, with a link each, fits that. The hard part is failure handling: free models are busy or sometimes reply with something that is not a web page, so every request falls through to the next model and the customer still ends up with a site.",
+    image: webberHome,
+    imageAlt: "The Webber landing page: Spin your website in a minute",
     live: null,
     repo: "https://github.com/Aaron-C-P/portfolio/tree/main/siteforge",
-    featured: false,
+    featured: true,
     services: ["custom-applications", "web-development", "workflow-automation"],
+    gallery: [
+      { src: webberDashboard, alt: "The Webber dashboard with three demo websites", caption: "The dashboard: each site is live or offline, with the monthly AI count." },
+      { src: webberBuilder, alt: "The Webber editor with the AI panel and model picker", caption: "The editor: ask the AI for a change and choose which free model does it." },
+      { src: webberNew, alt: "The Webber new website form", caption: "A new site starts from a few plain questions." },
+    ],
   },
   {
     slug: "help-hamster-haven",
     name: "Help Hamster Haven",
-    kind: "Website built with my own site builder",
-    status: "Working prototype",
-    oneLiner: "A friendly one-page site for a hamster rescue and care service, generated and published by SiteForge.",
-    purpose: "Give a small-pet rescue a clear home online: what they do, how to adopt, and how to get in touch.",
-    problem: "Small rescues rarely have a web designer or a budget. They need a page that works on a phone and that the owner can edit without code.",
+    kind: "Product concept: a modular hamster habitat",
+    status: "Concept design",
+    oneLiner: "A cardboard prototype of a hamster home built from tunnels, rooms and an arched archway, made to be rearranged.",
+    purpose: "Explore a hamster habitat that is made of separate pieces, so a pet owner can rearrange it, clean it and add rooms as the hamster grows.",
+    problem: "Many small-pet homes are one fixed box. Hamsters like to tunnel, hide and explore, and owners find it hard to change the layout or clean every corner.",
     solution:
-      "I described the rescue to SiteForge, my site builder, which wrote the page from a short brief, published it as plain static HTML and gave it its own address. The owner can change words and photos by tapping them, or ask the AI for bigger changes.",
-    role: "Built SiteForge (accounts, background AI jobs, editor, version history, publishing) and used it to produce this site.",
-    tech: ["Node.js", "Express", "SQLite", "OpenRouter free models", "Static HTML and CSS"],
+      "I built the idea as a physical cardboard model first, the way a product designer would: round tunnel doorways on the sides, a sloped roof panel, separate stacked rooms with dividers and a green arched panel at the front. Making it in card lets me test the shapes cheaply before choosing real materials.",
+    role: "Designed and built the prototype model.",
+    tech: ["Cardboard prototyping", "Product design", "Modular layout"],
     verified: [
-      "The site was created and published through SiteForge's own sign-up, build and publish flow",
-      "SiteForge falls back between several free OpenRouter models and stops cleanly at a daily request limit (covered by automated tests against a mock of the service)",
-      "The page is plain static HTML and CSS with no scripts",
+      "The photo on this page is of the prototype itself",
+      "The model has separate rooms, tunnel openings, a sloped roof and an arched front panel",
     ],
     conceptual: [
-      "Photos are placeholders until the rescue supplies real ones",
-      "SiteForge is not open for public sign-ups yet",
+      "Not tested with real hamsters, and no safe final materials chosen yet",
+      "Sizes, ventilation and a manufacturing plan are still to be worked out",
     ],
-    image: null,
-    live: "/projects/help-hamster-haven/",
+    image: hamsterHaven,
+    imageAlt: "A cardboard prototype of a modular hamster habitat on a workshop table",
+    photo: true,
+    live: null,
     repo: null,
     featured: false,
-    services: ["web-development", "custom-applications"],
+    services: ["custom-applications"],
   },
 ];
 

@@ -1,5 +1,6 @@
-import { ExternalLink, Mail, MessageCircle, Phone } from "lucide-react";
-import { brand } from "@/data/studio";
+import { Link } from "react-router-dom";
+import { ArrowRight, Mail, MessageCircle, Phone } from "lucide-react";
+import { brand, hamsterHaven } from "@/data/studio";
 import { offers } from "@/data/studentHelp";
 import page01 from "@/assets/pizza/page-01.jpg";
 import page02 from "@/assets/pizza/page-02.jpg";
@@ -80,17 +81,15 @@ const AssignmentHelp = () => {
       </section>
 
       <section className="mt-16" aria-labelledby="hamster">
-        <p className="font-hand text-2xl text-violet-light">Latest IT and coding project</p>
+        <p className="font-hand text-2xl text-violet-light">Latest design and product project</p>
         <h2 id="hamster" className="text-3xl font-extrabold tracking-tight md:text-4xl">
           Help Hamster Haven
         </h2>
-        <p className="mb-6 mt-3 max-w-2xl text-soft">A one-page website for a hamster rescue and care service, a good example of what an IT or web design project can look like. Made with my own site builder, SiteForge, as plain HTML and CSS. The photos are placeholders. I can help you plan, build and explain a project like this, and you write up your own work.</p>
-        <div className="overflow-hidden rounded-3xl border border-line bg-panel">
-          <iframe src="/projects/help-hamster-haven/" title="Help Hamster Haven website preview" loading="lazy" className="h-[520px] w-full bg-white" />
-        </div>
-        <a href="/projects/help-hamster-haven/" target="_blank" rel="noopener noreferrer" className={`${action} mt-4`}>
-          <ExternalLink className="h-4 w-4 text-violet-light" aria-hidden="true" /> Open the full site
-        </a>
+        <p className="mb-6 mt-3 max-w-2xl text-soft">A product concept: a modular hamster habitat built from separate rooms and tunnels, prototyped in cardboard first. Product and design projects are part of what I help students plan, build and explain, and you write up your own work.</p>
+        <img src={hamsterHaven} alt="A cardboard prototype of a modular hamster habitat on a workshop table" className="w-full rounded-3xl border border-line object-cover" loading="lazy" />
+        <Link to="/work/help-hamster-haven" className={`${action} mt-4`}>
+          Read the project <ArrowRight className="h-4 w-4 text-violet-light" aria-hidden="true" />
+        </Link>
       </section>
 
       <section className="mt-16" aria-labelledby="tutor">

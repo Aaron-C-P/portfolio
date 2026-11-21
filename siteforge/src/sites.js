@@ -182,7 +182,7 @@ api.get('/me', (req, res) => {
     user: publicUser(req.user),
     account: lim.state,
     limits: { maxSites: lim.maxSites, aiPerMonth: lim.aiPerMonth, aiUsed: lim.aiUsed },
-    plans: ['starter', 'business'].map((id) => ({ ...PLANS[id], checkout: checkoutAvailable(id) })),
+    plans: ['starter'].map((id) => ({ ...PLANS[id], checkout: checkoutAvailable(id) })),
     aiEnabled: aiEnabled(),
     aiProvider: providerName(),
     aiDaily: providerName() === 'openrouter' ? dailyBudget() : null,

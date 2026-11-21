@@ -155,7 +155,7 @@ route();
 
 function shell(active, inner) {
   return `<header class="topbar"><div class="in">
-      <a class="logo" href="#/"><i>✦</i><span class="word">${esc(ME.brand)}</span></a>
+      <a class="logo" href="#/"><i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#12141a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="3.6" ry="4.4" fill="#12141a" fill-opacity=".25"/><circle cx="12" cy="8.2" r="1.9" fill="#12141a" fill-opacity=".25"/><path d="M9 11.5 5 8 2.5 9.5M8.6 14.2 3.5 14.2 2 17M9 16.8 5.5 20 4 22M15 11.5 19 8 21.5 9.5M15.4 14.2 20.5 14.2 22 17M15 16.8 18.5 20 20 22"/></svg></i><span class="word">${esc(ME.brand)}</span></a>
       <nav class="nav">
         <a href="#/" class="${active === 'sites' ? 'on' : ''}">My websites</a>
         <a href="#billing" class="${active === 'billing' ? 'on' : ''}">Plan</a>
@@ -191,9 +191,9 @@ function accountBanner() {
 function viewAuth(mode) {
   app.innerHTML = `<div class="auth">
     <section class="pitch">
-      <a class="logo" href="/"><i>✦</i>${esc(ME.brand)}</a>
+      <a class="logo" href="/"><i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#12141a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="3.6" ry="4.4" fill="#12141a" fill-opacity=".25"/><circle cx="12" cy="8.2" r="1.9" fill="#12141a" fill-opacity=".25"/><path d="M9 11.5 5 8 2.5 9.5M8.6 14.2 3.5 14.2 2 17M9 16.8 5.5 20 4 22M15 11.5 19 8 21.5 9.5M15.4 14.2 20.5 14.2 22 17M15 16.8 18.5 20 20 22"/></svg></i>${esc(ME.brand)}</a>
       <div style="position:relative;z-index:1">
-        <h1>Your business online today.</h1>
+        <h1>Let’s web you in.</h1>
         <p>Tell us about your business and AI builds your website in about a minute. Change it any time from your phone — no tech skills, no waiting on a developer.</p>
         <ul>
           <li>Your own link: <b>yourname.${esc(ME.siteDomain || '')}</b></li>
@@ -925,11 +925,11 @@ function viewBilling() {
     <div class="plans">
       ${ME.plans.map((p) => {
         const current = (a.reason === 'subscription' || a.reason === 'manual') && a.plan === p.id;
-        return `<div class="card plan ${p.id === 'business' ? 'featured' : ''}">
-          <div style="display:flex;justify-content:space-between;align-items:center"><h2>${esc(p.name)}</h2>${p.id === 'business' ? '<span class="pill changes">Most popular</span>' : ''}</div>
+        return `<div class="card plan ${true ? 'featured' : ''}">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h2>${esc(p.name)}</h2>${true ? '<span class="pill changes">Most popular</span>' : ''}</div>
           <div class="price">${money(p.price)}<small> / month</small></div>
           <ul>${p.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
-          ${current ? '<button class="btn btn-line" disabled>Current plan</button>' : `<button class="btn ${p.id === 'business' ? 'btn-gold' : 'btn-dark'}" data-plan="${p.id}">Choose ${esc(p.name)}</button>`}
+          ${current ? '<button class="btn btn-line" disabled>Current plan</button>' : `<button class="btn ${true ? 'btn-gold' : 'btn-dark'}" data-plan="${p.id}">Choose ${esc(p.name)}</button>`}
         </div>`;
       }).join('')}
     </div>

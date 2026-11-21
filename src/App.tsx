@@ -59,6 +59,7 @@ const App = () => (
         <Route path="/pay" element={<Pay />} />
         <Route path="/card" element={<Card />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/work/siteforge" element={<Navigate to="/work/the-webber" replace />} />
         <Route path="/tutor" element={<Navigate to="/assignment-help" replace />} />
         <Route path="*" element={<NotFound />} />
       </Route>

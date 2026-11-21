@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import { Menu, X, Github, Linkedin, Lock, Mail, Phone } from "lucide-react";
+import { Menu, X, Github, Linkedin, Lock, Mail, Phone, ChevronDown } from "lucide-react";
+import { Spider } from "@/components/studio/Spider";
+import { ResumeStudioIcon } from "@/components/studio/AppIcon";
 import avatar from "@/assets/portfolio/aaron-avatar.jpg";
 import graduationPhoto from "@/assets/portfolio/feed-graduation.webp";
 import { brand } from "@/data/studio";
@@ -9,19 +11,23 @@ import { Assistant } from "@/components/studio/Assistant";
 import { FooterChristmas } from "@/components/studio/ChristmasExtras";
 import { seasonFor } from "@/lib/season";
 
-const nav = [
+const mainNav: { to: string; label: string; end?: boolean; spider?: boolean; doc?: boolean }[] = [
   { to: "/", label: "Home", end: true },
   { to: "/work", label: "Work" },
-  { to: "/journey", label: "Journey" },
-  { to: "/skills", label: "Skills" },
   { to: "/services", label: "Services" },
-  { to: "/writing", label: "Writing" },
-  { to: "/feed", label: "Feed" },
   { to: "/assignment-help", label: "Student Help" },
-  { to: "/resume-builder", label: "Résumé Studio" },
-  { to: "/watch", label: "Watch" },
+  { to: "/resume-builder", label: "Résumé Studio", doc: true },
+  { to: "/work/the-webber", label: "The Webber", spider: true },
   { to: "/about", label: "About" },
 ];
+const moreNav: { to: string; label: string }[] = [
+  { to: "/journey", label: "Journey" },
+  { to: "/skills", label: "Skills" },
+  { to: "/writing", label: "Writing" },
+  { to: "/feed", label: "Feed" },
+  { to: "/watch", label: "Watch" },
+];
+const nav: { to: string; label: string; end?: boolean; spider?: boolean; doc?: boolean }[] = [...mainNav, ...moreNav];
 
 export const Wordmark = () => (
   <span className="flex items-center gap-3">
@@ -59,11 +65,25 @@ const Header = () => {
           <Wordmark />
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
-          {nav.map((n) => (
+          {mainNav.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={linkClass}>
+              {n.spider && <Spider className="mr-1 inline h-4 w-4 -translate-y-px text-amber-300" />}
+              {n.doc && <ResumeStudioIcon className="mr-1 inline h-4 w-4 -translate-y-px text-violet-light" />}
               {n.label}
             </NavLink>
           ))}
+          <details className="group relative">
+            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-soft transition hover:text-fg [&::-webkit-details-marker]:hidden">
+              More <ChevronDown className="h-3.5 w-3.5 transition group-open:rotate-180" aria-hidden="true" />
+            </summary>
+            <div className="absolute right-0 top-full z-50 mt-2 min-w-40 rounded-2xl border border-line bg-panel p-2 shadow-xl">
+              {moreNav.map((n) => (
+                <NavLink key={n.to} to={n.to} className={({ isActive }) => `block rounded-xl px-3 py-2 text-sm ${isActive ? "text-cream" : "text-soft hover:text-fg"}`}>
+                  {n.label}
+                </NavLink>
+              ))}
+            </div>
+          </details>
         </nav>
         <div className="flex items-center gap-2">
           <a
@@ -88,7 +108,7 @@ const Header = () => {
           >
             <Phone className="h-4 w-4 text-violet-light" aria-hidden="true" /> {brand.phone}
           </a>
-          <Link to="/contact" className="btn-primary hidden whitespace-nowrap xl:inline-flex">
+          <Link to="/contact" className="btn-primary hidden whitespace-nowrap min-[1400px]:inline-flex">
             Start a conversation
           </Link>
           <Link to="/admin" aria-label="Admin login" title="Admin login" className="inline-flex rounded-lg p-2 text-soft transition hover:text-violet-light">

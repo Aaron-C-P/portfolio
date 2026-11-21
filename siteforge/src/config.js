@@ -28,7 +28,7 @@ const appUrlParsed = new URL(appUrl);
 
 export const config = {
   port,
-  brand: env.BRAND_NAME || 'SiteCraft',
+  brand: env.BRAND_NAME || 'The Webber',
   // The domain you bought, e.g. "mybrand.com". Client sites live at <name>.mybrand.com
   rootDomain: (env.ROOT_DOMAIN || appUrlParsed.hostname).toLowerCase(),
   appUrl,
@@ -94,20 +94,22 @@ export const PLANS = {
     id: 'trial',
     name: 'Free trial',
     price: 0,
-    sites: 1,
+    sites: Number(env.TRIAL_SITES || 1),
     aiPerMonth: Number(env.AI_LIMIT_TRIAL || 15),
     badge: true,
     features: [`${config.trialDays} days free`, '1 website', 'AI builder + editor'],
   },
+  // One fee, everything included. (The id stays "starter" so existing subscriptions and webhooks keep working.)
   starter: {
     id: 'starter',
-    name: 'Starter',
-    price: Number(env.PRICE_STARTER || 15),
-    sites: 1,
-    aiPerMonth: Number(env.AI_LIMIT_STARTER || 60),
-    badge: true,
-    features: ['1 website', '60 AI edits / month', 'Free yourname link', 'Edit anytime'],
+    name: 'The Webber',
+    price: Number(env.PRICE_STARTER || 19),
+    sites: Number(env.SITES_PER_PLAN || 3),
+    aiPerMonth: Number(env.AI_LIMIT_STARTER || 250),
+    badge: false,
+    features: ['Up to 3 websites', '250 AI changes a month', 'Your own yourname link', 'Edit, unpublish or cancel any time'],
   },
+  // Legacy tier, no longer sold. Kept so old customers and webhooks still resolve.
   business: {
     id: 'business',
     name: 'Business',
