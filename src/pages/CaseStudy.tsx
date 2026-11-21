@@ -15,9 +15,9 @@ import {
 
 const Block = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <Reveal className="border-t border-line py-10">
-    <div className="grid gap-4 md:grid-cols-[200px_minmax(0,1fr)] md:gap-10">
+    <div className="grid gap-3">
       <h2 className="font-hand text-3xl text-violet-light">{title}</h2>
-      <div className="space-y-4 text-lg leading-relaxed text-fg/90">{children}</div>
+      <div className="w-full min-w-0 max-w-3xl space-y-4 text-lg leading-relaxed text-fg/90">{children}</div>
     </div>
   </Reveal>
 );
@@ -58,7 +58,10 @@ const CaseStudy = () => {
         <h1 className="mt-3 text-4xl font-extrabold tracking-tight md:text-6xl">{project.name}</h1>
         <p className="mt-4 max-w-2xl text-xl text-soft">{project.oneLiner}</p>
         <div className="mt-6 flex flex-wrap gap-3">
-          {project.live && (
+          {project.slug === "the-webber" && (
+          <Link to="/webber" className="btn-primary">Try the working Webber</Link>
+        )}
+        {project.live && (
             <a href={project.live} target="_blank" rel="noopener noreferrer" className="btn-primary">
               <ExternalLink className="h-4 w-4" /> Visit the live site
             </a>

@@ -200,7 +200,7 @@ const Home = () => {
             </span>
             <span className="btn-primary mt-5 self-start">Build my résumé <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </Link>
-          <Link to="/work/the-webber" className="group flex flex-col rounded-3xl border border-amber-300/40 bg-gradient-to-br from-amber-300/15 via-panel to-panel p-6 transition hover:border-amber-300 md:p-7">
+          <Link to="/webber" className="group flex flex-col rounded-3xl border border-amber-300/40 bg-gradient-to-br from-amber-300/15 via-panel to-panel p-6 transition hover:border-amber-300 md:p-7">
             <span className="flex items-center gap-4">
               <AppTile tone="amber"><Spider className="h-10 w-10" /></AppTile>
               <span>
@@ -213,7 +213,7 @@ const Home = () => {
             <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-soft">
               <span>✓ Site live on its own link</span><span>✓ Owner edits it with AI</span><span>✓ Switch off or cancel any time</span>
             </span>
-            <span className="btn-ghost mt-5 self-start">See how it works <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            <span className="btn-primary mt-5 self-start">Try The Webber <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </Link>
         </div>
         <p className="mt-3 text-right"><ReplayIntro onReplay={() => setPlays((n) => n + 1)} /></p>
