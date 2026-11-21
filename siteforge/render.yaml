@@ -1,0 +1,24 @@
+# Render Blueprint: one click deploy of The Webber from this repo.
+services:
+  - type: web
+    name: the-webber
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: NODE_ENV
+        value: production
+      - key: BRAND_NAME
+        value: The Webber
+      - key: STORAGE_DRIVER
+        value: local
+      - key: ADMIN_EMAILS
+        value: apaaron826@gmail.com
+      - key: APP_URL
+        sync: false   # set to your onrender.com address after the first deploy
+      - key: OPENROUTER_API_KEY
+        sync: false   # optional: without it sites are built from the built-in template
