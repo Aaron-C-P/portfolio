@@ -1,8 +1,8 @@
 // Vercel Serverless Function — Aaron Prince's AI clone
-// Lives at /api/chat. Calls Anthropic with a persona system prompt.
+// Lives at /api/chat. Calls the AI (OpenRouter free models, see _ai.js) with a persona system prompt.
 //
 // SETUP (one time): in Vercel → Project → Settings → Environment Variables,
-// add  ANTHROPIC_API_KEY = sk-ant-...   then redeploy.
+// add  OPENROUTER_API_KEY = sk-or-...   then redeploy. (ANTHROPIC_API_KEY also works.)
 // Without that key the site still works — the chat falls back to a built-in
 // offline responder on the front end.
 
@@ -100,33 +100,8 @@ CONTEXT: the visitor is currently on the page "${page}" of this site. Use it to 
       return res.status(400).json({ error: "No messages provided" });
     }
 
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 400,
-        system,
-        messages,
-      }),
-    });
-
-    if (!r.ok) {
-      const detail = await r.text();
-      console.error("Anthropic error:", r.status, detail);
-      return res.status(502).json({ error: "Upstream error" });
-    }
-
-    const data = await r.json();
-    const reply = (data?.content || [])
-      .filter((b) => b.type === "text")
-      .map((b) => b.text)
-      .join("\n")
-      .trim();
+    const out = await complete({ system, messages, maxTokens: 400 });
+    const reply = out?.text || "";
 
     return res.status(200).json({ reply: reply || "…" });
   } catch (err) {

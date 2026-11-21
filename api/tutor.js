@@ -1,8 +1,8 @@
 // Vercel Serverless Function: the subject-agnostic AI tutor.
-// Lives at /api/tutor. Needs ANTHROPIC_API_KEY in Vercel (same key as /api/chat).
+// Lives at /api/tutor. Uses the shared AI helper (OPENROUTER_API_KEY in Vercel, same as /api/chat).
 // Without it the page falls back to showing the best-matching study note.
 
-const MODEL = "claude-haiku-4-5-20251001";
+import { complete, aiConfigured } from "./_ai.js";
 
 const BASE = `You are a patient, encouraging tutor on Aaron Prince's site. You can help with any school or college subject, and you are especially strong in CSEC-level Mathematics.
 
@@ -37,8 +37,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(503).json({ error: "AI not configured" });
+  if (!aiConfigured()) return res.status(503).json({ error: "AI not configured" });
 
   try {
     let body = req.body;
@@ -66,23 +65,8 @@ export default async function handler(req, res) {
       .filter(Boolean)
       .join("\n\n");
 
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 900, system, messages }),
-    });
-
-    if (!r.ok) {
-      console.error("Anthropic error:", r.status, await r.text());
-      return res.status(502).json({ error: "Upstream error" });
-    }
-
-    const data = await r.json();
-    const reply = (data?.content || [])
-      .filter((b) => b.type === "text")
-      .map((b) => b.text)
-      .join("\n")
-      .trim();
+    const out = await complete({ system, messages, maxTokens: 900 });
+    const reply = out?.text || "";
     return res.status(200).json({ reply: reply || "…" });
   } catch (err) {
     console.error("tutor handler error:", err);
