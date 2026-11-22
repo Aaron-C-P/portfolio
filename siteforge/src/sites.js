@@ -11,7 +11,9 @@ import { storage, invalidate, UPLOAD_TYPES, contentTypeFor } from './storage/ind
 import { generateSite, editSite, aiEnabled, listModels } from './ai.js';
 import { providerName, dailyBudget, isAllowedModel } from './models.js';
 import { templateSite } from './templates.js';
-import { startJob, getJob } from './jobs.js';
+import { startJob, getJob, addEvent, getEvents } from './jobs.js';
+import { buildWithTeam } from './agents.js';
+import { siteUsage } from './usage.js';
 import { checkoutAvailable } from './billing.js';
 
 export const api = express.Router();
@@ -235,9 +237,9 @@ api.post('/sites', (req, res) => {
   );
   const userId = req.user.id;
   const model = pickModel(req.body?.model);
-  const jobId = startJob({ userId, siteId: id, kind: 'generate' }, async (update) => {
+  const jobId = startJob({ userId, siteId: id, kind: 'generate' }, async (update, jid) => {
     try {
-      const { html, usage } = await generateSite(brief, update, { model });
+      const { html, usage } = await buildWithTeam(brief, { model, pace: aiEnabled() ? 0 : 700, progress: update, emit: (e) => addEvent(jid, e) });
       recordUsage(userId, 'generate', usage);
       saveDraft(id, html, 'AI built your site', 'ai');
       return { message: 'Your site is ready!' };
@@ -312,8 +314,8 @@ api.post('/sites/:id/regenerate', (req, res) => {
   q.run('UPDATE sites SET brief = ?, name = ? WHERE id = ?', JSON.stringify(brief), brief.name || s.name, s.id);
   const userId = req.user.id;
   const model = pickModel(req.body?.model);
-  const jobId = startJob({ userId, siteId: s.id, kind: 'generate' }, async (update) => {
-    const { html, usage } = await generateSite(brief, update, { model });
+  const jobId = startJob({ userId, siteId: s.id, kind: 'generate' }, async (update, jid) => {
+    const { html, usage } = await buildWithTeam(brief, { model, pace: aiEnabled() ? 0 : 700, progress: update, emit: (e) => addEvent(jid, e) });
     recordUsage(userId, 'generate', usage);
     saveDraft(s.id, html, 'AI rebuilt your site', 'ai');
     return { message: 'Fresh design ready!' };
@@ -401,5 +403,13 @@ api.get('/sites/:id/assets', async (req, res) => {
 api.get('/jobs/:id', requireUser, (req, res) => {
   const job = getJob(req.params.id, req.user.id);
   if (!job) return res.status(404).json({ error: 'Job not found.' });
-  res.json({ job });
+  const events = getEvents(req.params.id, req.user.id, Number(req.query.after) || 0) || [];
+  res.json({ job, events });
+});
+
+// How much room this site takes: bucket files, saved versions in the database, and what is cached in server memory.
+api.get('/sites/:id/usage', async (req, res) => {
+  const s = ownSite(req, res);
+  if (!s) return;
+  res.json({ usage: await siteUsage(s.id) });
 });

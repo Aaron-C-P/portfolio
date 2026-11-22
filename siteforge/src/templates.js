@@ -88,11 +88,13 @@ export function waDigits(n) {
   return d;
 }
 
-export function templateSite(brief) {
+export function templateSite(brief, copy = null) {
   const b = brief || {};
   const name = (b.name || 'Your Business').trim();
   const text = `${b.type || ''} ${b.description || ''}`;
-  const preset = PRESETS.find((p) => p.re.test(text)) || DEFAULT_PRESET;
+  const base = PRESETS.find((p) => p.re.test(text)) || DEFAULT_PRESET;
+  // `copy` is text written by the content-writer agent: it replaces the stock wording, never the owner's real details.
+  const preset = { ...base, services: copy?.services?.length ? copy.services : base.services };
   const vibe = VIBES[pickVibe(b.vibe)];
   const brand = pickColor(b.color, preset.color);
   const c = brand.slice(1);
@@ -220,7 +222,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
     <div>
       ${tagline ? `<span class="eyebrow">${esc(tagline)}</span>` : ''}
       <h1>${esc(name)}</h1>
-      <p>${esc(desc)}</p>
+      <p>${esc(copy?.hero || desc)}</p>
       <div class="ctas">${primaryCta}${secondCta}</div>
     </div>
     <div class="hero-img"><img src="/_ph/900x1100/main-photo?c=${c}" alt="${esc(name)} — main photo"></div>
@@ -242,8 +244,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
     <div>
       <span class="eyebrow">About us</span>
       <div class="head" style="margin-bottom:1rem"><h2>Built on care and good work</h2></div>
-      <p>${esc(desc)}</p>
-      <p>Tell your story here: how you started, who you serve, and what customers can count on when they choose ${esc(name)}.</p>
+      <p>${esc(copy?.about || desc)}</p>
+      <p>${copy?.about ? '' : 'Tell your story here: how you started, who you serve, and what customers can count on when they choose ' + esc(name) + '.'}</p>
     </div>
   </div>
 </section>

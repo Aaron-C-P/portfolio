@@ -89,6 +89,25 @@ async function load() {
   });
 }
 
+const fmt = (mb) => (mb >= 1 ? mb.toFixed(2) + ' MB' : Math.round(mb * 1024) + ' KB');
+async function loadUsage() {
+  const u = await api('/usage');
+  $('#usage-stats').innerHTML = [
+    [fmt(u.server.rssMb), 'Server memory (RSS)'],
+    [fmt(u.server.cacheMb), 'Page cache in memory (' + u.server.cacheEntries + ' files)'],
+    [fmt(u.totals.bucketMb), 'All tenants in the bucket'],
+    [fmt(u.totals.databaseMb), 'Drafts and versions in the database'],
+  ].map(([v, l]) => '<div class="card stat"><b>' + v + '</b><span>' + l + '</span></div>').join('');
+  const max = Math.max(1, ...u.sites.map((s) => s.totalBytes));
+  const rows = u.sites.map((s) => '<tr><td><b>' + esc(s.name) + '</b><br><span class="muted small">' + esc(s.email) + '</span></td>' +
+    '<td>' + fmt(s.bucketBytes / 1048576) + '</td><td>' + s.bucketFiles + '</td>' +
+    '<td>' + fmt(s.databaseBytes / 1048576) + ' <span class="muted small">(' + s.versions + ' versions)</span></td>' +
+    '<td>' + fmt(s.memoryBytes / 1048576) + '</td><td><b>' + fmt(s.totalBytes / 1048576) + '</b></td>' +
+    '<td style="min-width:120px"><div class="meter"><i style="width:' + Math.max(2, (s.totalBytes / max) * 100) + '%"></i></div></td></tr>').join('');
+  $('#usage').innerHTML = '<thead><tr><th>Website</th><th>Bucket</th><th>Files</th><th>Database</th><th>In memory now</th><th>Total</th><th></th></tr></thead><tbody>' +
+    (rows || '<tr><td colspan="7" class="muted">No websites yet.</td></tr>') + '</tbody>';
+}
+
 async function act(fn, msg) {
   try {
     await fn();
@@ -99,5 +118,6 @@ async function act(fn, msg) {
   }
 }
 
-$('#reload').onclick = () => load().catch((e) => toast(esc(e.message), true));
+$('#reload').onclick = () => Promise.all([load(), loadUsage()]).catch((e) => toast(esc(e.message), true));
 load().catch((e) => toast(esc(e.message), true));
+loadUsage().catch((e) => toast(esc(e.message), true));

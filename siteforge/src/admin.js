@@ -5,6 +5,7 @@ import { q, now } from './db.js';
 import { PLANS, siteUrl } from './config.js';
 import { requireUser, requireAdmin, accountState, hashPassword } from './auth.js';
 import { invalidate } from './storage/index.js';
+import { fleetUsage } from './usage.js';
 
 export const admin = express.Router();
 admin.use(requireUser, requireAdmin);
@@ -42,6 +43,11 @@ admin.get('/overview', (_req, res) => {
                        FROM sites s JOIN users u ON u.id = s.user_id ORDER BY s.updated_at DESC`)
     .map((s) => ({ ...s, url: siteUrl(s.slug) }));
   res.json({ totals, clients, sites, plans: PLANS });
+});
+
+// Per-tenant storage and server memory, biggest first.
+admin.get('/usage', async (_req, res) => {
+  res.json(await fleetUsage());
 });
 
 admin.post('/users/:id', (req, res) => {

@@ -87,13 +87,28 @@ const TIPS = [
   'Tip: nothing goes live until you press Publish.',
 ];
 
+const AGENTS = { lead: ['LD', 'Lead Developer'], writer: ['CW', 'Content Writer'], builder: ['PB', 'Page Builder'], system: ['★', 'Studio'] };
+function addTeamLine(box, ev) {
+  const [badge, name] = AGENTS[ev.from] || ['?', ev.from];
+  const to = ev.to && AGENTS[ev.to] ? ` → ${AGENTS[ev.to][1]}` : '';
+  const row = document.createElement('div');
+  row.className = `msg ${ev.from} ${ev.kind}`;
+  row.innerHTML = `<i>${esc(badge)}</i><div><b>${esc(name)}${esc(to)}</b>${ev.kind === 'fail' ? ' <em>problem</em>' : ev.kind === 'replan' ? ' <em>new plan</em>' : ''}<p>${esc(ev.text)}</p></div>`;
+  box.append(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+const fmtBytes = (n) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`);
+
 // Shows the building screen while a background AI job runs.
 function runJob(jobId, title = 'Building your website') {
   return new Promise((resolve, reject) => {
     const ov = document.createElement('div');
     ov.className = 'overlay';
     ov.innerHTML = `<div class="modal building"><div class="orb"></div><h2>${esc(title)}</h2>
-      <p class="muted" data-msg>Starting…</p><div class="progress"><i></i></div><p class="small muted" data-tip></p></div>`;
+      <p class="muted" data-msg>Starting…</p><div class="progress"><i></i></div>
+      <div class="team" aria-live="polite" aria-label="Your build team"></div><p class="small muted" data-tip></p></div>`;
+    let seq = 0;
     document.body.append(ov);
     let i = 0;
     const tip = () => ($('[data-tip]', ov).textContent = TIPS[i++ % TIPS.length]);
@@ -107,7 +122,11 @@ function runJob(jobId, title = 'Building your website') {
     };
     const poll = setInterval(async () => {
       try {
-        const { job } = await api(`/jobs/${jobId}`);
+        const { job, events = [] } = await api(`/jobs/${jobId}?after=${seq}`);
+        for (const ev of events) {
+          seq = ev.seq;
+          addTeamLine($('.team', ov), ev);
+        }
         $('.progress i', ov).style.width = `${job.progress}%`;
         if (job.message) $('[data-msg]', ov).textContent = job.message;
         if (job.status === 'done') {
@@ -274,6 +293,14 @@ async function viewDashboard() {
   `);
   bindShell();
   $$('.thumb iframe').forEach((f) => (f.style.transform = `scale(${f.parentElement.clientWidth / 1280})`));
+  $$('[data-usage]').forEach(async (p) => {
+    try {
+      const { usage: u } = await api('/sites/' + p.dataset.usage + '/usage');
+      p.textContent = 'Storage: ' + fmtBytes(u.totalBytes) + ' · ' + u.bucketFiles + ' file' + (u.bucketFiles === 1 ? '' : 's') + ' in the bucket · ' + u.versions + ' saved version' + (u.versions === 1 ? '' : 's');
+    } catch {
+      p.textContent = '';
+    }
+  });
   $$('[data-limit]').forEach(
     (a) =>
       (a.onclick = (e) => {
@@ -292,6 +319,7 @@ function siteCard(s) {
     <div class="body">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3>${esc(s.name)}</h3>${statusPill(s)}</div>
       <a class="link" href="${esc(s.url)}" target="_blank" rel="noopener">${esc(host)}</a>
+      <p class="small muted" data-usage="${s.id}">Storage: checking…</p>
       <div class="actions">
         <a class="btn btn-dark btn-sm" href="#site/${s.id}">Edit site</a>
         ${s.status === 'published' ? `<a class="btn btn-line btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener">View live ↗</a>` : ''}

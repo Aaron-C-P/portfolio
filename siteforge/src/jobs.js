@@ -22,7 +22,7 @@ export function startJob({ userId, siteId, kind }, work) {
   };
   (async () => {
     try {
-      const result = await work(update);
+      const result = await work(update, id);
       q.run(`UPDATE jobs SET status = 'done', progress = 100, message = ?, finished_at = ? WHERE id = ?`,
         result?.message || 'Done', now(), id);
     } catch (e) {
@@ -36,4 +36,17 @@ export function startJob({ userId, siteId, kind }, work) {
 
 export function getJob(id, userId) {
   return q.get('SELECT id, site_id, kind, status, progress, message, error FROM jobs WHERE id = ? AND user_id = ?', id, userId);
+}
+
+// The team's conversation for a job: who said what to whom, in order.
+export function addEvent(jobId, ev) {
+  const seq = (q.get('SELECT COALESCE(MAX(seq), 0) + 1 AS n FROM agent_events WHERE job_id = ?', jobId)?.n) || 1;
+  q.run('INSERT INTO agent_events (job_id, seq, at, from_agent, to_agent, kind, text) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    jobId, seq, now(), ev.from, ev.to || null, ev.kind, String(ev.text).slice(0, 400));
+  return seq;
+}
+
+export function getEvents(jobId, userId, after = 0) {
+  if (!q.get('SELECT 1 AS x FROM jobs WHERE id = ? AND user_id = ?', jobId, userId)) return null;
+  return q.all('SELECT seq, at, from_agent AS "from", to_agent AS "to", kind, text FROM agent_events WHERE job_id = ? AND seq > ? ORDER BY seq', jobId, after);
 }

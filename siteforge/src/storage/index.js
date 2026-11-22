@@ -38,3 +38,15 @@ export async function cachedGet(key) {
 export function invalidate(prefix) {
   for (const k of cache.keys()) if (k.startsWith(prefix)) cache.delete(k);
 }
+
+/** Bytes and entries currently held in the in-memory read cache for keys starting with prefix. */
+export function cacheStats(prefix = '') {
+  let bytes = 0;
+  let entries = 0;
+  for (const [k, v] of cache) {
+    if (!k.startsWith(prefix)) continue;
+    entries++;
+    bytes += v.value?.length || 0;
+  }
+  return { bytes, entries };
+}

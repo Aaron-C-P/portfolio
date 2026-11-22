@@ -269,7 +269,7 @@ export function cleanHtml(html) {
 
 const progressFrom = (chars, expected) => Math.min(95, 8 + Math.round((chars / expected) * 87));
 
-export async function generateSite(brief, onProgress = () => {}, { model } = {}) {
+export async function generateSite(brief, onProgress = () => {}, { model, copy } = {}) {
   if (!aiEnabled()) {
     onProgress(60, 'Designing your site…');
     await new Promise((r) => setTimeout(r, 600));
@@ -278,7 +278,7 @@ export async function generateSite(brief, onProgress = () => {}, { model } = {})
   onProgress(5, 'Planning the layout…');
   const r = await complete({
     system: GENERATE_SYSTEM,
-    user: `Build the website for this business:\n\n${briefToText(brief)}`,
+    user: `Build the website for this business:\n\n${briefToText(brief)}${copy ? `\n\nThe content writer has already written this copy. Use it exactly and do not add more blocks of text:\n${JSON.stringify(copy)}` : ''}`,
     model,
     onProgress,
     onChars: (n) =>
@@ -305,6 +305,33 @@ export async function editSite(html, instruction, brief, onProgress = () => {}, 
     },
   });
   return { html: r.parsed.html, summary: r.parsed.summary, usage: r.usage, model: r.model };
+}
+
+const COPY_SYSTEM = `You are the content writer on a small web team. Write short website copy for a small business, in a warm, specific voice.
+Reply with ONE JSON object only, no markdown, using exactly the section ids you are asked for:
+- "hero": one sentence.
+- "services": an array of exactly 3 [title, one short sentence] pairs.
+- "about": 2 short sentences.
+Hard rules: stay inside each word budget. Never invent phone numbers, addresses, prices, awards, years in business or customer names. Use only facts from the brief.`;
+
+/** The content writer agent: copy for a few sections at a time, inside a word budget. */
+export async function writeCopy({ brief, units, scale = 1, model }) {
+  const ask = units.map((u) => `- ${u.id} (${u.title}): max ${Math.round(u.budget * scale)} words`).join('\n');
+  const r = await complete({
+    system: COPY_SYSTEM,
+    user: `Business:\n${briefToText(brief)}\n\nWrite these sections only:\n${ask}`,
+    model,
+    parse: (text) => {
+      const m = text.match(/\{[\s\S]*\}/);
+      if (!m) throw new AiError('The writer did not return JSON.', { retryable: true });
+      try {
+        return JSON.parse(m[0]);
+      } catch {
+        throw new AiError('The writer returned broken JSON.', { retryable: true });
+      }
+    },
+  });
+  return r.parsed;
 }
 
 export { listModels };

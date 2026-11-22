@@ -94,6 +94,17 @@ CREATE TABLE IF NOT EXISTS ai_calls (
 );
 CREATE INDEX IF NOT EXISTS idx_calls_time ON ai_calls(created_at);
 
+CREATE TABLE IF NOT EXISTS agent_events (
+  job_id      TEXT NOT NULL,
+  seq         INTEGER NOT NULL,
+  at          INTEGER NOT NULL,
+  from_agent  TEXT NOT NULL,
+  to_agent    TEXT,
+  kind        TEXT NOT NULL,
+  text        TEXT NOT NULL,
+  PRIMARY KEY (job_id, seq)
+);
+
 CREATE TABLE IF NOT EXISTS billing_events (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   provider    TEXT,
