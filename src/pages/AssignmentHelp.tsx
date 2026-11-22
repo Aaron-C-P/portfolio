@@ -13,6 +13,7 @@ import page08 from "@/assets/pizza/page-08.jpg";
 import page09 from "@/assets/pizza/page-09.jpg";
 import page10 from "@/assets/pizza/page-10.jpg";
 import { FlipBook } from "@/components/studio/FlipBook";
+import { Tilt3D } from "@/components/studio/Tilt3D";
 import { TutorChat } from "@/components/studio/TutorChat";
 import { Reveal, SectionHead, usePageTitle } from "@/components/studio/parts";
 
@@ -86,9 +87,9 @@ const AssignmentHelp = () => {
           Help Hamster Haven
         </h2>
         <p className="mb-6 mt-3 max-w-2xl text-soft">A product concept: a modular hamster habitat built from separate rooms and tunnels, prototyped in cardboard first. Product and design projects are part of what I help students plan, build and explain, and you write up your own work.</p>
-        <img src={hamsterHaven} alt="A cardboard prototype of a modular hamster habitat on a workshop table" className="w-full rounded-3xl border border-line object-cover" loading="lazy" />
+        <Tilt3D><img src={hamsterHaven} alt="A cardboard prototype of a modular hamster habitat on a workshop table" className="w-full rounded-3xl border border-line object-cover" loading="lazy" /></Tilt3D>
         <Link to="/work/help-hamster-haven" className={`${action} mt-4`}>
-          Read the project <ArrowRight className="h-4 w-4 text-violet-light" aria-hidden="true" />
+          Move over it to tilt it. Read the project <ArrowRight className="h-4 w-4 text-violet-light" aria-hidden="true" />
         </Link>
       </section>
 

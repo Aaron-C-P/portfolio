@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { X } from "lucide-react";
+import { Award, X } from "lucide-react";
 import { AppTile, ResumeStudioIcon } from "@/components/studio/AppIcon";
 import { Spider } from "@/components/studio/Spider";
 
-const KEY = "whats-new-closed-v2";
+const KEY = "whats-new-closed-v3";
 const WEBBER_URL = "https://webber-beryl.vercel.app/";
+
+const CERTS = [
+  { label: "Databricks for Data Analysts", href: "/certificates/databricks-for-data-analysts-linkedin-learning.pdf" },
+  { label: "Power BI Data Modeling", href: "/certificates/power-bi-data-modeling-linkedin-learning.pdf" },
+];
 
 const card = "group relative flex items-center gap-3 rounded-2xl border border-line bg-panel/95 p-2 pr-4 shadow-2xl shadow-violet/20 transition hover:border-violet-light";
 
@@ -37,7 +42,7 @@ export const WhatsNew = () => {
     calm ? null : <span aria-hidden="true" className={`pointer-events-none absolute left-2 top-2 h-12 w-12 animate-ping rounded-[1.4rem] opacity-40 ${tone}`} />;
 
   return (
-    <div className="fixed bottom-5 left-3 z-40 flex max-w-[calc(100vw-6rem)] flex-col items-start gap-3 sm:left-5" aria-label="What’s new: two apps">
+    <div className="fixed bottom-5 left-3 z-40 flex max-w-[calc(100vw-6rem)] flex-col items-start gap-3 sm:left-5" aria-label="What’s new: two apps and new certificates">
       <div className="flex items-center gap-2 pl-1">
         <span className="rounded-full bg-fuchsia-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white shadow-lg">2 new apps</span>
         <button onClick={dismiss} aria-label="Hide the new apps badge" className="rounded-full bg-panel/90 p-1 text-soft shadow hover:text-fg"><X className="h-3.5 w-3.5" /></button>
@@ -63,6 +68,15 @@ export const WhatsNew = () => {
             <span className="block text-xs text-soft">A website in minutes</span>
           </span>
         </a>
+      </motion.div>
+
+      <motion.div animate={float} transition={T(1.2)}>
+        <div className={`${card} flex-col !items-start gap-1.5 p-3 pr-4`}>
+          <span className="flex items-center gap-2 text-sm font-bold"><Award className="h-4 w-4 text-amber-400" aria-hidden="true" /> New certificates</span>
+          {CERTS.map((c) => (
+            <a key={c.href} href={c.href} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-violet-light underline underline-offset-4 hover:text-fg">{c.label}</a>
+          ))}
+        </div>
       </motion.div>
     </div>
   );

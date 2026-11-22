@@ -20,6 +20,8 @@ const Resume = () => {
   usePageTitle("Request my résumé");
   const [focus, setFocus] = useState("");
   const [posting, setPosting] = useState("");
+  const [other, setOther] = useState(false);
+  const [otherRole, setOtherRole] = useState("");
   const [template, setTemplate] = useState("classic");
   const [variant, setVariant] = useState(0);
   const [who, setWho] = useState({ name: "", email: "", organisation: "", website: "" });
@@ -27,19 +29,19 @@ const Resume = () => {
   const [msg, setMsg] = useState("");
   const [done, setDone] = useState(false);
 
-  const preview = useMemo(() => tailor(master, { focus, posting, contact: false }), [focus, posting]);
+  const preview = useMemo(() => tailor(master, { focus, posting: posting || otherRole, contact: false }), [focus, posting, otherRole]);
   // The preview stays masked (text blocked out, faded) until the visitor gives a real name and a valid email.
   const unlocked = done || (who.name.trim().length >= 2 && /^[^s@]+@[^s@]+.[^s@]{2,}$/.test(who.email.trim()));
-  const guessed = useMemo(() => (posting.trim() ? detectFocus(master, posting).focus : null), [posting]);
+  const guessed = useMemo(() => ((posting || otherRole).trim() ? detectFocus(master, posting || otherRole).focus : null), [posting, otherRole]);
 
   const get = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setMsg("");
     try {
-      const payload = { ...who, focus, posting, template, variant };
+      const payload = { ...who, focus, posting: posting || otherRole, template, variant };
       // Aaron is also told by email (the sheet records it too). Never blocks the download.
-      void fetch(FORMSPREE, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ _subject: `Résumé downloaded: ${preview.focusLabel}`, name: who.name, email: who.email, organisation: who.organisation, focus: preview.focus, matched: preview.matched.join(", "), posting: posting.slice(0, 500) }) }).catch(() => undefined);
+      void fetch(FORMSPREE, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ _subject: `Résumé downloaded: ${preview.focusLabel}`, name: who.name, email: who.email, organisation: who.organisation, focus: preview.focus, matched: preview.matched.join(", "), posting: (posting || otherRole).slice(0, 500), otherRole }) }).catch(() => undefined);
       const res = await fetch("/api/my-resume", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -75,12 +77,22 @@ const Resume = () => {
         <h2 id="pick" className="text-xl font-bold">1. What are you hiring for?</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Role focus">
           {Object.entries(master.focuses).map(([id, f]) => (
-            <button key={id} type="button" role="radio" aria-checked={preview.focus === id && (focus === id || (!focus && guessed === id))} onClick={() => setFocus(focus === id ? "" : id)} className={chip(preview.focus === id && (focus === id || (!focus && guessed === id)))}>
+            <button key={id} type="button" role="radio" aria-checked={preview.focus === id && (focus === id || (!focus && guessed === id))} onClick={() => { setOther(false); setFocus(focus === id ? "" : id); }} className={chip(preview.focus === id && (focus === id || (!focus && guessed === id)))}>
               <span className="block font-bold">{f.label}</span>
               <span className="block text-sm text-soft">{f.blurb}</span>
             </button>
           ))}
+          <button type="button" role="radio" aria-checked={other} onClick={() => { setOther(!other); setFocus(""); }} className={chip(other)}>
+            <span className="block font-bold">Other</span>
+            <span className="block text-sm text-soft">Something else: tell me the role and I will match it</span>
+          </button>
         </div>
+        {other && (
+          <label className="mt-4 block text-sm font-semibold">
+            What is the role?
+            <input value={otherRole} onChange={(e) => setOtherRole(e.target.value)} placeholder="For example: IT support, project coordinator, QA tester" className={`${field} mt-1`} maxLength={120} />
+          </label>
+        )}
         <label className="mt-4 block text-sm font-semibold">
           Or paste the job posting and I will match it
           <textarea value={posting} onChange={(e) => setPosting(e.target.value)} placeholder="Paste the job description here (optional)" className={`${field} mt-1 min-h-28`} maxLength={6000} />
