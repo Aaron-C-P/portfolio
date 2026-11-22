@@ -16,6 +16,9 @@ const FORMSPREE = "https://formspree.io/f/mnjqgkgz";
  * pick a role (or paste the job posting) and the app puts the most relevant experience first. Contact details are left
  * out of the on-screen preview and are in the PDF you download.
  */
+const maskEmail = (e: string) => e.replace(/^(.{2})[^@]*(@.*)$/, "$1••••$2");
+const maskPhone = (p: string) => p.replace(/\d(?=(?:\D*\d){2})/g, "•");
+
 const Resume = () => {
   usePageTitle("Request my résumé");
   const [focus, setFocus] = useState("");
@@ -57,6 +60,7 @@ const Resume = () => {
     }
   };
 
+  const r = preview.resume;
   const chip = (on: boolean) => `rounded-2xl border px-4 py-3 text-left transition ${on ? "border-violet-light bg-violet/25" : "border-line bg-panel hover:border-violet-light/60"}`;
 
   return (
@@ -91,7 +95,7 @@ const Resume = () => {
 
       <section className="mt-10" aria-labelledby="see">
         <h2 id="see" className="text-xl font-bold">2. See it, in 3D</h2>
-        <p className="mt-1 text-sm text-soft">Move over it to tilt it, pull the layers apart, or switch on the ATS X-ray to see what a hiring system reads. Contact details are in the download, not the preview.</p>
+        <p className="mt-1 text-sm text-soft">Move over it to tilt it, pull the layers apart, or switch on the ATS X-ray to see what a hiring system reads. Contact details stay masked on screen.</p>
         <div className="mt-4"><Stage3D id="resume-stage" r={preview.resume} templateId={template} variant={variant} locked={false} onRemix={() => setVariant((v) => (v + 1) % 100)} /></div>
         <div className="mt-4 flex flex-wrap justify-center gap-2" role="radiogroup" aria-label="Template">
           {TEMPLATES.map((t) => (
@@ -100,8 +104,32 @@ const Resume = () => {
         </div>
       </section>
 
+      <section className="mt-10" aria-labelledby="read">
+        <h2 id="read" className="text-xl font-bold">Read it right here</h2>
+        <p className="mt-1 text-sm text-soft">No request needed. My phone and email are masked on screen and are in the PDF below.</p>
+        <article className="mt-4 rounded-3xl border border-line bg-panel p-5 md:p-8">
+          <h3 className="text-2xl font-extrabold">{r.name}</h3>
+          <p className="font-semibold text-violet-light">{r.title}</p>
+          <p className="mt-1 text-sm text-soft">{r.location} · {maskEmail(master.email)} · {maskPhone(master.phone)} · {r.links}</p>
+          <p className="mt-4 text-soft">{r.summary}</p>
+          <h4 className="mt-6 text-sm font-bold uppercase tracking-widest text-soft">Skills</h4>
+          <p className="mt-1">{r.skills}</p>
+          <h4 className="mt-6 text-sm font-bold uppercase tracking-widest text-soft">Experience and projects</h4>
+          <div className="mt-2 space-y-5">
+            {r.experience.map((x, i) => (
+              <div key={i}>
+                <p className="font-bold">{x.role}{x.org ? <span className="font-normal text-soft"> · {x.org}</span> : null}{x.dates ? <span className="font-normal text-soft"> · {x.dates}</span> : null}</p>
+                <ul className="mt-1 list-disc space-y-1 pl-5 text-soft">{x.bullets.map((b: string, j: number) => <li key={j}>{b}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+          <h4 className="mt-6 text-sm font-bold uppercase tracking-widest text-soft">Education and certifications</h4>
+          <ul className="mt-2 space-y-1.5 text-soft">{r.education.map((e, i) => <li key={i}><b className="text-fg">{e.school}</b>{e.what ? `: ${e.what}` : ""}{e.dates ? ` (${e.dates})` : ""}</li>)}</ul>
+        </article>
+      </section>
+
       <section className="mt-10" aria-labelledby="get">
-        <h2 id="get" className="text-xl font-bold">3. Get your copy</h2>
+        <h2 id="get" className="text-xl font-bold">Get the PDF with my contact details</h2>
         {done ? (
           <div role="status" className="mt-3 rounded-3xl border border-emerald-400/40 bg-emerald-400/5 p-6">
             <p className="text-xl font-bold">Your résumé is downloading.</p>
