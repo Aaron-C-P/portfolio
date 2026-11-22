@@ -27,7 +27,7 @@ const SCENES: Scene[] = [
   { key: "projects", ms: 4200, kicker: "Real projects", title: "Built and shipped", lines: shown.map((p) => p.name) },
   { key: "content", ms: 3200, kicker: "Content creation", title: "Stories that get seen", lines: ["Brand films", "Writing for real audiences", "A feed that shows the work"] },
   { key: "tech", ms: 3200, kicker: "Technology", title: "Built to last", lines: ["Fast on a phone", "Clear for the people using it", "Yours to own and update"] },
-  { key: "new", ms: 4800, kicker: "What’s new", title: "Fresh off the build", lines: ["Résumé Studio: a living résumé you design in 3D", "Help Hamster Haven: student help, made friendly", "The Webber: websites made in minutes"] },
+  { key: "new", ms: 4800, kicker: "What’s new", title: "Fresh off the build", lines: ["Résumé Studio: a living résumé you design in 3D", "Help Hamster Haven: student help, made friendly", "The Webber: websites made in minutes", "New certificates: Databricks for Data Analysts, Power BI Data Modeling"] },
   { key: "resume", ms: 5200, kicker: "The digital résumé", title: "ATS-ready text. Art built in.", lines: ["Design it live in 3D", "Every word stays readable by hiring systems"] },
   { key: "webber", ms: 4400, kicker: "Now live · The Webber", title: "Let’s web you in.", lines: ["Describe a business, get a website", "Clients edit their own site, or switch it off", "One simple monthly fee"] },
 ];

@@ -3,12 +3,17 @@ import { useCallback, useEffect, useState } from "react";
 export type Theme = "light" | "dark";
 const KEY = "theme";
 
+/** Light by day, dark from 7pm to 7am, unless the visitor has picked one with the toggle. */
+export const byTimeOfDay = (d = new Date()): Theme => (d.getHours() >= 19 || d.getHours() < 7 ? "dark" : "light");
+
 const stored = (): Theme => {
   try {
-    return localStorage.getItem(KEY) === "dark" ? "dark" : "light"; // light unless the visitor chose dark
+    const v = localStorage.getItem(KEY);
+    if (v === "dark" || v === "light") return v;
   } catch {
-    return "light";
+    /* no storage: follow the clock */
   }
+  return byTimeOfDay();
 };
 
 export const applyTheme = (t: Theme) => {
