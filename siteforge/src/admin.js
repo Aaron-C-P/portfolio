@@ -10,15 +10,15 @@ import { fleetUsage } from './usage.js';
 export const admin = express.Router();
 admin.use(requireUser, requireAdmin);
 
-admin.get('/overview', (_req, res) => {
-  const users = q.all(`
+admin.get('/overview', async (_req, res) => {
+  const users = await q.all(`
     SELECT u.*,
       (SELECT COUNT(*) FROM sites s WHERE s.user_id = u.id) AS site_count,
       (SELECT COUNT(*) FROM sites s WHERE s.user_id = u.id AND s.status = 'published') AS live_count
     FROM users u ORDER BY u.created_at DESC`);
   const d = new Date();
   const monthStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
-  const usage = q.get(
+  const usage = await q.get(
     'SELECT COUNT(*) AS calls, COALESCE(SUM(input_tokens),0) AS input, COALESCE(SUM(output_tokens),0) AS output FROM ai_usage WHERE created_at >= ?',
     monthStart,
   );
@@ -39,9 +39,9 @@ admin.get('/overview', (_req, res) => {
       sites: u.site_count, live: u.live_count, createdAt: u.created_at,
     };
   });
-  const sites = q.all(`SELECT s.id, s.slug, s.name, s.status, s.admin_locked, s.custom_domain, s.updated_at, u.email
-                       FROM sites s JOIN users u ON u.id = s.user_id ORDER BY s.updated_at DESC`)
-    .map((s) => ({ ...s, url: siteUrl(s.slug) }));
+  const siteRows = await q.all(`SELECT s.id, s.slug, s.name, s.status, s.admin_locked, s.custom_domain, s.updated_at, u.email
+                       FROM sites s JOIN users u ON u.id = s.user_id ORDER BY s.updated_at DESC`);
+  const sites = siteRows.map((s) => ({ ...s, url: siteUrl(s.slug) }));
   res.json({ totals, clients, sites, plans: PLANS });
 });
 
@@ -50,42 +50,42 @@ admin.get('/usage', async (_req, res) => {
   res.json(await fleetUsage());
 });
 
-admin.post('/users/:id', (req, res) => {
-  const u = q.get('SELECT * FROM users WHERE id = ?', req.params.id);
+admin.post('/users/:id', async (req, res) => {
+  const u = await q.get('SELECT * FROM users WHERE id = ?', req.params.id);
   if (!u) return res.status(404).json({ error: 'User not found.' });
   const b = req.body || {};
-  if (b.plan && PLANS[b.plan]) q.run('UPDATE users SET plan = ? WHERE id = ?', b.plan, u.id);
+  if (b.plan && PLANS[b.plan]) await q.run('UPDATE users SET plan = ? WHERE id = ?', b.plan, u.id);
   if (b.paidUntil !== undefined) {
     const t = b.paidUntil ? Date.parse(`${b.paidUntil}T23:59:59Z`) : null;
     if (b.paidUntil && !t) return res.status(400).json({ error: 'Use a date like 2026-12-31.' });
-    q.run('UPDATE users SET paid_until = ? WHERE id = ?', t, u.id);
+    await q.run('UPDATE users SET paid_until = ? WHERE id = ?', t, u.id);
   }
   if (b.extendTrialDays) {
     const base = Math.max(now(), u.trial_ends_at || 0);
-    q.run('UPDATE users SET trial_ends_at = ? WHERE id = ?', base + Number(b.extendTrialDays) * 864e5, u.id);
+    await q.run('UPDATE users SET trial_ends_at = ? WHERE id = ?', base + Number(b.extendTrialDays) * 864e5, u.id);
   }
   res.json({ ok: true });
 });
 
-admin.post('/users/:id/reset-password', (req, res) => {
-  const u = q.get('SELECT * FROM users WHERE id = ?', req.params.id);
+admin.post('/users/:id/reset-password', async (req, res) => {
+  const u = await q.get('SELECT * FROM users WHERE id = ?', req.params.id);
   if (!u) return res.status(404).json({ error: 'User not found.' });
   const temp = crypto.randomBytes(6).toString('base64url');
-  q.run('UPDATE users SET password_hash = ? WHERE id = ?', hashPassword(temp), u.id);
-  q.run('DELETE FROM sessions WHERE user_id = ?', u.id);
+  await q.run('UPDATE users SET password_hash = ? WHERE id = ?', hashPassword(temp), u.id);
+  await q.run('DELETE FROM sessions WHERE user_id = ?', u.id);
   res.json({ tempPassword: temp });
 });
 
-admin.post('/sites/:id', (req, res) => {
-  const s = q.get('SELECT * FROM sites WHERE id = ?', req.params.id);
+admin.post('/sites/:id', async (req, res) => {
+  const s = await q.get('SELECT * FROM sites WHERE id = ?', req.params.id);
   if (!s) return res.status(404).json({ error: 'Site not found.' });
   const b = req.body || {};
-  if (b.locked !== undefined) q.run('UPDATE sites SET admin_locked = ? WHERE id = ?', b.locked ? 1 : 0, s.id);
+  if (b.locked !== undefined) await q.run('UPDATE sites SET admin_locked = ? WHERE id = ?', b.locked ? 1 : 0, s.id);
   if (b.customDomain !== undefined) {
     const dom = String(b.customDomain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '') || null;
     if (dom && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(dom)) return res.status(400).json({ error: 'That domain looks wrong.' });
     try {
-      q.run('UPDATE sites SET custom_domain = ? WHERE id = ?', dom, s.id);
+      await q.run('UPDATE sites SET custom_domain = ? WHERE id = ?', dom, s.id);
     } catch {
       return res.status(409).json({ error: 'Another site already uses that domain.' });
     }

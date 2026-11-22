@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+process.env.DB_MEMORY = '1';
 process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'webber-journey-'));
 process.env.STORAGE_DRIVER = 'local';
 delete process.env.OPENROUTER_API_KEY;
@@ -142,14 +143,17 @@ test('stress: 25 owners build and publish at the same time; every tenant’s foo
   }));
   const ms = Date.now() - t0;
 
-  const admin = q.get('SELECT id FROM users WHERE email = ?', 'marcia@example.com');
-  q.run('UPDATE users SET is_admin = 1 WHERE id = ?', admin.id);
+  const admin = await q.get('SELECT id FROM users WHERE email = ?', 'marcia@example.com');
+  await q.run('UPDATE users SET is_admin = 1 WHERE id = ?', admin.id);
   const v = new Visitor();
   await v.call('POST', '/api/auth/login', { email: 'marcia@example.com', password: 'a-good-password-1' });
   const fleet = (await v.call('GET', '/api/admin/usage')).json;
   assert.ok(fleet.sites.length >= 26);
   assert.ok(owners.every((id) => fleet.sites.some((s) => s.id === id && s.bucketBytes > 0)), 'every tenant has a bucket footprint');
   assert.ok(fleet.server.rssMb > 0);
+  const ov = await v.call('GET', '/api/admin/overview');
+  assert.equal(ov.status, 200, 'admin overview loads');
+  assert.ok(ov.json.clients.length >= 26 && ov.json.sites.length >= 26 && ov.json.sites.every((x) => x.url), 'overview lists every client and site');
   const own = await fleetUsage();
   const perSite = own.sites.map((s) => s.totalBytes);
   const avgKb = perSite.reduce((a, b) => a + b, 0) / perSite.length / 1024;

@@ -1,4 +1,5 @@
 // The build team: unit tests for how the lead handles a misbehaving writer, plus a stress run of many builds at once.
+process.env.DB_MEMORY = '1';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildWithTeam, reviewCopy, makePlan, offlineCopy, LIMITS } from '../src/agents.js';
@@ -50,7 +51,7 @@ test('a writer that hangs is timed out', async () => {
   assert.ok(r.html.includes('id="home"'));
 });
 
-test('invented phone numbers are rejected, real ones from the brief are fine', () => {
+test('invented phone numbers are rejected, real ones from the brief are fine', async () => {
   const units = makePlan(brief).units.filter((u) => u.id === 'hero');
   assert.deepEqual(reviewCopy(brief, { hero: 'Call us on 876 555 0142 today.' }, units), []);
   assert.match(reviewCopy(brief, { hero: 'Call us on 876 123 4567 today.' }, units)[0], /invented a number/);

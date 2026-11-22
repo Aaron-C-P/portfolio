@@ -55,40 +55,40 @@ export function slugify(s) {
     .replace(/-+$/g, '');
 }
 
-export function slugProblem(slug) {
+export async function slugProblem(slug) {
   if (!/^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/.test(slug)) return 'Use 3–40 letters, numbers or dashes.';
   if (RESERVED_SLUGS.has(slug)) return 'That name is reserved.';
-  if (q.get('SELECT 1 FROM sites WHERE slug = ?', slug)) return 'That name is taken.';
+  if (await q.get('SELECT 1 FROM sites WHERE slug = ?', slug)) return 'That name is taken.';
   return null;
 }
 
-function freeSlug(base) {
+async function freeSlug(base) {
   let slug = slugify(base) || 'my-site';
   if (slug.length < 3) slug = `${slug}-site`;
-  if (!slugProblem(slug)) return slug;
+  if (!await slugProblem(slug)) return slug;
   for (let i = 2; i < 500; i++) {
     const s = `${slug.slice(0, 36)}-${i}`;
-    if (!slugProblem(s)) return s;
+    if (!await slugProblem(s)) return s;
   }
   return `${slug.slice(0, 30)}-${newId(3)}`;
 }
 
-function ownSite(req, res) {
-  const s = q.get('SELECT * FROM sites WHERE id = ? AND user_id = ?', req.params.id, req.user.id);
+async function ownSite(req, res) {
+  const s = await q.get('SELECT * FROM sites WHERE id = ? AND user_id = ?', req.params.id, req.user.id);
   if (!s) res.status(404).json({ error: 'Site not found.' });
   return s;
 }
 
-export function saveDraft(siteId, html, note, source) {
+export async function saveDraft(siteId, html, note, source) {
   const t = now();
-  q.run(
+  await q.run(
     `UPDATE sites SET draft_html = ?, updated_at = ?,
        has_unpublished_changes = CASE WHEN status = 'draft' THEN 0 ELSE 1 END
      WHERE id = ?`,
     html, t, siteId,
   );
-  q.run('INSERT INTO site_versions (site_id, html, note, source, created_at) VALUES (?, ?, ?, ?, ?)', siteId, html, note, source, t);
-  q.run(
+  await q.run('INSERT INTO site_versions (site_id, html, note, source, created_at) VALUES (?, ?, ?, ?, ?)', siteId, html, note, source, t);
+  await q.run(
     `DELETE FROM site_versions WHERE site_id = ? AND id NOT IN
        (SELECT id FROM site_versions WHERE site_id = ? ORDER BY id DESC LIMIT ?)`,
     siteId, siteId, MAX_VERSIONS,
@@ -100,19 +100,19 @@ const pickModel = (v) => {
   return isAllowedModel(m) ? m : '';
 };
 
-function recordUsage(userId, kind, usage) {
+async function recordUsage(userId, kind, usage) {
   if (!usage) return; // template builds cost nothing
-  q.run('INSERT INTO ai_usage (user_id, kind, input_tokens, output_tokens, created_at) VALUES (?, ?, ?, ?, ?)',
+  await q.run('INSERT INTO ai_usage (user_id, kind, input_tokens, output_tokens, created_at) VALUES (?, ?, ?, ?, ?)',
     userId, kind, usage.input_tokens, usage.output_tokens, now());
 }
 
-function aiAllowed(user, res, { allowDailyFallback = false } = {}) {
-  const lim = limitsFor(user);
+async function aiAllowed(user, res, { allowDailyFallback = false } = {}) {
+  const lim = await limitsFor(user);
   if (!lim.state.active) {
     res.status(402).json({ error: 'Your plan has ended. Choose a plan to keep building.', code: 'inactive' });
     return false;
   }
-  if (!allowDailyFallback && providerName() === 'openrouter' && dailyBudget().left <= 0) {
+  if (!allowDailyFallback && providerName() === 'openrouter' && (await dailyBudget()).left <= 0) {
     res.status(429).json({
       error: 'The free AI limit for today has been reached. It resets at 00:00 UTC. You can still edit text and photos yourself.',
       code: 'ai_daily',
@@ -140,7 +140,7 @@ function cleanBrief(b = {}) {
 }
 
 // ---------- account ----------
-api.post('/auth/signup', (req, res) => {
+api.post('/auth/signup', async (req, res) => {
   const email = cleanEmail(req.body?.email);
   const password = String(req.body?.password || '');
   const name = String(req.body?.name || '').trim().slice(0, 80);
@@ -148,37 +148,37 @@ api.post('/auth/signup', (req, res) => {
   if (tooManyAttempts(`signup|${req.ip}`))
     return res.status(429).json({ error: 'Too many sign-ups from this connection. Try again later.' });
   if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
-  if (q.get('SELECT 1 FROM users WHERE email = ?', email))
+  if (await q.get('SELECT 1 FROM users WHERE email = ?', email))
     return res.status(409).json({ error: 'An account with that email already exists. Try logging in.' });
-  const user = createUser({ email, password, name });
-  startSession(res, user.id);
+  const user = await createUser({ email, password, name });
+  await startSession(res, user.id);
   res.json({ user: publicUser(user) });
 });
 
-api.post('/auth/login', (req, res) => {
+api.post('/auth/login', async (req, res) => {
   const email = cleanEmail(req.body?.email);
   if (tooManyAttempts(`${req.ip}|${email}`))
     return res.status(429).json({ error: 'Too many attempts. Wait 15 minutes and try again.' });
-  const user = q.get('SELECT * FROM users WHERE email = ?', email);
+  const user = await q.get('SELECT * FROM users WHERE email = ?', email);
   if (!user || !verifyPassword(String(req.body?.password || ''), user.password_hash))
     return res.status(401).json({ error: 'Wrong email or password.' });
-  startSession(res, user.id);
+  await startSession(res, user.id);
   res.json({ user: publicUser(user) });
 });
 
-api.post('/auth/logout', (req, res) => {
-  endSession(req, res);
+api.post('/auth/logout', async (req, res) => {
+  await endSession(req, res);
   res.json({ ok: true });
 });
 
-api.get('/me', (req, res) => {
+api.get('/me', async (req, res) => {
   const base = {
     brand: config.brand,
     trialDays: config.trialDays,
     siteDomain: config.rootDomain + (config.appPort ? `:${config.appPort}` : ''),
   };
   if (!req.user) return res.json({ ...base, user: null });
-  const lim = limitsFor(req.user);
+  const lim = await limitsFor(req.user);
   res.json({
     ...base,
     user: publicUser(req.user),
@@ -187,7 +187,7 @@ api.get('/me', (req, res) => {
     plans: ['starter'].map((id) => ({ ...PLANS[id], checkout: checkoutAvailable(id) })),
     aiEnabled: aiEnabled(),
     aiProvider: providerName(),
-    aiDaily: providerName() === 'openrouter' ? dailyBudget() : null,
+    aiDaily: providerName() === 'openrouter' ? await dailyBudget() : null,
     contact: config.contact,
   });
 });
@@ -199,169 +199,171 @@ api.get('/ai/models', requireUser, async (_req, res) => {
     provider: providerName(),
     models,
     default: models[0]?.id || null,
-    daily: providerName() === 'openrouter' ? dailyBudget() : null,
+    daily: providerName() === 'openrouter' ? await dailyBudget() : null,
   });
 });
 
 // ---------- sites ----------
 api.use('/sites', requireUser);
 
-api.get('/sites', (req, res) => {
-  const rows = q.all('SELECT * FROM sites WHERE user_id = ? ORDER BY created_at DESC', req.user.id);
+api.get('/sites', async (req, res) => {
+  const rows = await q.all('SELECT * FROM sites WHERE user_id = ? ORDER BY created_at DESC', req.user.id);
   res.json({ sites: rows.map(siteJson) });
 });
 
-api.get('/slug-check', requireUser, (req, res) => {
+api.get('/slug-check', requireUser, async (req, res) => {
   const slug = slugify(req.query.slug);
-  res.json({ slug, problem: slugProblem(slug), url: siteUrl(slug || 'name') });
+  res.json({ slug, problem: await slugProblem(slug), url: siteUrl(slug || 'name') });
 });
 
-api.post('/sites', (req, res) => {
-  const lim = limitsFor(req.user);
-  if (!aiAllowed(req.user, res, { allowDailyFallback: true })) return;
-  const count = q.get('SELECT COUNT(*) AS n FROM sites WHERE user_id = ?', req.user.id).n;
+api.post('/sites', async (req, res) => {
+  const lim = await limitsFor(req.user);
+  if (!await aiAllowed(req.user, res, { allowDailyFallback: true })) return;
+  const count = (await q.get('SELECT COUNT(*) AS n FROM sites WHERE user_id = ?', req.user.id)).n;
   if (count >= lim.maxSites)
     return res.status(402).json({ error: `Your plan allows ${lim.maxSites} website${lim.maxSites === 1 ? '' : 's'}. Upgrade to add more.`, code: 'site_limit' });
   const brief = cleanBrief(req.body?.brief);
   if (!brief.name) return res.status(400).json({ error: 'Tell us your business name.' });
-  let slug = req.body?.slug ? slugify(req.body.slug) : freeSlug(brief.name);
-  const problem = slugProblem(slug);
+  let slug = req.body?.slug ? slugify(req.body.slug) : await freeSlug(brief.name);
+  const problem = await slugProblem(slug);
   if (problem) return res.status(400).json({ error: `Web address: ${problem}` });
 
   const id = newId(6);
   const t = now();
-  q.run(
+  await q.run(
     `INSERT INTO sites (id, user_id, slug, name, status, brief, created_at, updated_at)
      VALUES (?, ?, ?, ?, 'draft', ?, ?, ?)`,
     id, req.user.id, slug, brief.name, JSON.stringify(brief), t, t,
   );
+  // A starter page is there straight away, so the owner can watch their site take shape while the team works.
+  await q.run('UPDATE sites SET draft_html = ? WHERE id = ?', templateSite(brief), id);
   const userId = req.user.id;
   const model = pickModel(req.body?.model);
-  const jobId = startJob({ userId, siteId: id, kind: 'generate' }, async (update, jid) => {
+  const jobId = await startJob({ userId, siteId: id, kind: 'generate' }, async (update, jid) => {
     try {
       const { html, usage } = await buildWithTeam(brief, { model, pace: aiEnabled() ? 0 : 700, progress: update, emit: (e) => addEvent(jid, e) });
-      recordUsage(userId, 'generate', usage);
-      saveDraft(id, html, 'AI built your site', 'ai');
+      await recordUsage(userId, 'generate', usage);
+      await saveDraft(id, html, 'AI built your site', 'ai');
       return { message: 'Your site is ready!' };
     } catch (e) {
       // Never leave a new customer with an empty site: fall back to the built-in design.
       console.warn('[generate] AI failed, using template:', e.message);
-      saveDraft(id, templateSite(brief), 'Built from the starter design (AI was busy)', 'template');
+      await saveDraft(id, templateSite(brief), 'Built from the starter design (AI was busy)', 'template');
       return { message: 'Your site is ready! (The AI was busy, so we used our starter design. Use “Redesign with AI” in a minute.)' };
     }
   });
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', id)), jobId });
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', id)), jobId });
 });
 
-api.get('/sites/:id', (req, res) => {
-  const s = ownSite(req, res);
+api.get('/sites/:id', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
-  const versions = q.all(
+  const versions = await q.all(
     'SELECT id, note, source, created_at FROM site_versions WHERE site_id = ? ORDER BY id DESC LIMIT ?', s.id, MAX_VERSIONS,
   );
   res.json({ site: siteJson(s), versions });
 });
 
-api.patch('/sites/:id', (req, res) => {
-  const s = ownSite(req, res);
+api.patch('/sites/:id', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
   const name = req.body?.name != null ? String(req.body.name).trim().slice(0, 80) : s.name;
   let slug = s.slug;
   if (req.body?.slug != null && slugify(req.body.slug) !== s.slug) {
     slug = slugify(req.body.slug);
-    const problem = slugProblem(slug);
+    const problem = await slugProblem(slug);
     if (problem) return res.status(400).json({ error: `Web address: ${problem}` });
   }
   let brief = s.brief;
   if (req.body?.brief) brief = JSON.stringify(cleanBrief({ ...JSON.parse(s.brief || '{}'), ...req.body.brief }));
-  q.run('UPDATE sites SET name = ?, slug = ?, brief = ?, updated_at = ? WHERE id = ?', name || s.name, slug, brief, now(), s.id);
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
+  await q.run('UPDATE sites SET name = ?, slug = ?, brief = ?, updated_at = ? WHERE id = ?', name || s.name, slug, brief, now(), s.id);
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
 });
 
-api.put('/sites/:id/html', (req, res) => {
-  const s = ownSite(req, res);
+api.put('/sites/:id/html', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
   const html = String(req.body?.html || '');
   if (!/<html[\s>]/i.test(html) || html.length > 800_000) return res.status(400).json({ error: 'That page could not be saved.' });
-  saveDraft(s.id, html, String(req.body?.note || 'Your edits').slice(0, 120), 'manual');
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
+  await saveDraft(s.id, html, String(req.body?.note || 'Your edits').slice(0, 120), 'manual');
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
 });
 
-api.post('/sites/:id/ai-edit', (req, res) => {
-  const s = ownSite(req, res);
+api.post('/sites/:id/ai-edit', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
   const instruction = String(req.body?.instruction || '').trim().slice(0, 2000);
   if (!instruction) return res.status(400).json({ error: 'Tell the AI what to change.' });
   if (!s.draft_html) return res.status(400).json({ error: 'This site has no page yet.' });
-  if (!aiAllowed(req.user, res)) return;
+  if (!await aiAllowed(req.user, res)) return;
   const userId = req.user.id;
   const model = pickModel(req.body?.model);
-  const jobId = startJob({ userId, siteId: s.id, kind: 'edit' }, async (update) => {
-    const fresh = q.get('SELECT draft_html, brief FROM sites WHERE id = ?', s.id);
+  const jobId = await startJob({ userId, siteId: s.id, kind: 'edit' }, async (update) => {
+    const fresh = await q.get('SELECT draft_html, brief FROM sites WHERE id = ?', s.id);
     const { html, usage, summary } = await editSite(fresh.draft_html, instruction, JSON.parse(fresh.brief || '{}'), update, { model });
-    recordUsage(userId, 'edit', usage);
-    saveDraft(s.id, html, `AI: ${summary}`.slice(0, 200), 'ai');
+    await recordUsage(userId, 'edit', usage);
+    await saveDraft(s.id, html, `AI: ${summary}`.slice(0, 200), 'ai');
     return { message: summary };
   });
   res.json({ jobId });
 });
 
-api.post('/sites/:id/regenerate', (req, res) => {
-  const s = ownSite(req, res);
+api.post('/sites/:id/regenerate', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
-  if (!aiAllowed(req.user, res)) return;
+  if (!await aiAllowed(req.user, res)) return;
   const brief = cleanBrief({ ...JSON.parse(s.brief || '{}'), ...(req.body?.brief || {}) });
-  q.run('UPDATE sites SET brief = ?, name = ? WHERE id = ?', JSON.stringify(brief), brief.name || s.name, s.id);
+  await q.run('UPDATE sites SET brief = ?, name = ? WHERE id = ?', JSON.stringify(brief), brief.name || s.name, s.id);
   const userId = req.user.id;
   const model = pickModel(req.body?.model);
-  const jobId = startJob({ userId, siteId: s.id, kind: 'generate' }, async (update, jid) => {
+  const jobId = await startJob({ userId, siteId: s.id, kind: 'generate' }, async (update, jid) => {
     const { html, usage } = await buildWithTeam(brief, { model, pace: aiEnabled() ? 0 : 700, progress: update, emit: (e) => addEvent(jid, e) });
-    recordUsage(userId, 'generate', usage);
-    saveDraft(s.id, html, 'AI rebuilt your site', 'ai');
+    await recordUsage(userId, 'generate', usage);
+    await saveDraft(s.id, html, 'AI rebuilt your site', 'ai');
     return { message: 'Fresh design ready!' };
   });
   res.json({ jobId });
 });
 
-api.post('/sites/:id/restore/:versionId', (req, res) => {
-  const s = ownSite(req, res);
+api.post('/sites/:id/restore/:versionId', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
-  const v = q.get('SELECT * FROM site_versions WHERE id = ? AND site_id = ?', req.params.versionId, s.id);
+  const v = await q.get('SELECT * FROM site_versions WHERE id = ? AND site_id = ?', req.params.versionId, s.id);
   if (!v) return res.status(404).json({ error: 'Version not found.' });
-  saveDraft(s.id, v.html, `Restored: ${v.note || 'earlier version'}`.slice(0, 200), 'restore');
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
+  await saveDraft(s.id, v.html, `Restored: ${v.note || 'earlier version'}`.slice(0, 200), 'restore');
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
 });
 
 api.post('/sites/:id/publish', async (req, res) => {
-  const s = ownSite(req, res);
+  const s = await ownSite(req, res);
   if (!s) return;
   if (!s.draft_html) return res.status(400).json({ error: 'Build your site first.' });
-  const lim = limitsFor(req.user);
+  const lim = await limitsFor(req.user);
   if (!lim.state.active)
     return res.status(402).json({ error: 'Choose a plan to put your site online.', code: 'inactive' });
   if (s.admin_locked) return res.status(403).json({ error: 'This site has been paused by support. Please contact us.' });
   await storage.put(`sites/${s.id}/index.html`, Buffer.from(s.draft_html, 'utf8'));
   invalidate(`sites/${s.id}/`);
-  q.run(`UPDATE sites SET status = 'published', has_unpublished_changes = 0, published_at = ?, updated_at = ? WHERE id = ?`, now(), now(), s.id);
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
+  await q.run(`UPDATE sites SET status = 'published', has_unpublished_changes = 0, published_at = ?, updated_at = ? WHERE id = ?`, now(), now(), s.id);
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
 });
 
-api.post('/sites/:id/unpublish', (req, res) => {
-  const s = ownSite(req, res);
+api.post('/sites/:id/unpublish', async (req, res) => {
+  const s = await ownSite(req, res);
   if (!s) return;
-  q.run(`UPDATE sites SET status = 'offline', updated_at = ? WHERE id = ?`, now(), s.id);
+  await q.run(`UPDATE sites SET status = 'offline', updated_at = ? WHERE id = ?`, now(), s.id);
   invalidate(`sites/${s.id}/`);
-  res.json({ site: siteJson(q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
+  res.json({ site: siteJson(await q.get('SELECT * FROM sites WHERE id = ?', s.id)) });
 });
 
 api.delete('/sites/:id', async (req, res) => {
-  const s = ownSite(req, res);
+  const s = await ownSite(req, res);
   if (!s) return;
   if (String(req.body?.confirm || '') !== s.slug)
     return res.status(400).json({ error: `Type "${s.slug}" to confirm.` });
   await storage.deletePrefix(`sites/${s.id}/`);
   invalidate(`sites/${s.id}/`);
-  q.run('DELETE FROM sites WHERE id = ?', s.id);
+  await q.run('DELETE FROM sites WHERE id = ?', s.id);
   res.json({ ok: true });
 });
 
@@ -375,7 +377,7 @@ const MAGIC = [
 ];
 
 api.post('/sites/:id/assets', express.raw({ type: () => true, limit: '8mb' }), async (req, res) => {
-  const s = ownSite(req, res);
+  const s = await ownSite(req, res);
   if (!s) return;
   const original = decodeURIComponent(String(req.headers['x-filename'] || 'photo.jpg'));
   const ext = path.extname(original).toLowerCase();
@@ -391,7 +393,7 @@ api.post('/sites/:id/assets', express.raw({ type: () => true, limit: '8mb' }), a
 });
 
 api.get('/sites/:id/assets', async (req, res) => {
-  const s = ownSite(req, res);
+  const s = await ownSite(req, res);
   if (!s) return;
   const items = await storage.list(`sites/${s.id}/assets/`);
   res.json({
@@ -400,16 +402,16 @@ api.get('/sites/:id/assets', async (req, res) => {
 });
 
 // ---------- jobs ----------
-api.get('/jobs/:id', requireUser, (req, res) => {
-  const job = getJob(req.params.id, req.user.id);
+api.get('/jobs/:id', requireUser, async (req, res) => {
+  const job = await getJob(req.params.id, req.user.id);
   if (!job) return res.status(404).json({ error: 'Job not found.' });
-  const events = getEvents(req.params.id, req.user.id, Number(req.query.after) || 0) || [];
+  const events = await getEvents(req.params.id, req.user.id, Number(req.query.after) || 0) || [];
   res.json({ job, events });
 });
 
 // How much room this site takes: bucket files, saved versions in the database, and what is cached in server memory.
 api.get('/sites/:id/usage', async (req, res) => {
-  const s = ownSite(req, res);
+  const s = await ownSite(req, res);
   if (!s) return;
   res.json({ usage: await siteUsage(s.id) });
 });

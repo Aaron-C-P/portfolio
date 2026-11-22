@@ -101,3 +101,12 @@ This is a good paid add-on.
 Every AI build or change counts against the plan's monthly limit (`AI_LIMIT_*`). The admin panel
 shows AI runs and tokens used this month. Check Anthropic's current prices and set the limits so
 each plan stays comfortably profitable.
+
+## Supabase (permanent database and files)
+
+1. Create a Supabase project. In **Project Settings > Database** copy the **Transaction pooler** connection string (port 6543) into the host's `DATABASE_URL`.
+2. In **Storage** create a private bucket (for example `client-sites`) and, under **S3 connection**, create access keys. Set `STORAGE_DRIVER=s3`, `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`.
+3. Also set `APP_URL` (your public URL), `ADMIN_EMAILS` (who is admin) and optionally `OPENROUTER_API_KEY`.
+4. The tables are created automatically on first start.
+
+Try it locally with dummy data first: `node scripts/demo-server.mjs`, then in another terminal `node scripts/seed-demo.mjs http://localhost:3077 30`. Log in as `admin@demo.test` (admin) or `tenant1@demo.test` (a tenant), password `demo-password-1`. Run the tests with `npm test`.

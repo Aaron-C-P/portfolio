@@ -94,12 +94,12 @@ const dayStart = () => {
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 };
 
-export function recordCall(model, ok) {
-  q.run('INSERT INTO ai_calls (model, ok, created_at) VALUES (?, ?, ?)', model, ok ? 1 : 0, now());
+export async function recordCall(model, ok) {
+  await q.run('INSERT INTO ai_calls (model, ok, created_at) VALUES (?, ?, ?)', model, ok ? 1 : 0, now());
 }
 
-export function dailyBudget() {
+export async function dailyBudget() {
   const limit = config.ai.openrouter.dailyLimit;
-  const used = q.get('SELECT COUNT(*) AS n FROM ai_calls WHERE created_at >= ?', dayStart()).n;
+  const used = (await q.get('SELECT COUNT(*) AS n FROM ai_calls WHERE created_at >= ?', dayStart())).n;
   return { limit, used, left: Math.max(0, limit - used) };
 }

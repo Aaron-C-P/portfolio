@@ -208,7 +208,7 @@ async function streamOpenRouter({ model, system, user, onChars, signal }) {
 // is busy, rate limited, returns junk, or cuts off. `parse` validates the reply, so a model that
 // answers without a real web page also counts as a failure and the next one is tried.
 async function runOpenRouter({ system, user, onChars, onProgress, model, parse }) {
-  const budget = dailyBudget();
+  const budget = await dailyBudget();
   if (budget.left <= 0)
     throw new AiError(
       `The daily free AI limit (${budget.limit} requests) has been reached. It resets at 00:00 UTC. You can still edit text and photos yourself.`,
@@ -217,7 +217,7 @@ async function runOpenRouter({ system, user, onChars, onProgress, model, parse }
   let lastErr;
   let tried = 0;
   for (const m of chain) {
-    if (dailyBudget().left <= 0 || tried >= config.ai.openrouter.maxAttempts) break;
+    if ((await dailyBudget()).left <= 0 || tried >= config.ai.openrouter.maxAttempts) break;
     tried++;
     if (tried > 1) onProgress?.(null, 'That model is busy, trying another…');
     const ctrl = new AbortController();
@@ -225,10 +225,10 @@ async function runOpenRouter({ system, user, onChars, onProgress, model, parse }
     try {
       const r = await streamOpenRouter({ model: m, system, user, onChars, signal: ctrl.signal });
       const parsed = parse(r.text);
-      recordCall(m, true);
+      await recordCall(m, true);
       return { ...r, parsed };
     } catch (e) {
-      recordCall(m, false);
+      await recordCall(m, false);
       lastErr = e;
       const timedOut = e?.name === 'AbortError';
       const retry = timedOut || e.retryable || /did not contain a full web page/.test(e.message);

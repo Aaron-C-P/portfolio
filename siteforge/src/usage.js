@@ -10,8 +10,8 @@ const mb = (n) => Math.round((n / 1048576) * 100) / 100;
 export async function siteUsage(siteId) {
   const items = await storage.list(`sites/${siteId}/`).catch(() => []);
   const bucketBytes = items.reduce((a, o) => a + (o.size || 0), 0);
-  const draft = q.get('SELECT COALESCE(LENGTH(draft_html), 0) AS n FROM sites WHERE id = ?', siteId)?.n || 0;
-  const v = q.get('SELECT COUNT(*) AS c, COALESCE(SUM(LENGTH(html)), 0) AS n FROM site_versions WHERE site_id = ?', siteId);
+  const draft = await (await q.get('SELECT COALESCE(OCTET_LENGTH(draft_html), 0) AS n FROM sites WHERE id = ?', siteId))?.n || 0;
+  const v = await q.get('SELECT COUNT(*) AS c, COALESCE(SUM(OCTET_LENGTH(html)), 0) AS n FROM site_versions WHERE site_id = ?', siteId);
   const cacheBytes = cacheStats(`sites/${siteId}/`).bytes;
   const dbBytes = draft + v.n;
   return {
@@ -27,7 +27,7 @@ export async function siteUsage(siteId) {
 
 /** Whole-server view: process memory plus every tenant, biggest first. */
 export async function fleetUsage() {
-  const sites = q.all('SELECT s.id, s.slug, s.name, s.status, u.email FROM sites s JOIN users u ON u.id = s.user_id');
+  const sites = await q.all('SELECT s.id, s.slug, s.name, s.status, u.email FROM sites s JOIN users u ON u.id = s.user_id');
   const rows = [];
   for (const s of sites) rows.push({ ...s, ...(await siteUsage(s.id)) });
   rows.sort((a, b) => b.totalBytes - a.totalBytes);

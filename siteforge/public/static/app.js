@@ -101,12 +101,13 @@ function addTeamLine(box, ev) {
 const fmtBytes = (n) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`);
 
 // Shows the building screen while a background AI job runs.
-function runJob(jobId, title = 'Building your website') {
+function runJob(jobId, title = 'Building your website', siteId = null) {
   return new Promise((resolve, reject) => {
     const ov = document.createElement('div');
     ov.className = 'overlay';
     ov.innerHTML = `<div class="modal building"><div class="orb"></div><h2>${esc(title)}</h2>
       <p class="muted" data-msg>Starting…</p><div class="progress"><i></i></div>
+      ${siteId ? '<div class="livepreview" data-live><span class="small muted">Live preview</span><div class="lpframe"><iframe sandbox="allow-same-origin" tabindex="-1" title="Live preview of your site"></iframe></div></div>' : ''}
       <div class="team" aria-live="polite" aria-label="Your build team"></div><p class="small muted" data-tip></p></div>`;
     let seq = 0;
     document.body.append(ov);
@@ -114,8 +115,17 @@ function runJob(jobId, title = 'Building your website') {
     const tip = () => ($('[data-tip]', ov).textContent = TIPS[i++ % TIPS.length]);
     tip();
     const tipTimer = setInterval(tip, 5000);
+    const lp = $('[data-live] iframe', ov);
+    const showLive = () => {
+      if (!lp) return;
+      lp.style.transform = `scale(${lp.parentElement.clientWidth / 1280})`;
+      lp.src = `/preview/${siteId}/?t=${Date.now()}`;
+    };
+    if (lp) setTimeout(showLive, 50);
+    const liveTimer = lp ? setInterval(showLive, 3000) : null;
     const finish = (fn, v) => {
       clearInterval(tipTimer);
+      clearInterval(liveTimer);
       clearInterval(poll);
       ov.remove();
       fn(v);
@@ -463,7 +473,7 @@ async function viewNew() {
     try {
       const { site, jobId } = await api('/sites', { method: 'POST', body: { brief, slug: slugify(form.slug.value) || undefined, model: chosenModel() || undefined } });
       try {
-        await runJob(jobId, `Building ${brief.name}`);
+        await runJob(jobId, `Building ${brief.name}`, site.id);
       } catch (err) {
         fail(err);
       }
@@ -793,7 +803,7 @@ async function viewBuilder(id) {
       if (editing) return toast('Save or cancel your edits first.', true);
       try {
         const { jobId } = await api(`/sites/${site.id}/ai-edit`, { method: 'POST', body: { instruction, model: chosenModel() || undefined } });
-        const job = await runJob(jobId, 'Making your change');
+        const job = await runJob(jobId, 'Making your change', site.id);
         await loadMe();
         await refresh();
         loadPreview();
@@ -895,7 +905,7 @@ async function viewBuilder(id) {
       if (!confirm('Create a brand-new design? Your current version stays in History.')) return;
       try {
         const { jobId } = await api(`/sites/${site.id}/regenerate`, { method: 'POST', body: { brief: readBrief(bf), model: chosenModel() || undefined } });
-        await runJob(jobId, 'Redesigning your site');
+        await runJob(jobId, 'Redesigning your site', site.id);
         await loadMe();
         await refresh();
         loadPreview();

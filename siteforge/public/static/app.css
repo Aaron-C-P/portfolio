@@ -247,3 +247,7 @@ td .input { padding: 6px 8px; font-size: 13px; width: auto; }
 .team .msg p { margin: 2px 0 0; font-size: 13px; line-height: 1.4; color: #3c4150; }
 .team .msg.fail { border-color: #f3c4b8; }
 @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.livepreview { width: 100%; margin-top: 12px; text-align: left; }
+.lpframe { margin-top: 4px; height: 190px; overflow: hidden; border: 1px solid #eee7d6; border-radius: 14px; background: #fff; position: relative; }
+.lpframe iframe { width: 1280px; height: 760px; border: 0; transform-origin: top left; pointer-events: none; background: #fff; }

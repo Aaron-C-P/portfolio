@@ -37,9 +37,9 @@ function cookieFlags(maxAgeSec) {
   return `; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSec}${secure}`;
 }
 
-export function startSession(res, userId) {
+export async function startSession(res, userId) {
   const token = crypto.randomBytes(32).toString('base64url');
-  q.run(
+  await q.run(
     'INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)',
     sha256(token),
     userId,
@@ -48,17 +48,17 @@ export function startSession(res, userId) {
   res.append('Set-Cookie', `${COOKIE}=${token}${cookieFlags(SESSION_DAYS * 86400)}`);
 }
 
-export function endSession(req, res) {
+export async function endSession(req, res) {
   const token = parseCookies(req.headers.cookie)[COOKIE];
-  if (token) q.run('DELETE FROM sessions WHERE token_hash = ?', sha256(token));
+  if (token) await q.run('DELETE FROM sessions WHERE token_hash = ?', sha256(token));
   res.append('Set-Cookie', `${COOKIE}=${cookieFlags(0)}`);
 }
 
-export function loadUser(req, _res, next) {
+export async function loadUser(req, _res, next) {
   req.user = null;
   const token = parseCookies(req.headers.cookie)[COOKIE];
   if (token) {
-    const row = q.get(
+    const row = await q.get(
       `SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id
        WHERE s.token_hash = ? AND s.expires_at > ?`,
       sha256(token),
@@ -117,13 +117,13 @@ export function accountState(user) {
   return { active: false, plan: 'none', reason: user.sub_status ? 'subscription_ended' : 'trial_ended' };
 }
 
-export function aiUsedThisMonth(userId) {
+export async function aiUsedThisMonth(userId) {
   const d = new Date();
   const monthStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
-  return q.get('SELECT COUNT(*) AS n FROM ai_usage WHERE user_id = ? AND created_at >= ?', userId, monthStart).n;
+  return (await q.get('SELECT COUNT(*) AS n FROM ai_usage WHERE user_id = ? AND created_at >= ?', userId, monthStart)).n;
 }
 
-export function limitsFor(user) {
+export async function limitsFor(user) {
   const state = accountState(user);
   const plan = PLANS[state.plan] || null;
   return {
@@ -131,7 +131,7 @@ export function limitsFor(user) {
     plan,
     maxSites: plan ? plan.sites : 0,
     aiPerMonth: plan ? plan.aiPerMonth : 0,
-    aiUsed: aiUsedThisMonth(user.id),
+    aiUsed: await aiUsedThisMonth(user.id),
     showBadge: plan ? plan.badge : true,
   };
 }
@@ -147,9 +147,9 @@ export function publicUser(user) {
   };
 }
 
-export function createUser({ email, password, name }) {
+export async function createUser({ email, password, name }) {
   const isAdmin = config.adminEmails.includes(email) ? 1 : 0;
-  const info = q.run(
+  const id = await q.insert(
     `INSERT INTO users (email, name, password_hash, is_admin, plan, trial_ends_at, created_at)
      VALUES (?, ?, ?, ?, 'trial', ?, ?)`,
     email,
@@ -159,7 +159,7 @@ export function createUser({ email, password, name }) {
     now() + config.trialDays * 864e5,
     now(),
   );
-  return q.get('SELECT * FROM users WHERE id = ?', Number(info.lastInsertRowid));
+  return await q.get('SELECT * FROM users WHERE id = ?', id);
 }
 
 // Very small in-memory brute-force guard for login.

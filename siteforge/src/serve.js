@@ -32,8 +32,8 @@ function injectBadge(html, slug) {
 export async function serveSite(site, reqPath, res) {
   res.set('X-Content-Type-Options', 'nosniff');
   if (!site) return res.status(404).type('html').send(missingPage());
-  const owner = q.get('SELECT * FROM users WHERE id = ?', site.user_id);
-  const lim = limitsFor(owner);
+  const owner = await q.get('SELECT * FROM users WHERE id = ?', site.user_id);
+  const lim = await limitsFor(owner);
   if (site.status !== 'published' || site.admin_locked || !lim.state.active) {
     res.set('Cache-Control', 'no-store');
     return res.status(503).type('html').send(offlinePage(site.name));

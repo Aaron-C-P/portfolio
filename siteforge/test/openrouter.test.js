@@ -45,7 +45,8 @@ let ai;
 let models;
 before(async () => {
   await new Promise((r) => server.listen(0, r));
-  process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'asb-or-'));
+  process.env.DB_MEMORY = '1';
+process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'asb-or-'));
   process.env.OPENROUTER_API_KEY = 'test-key';
   process.env.OPENROUTER_BASE_URL = `http://127.0.0.1:${server.address().port}`;
   process.env.OPENROUTER_MODELS = 'a/busy:free,b/junk:free,c/good:free';
@@ -76,17 +77,17 @@ test('edit returns the summary line and the page', async () => {
 });
 
 test('every attempt counts against the daily budget and the app stops cleanly at the limit', async () => {
-  const before = models.dailyBudget();
+  const before = await models.dailyBudget();
   assert.equal(before.limit, 6);
   assert.ok(before.used >= 4);
   // use up whatever is left, then the next request is refused without calling the API
-  while (models.dailyBudget().left > 0) models.recordCall('x', true);
+  while ((await models.dailyBudget()).left > 0) await models.recordCall('x', true);
   hits.length = 0;
   await assert.rejects(() => ai.generateSite({ name: 'x' }), /daily free AI limit/);
   assert.equal(hits.length, 0);
 });
 
-test('model ids from users must be free models', () => {
+test('model ids from users must be free models', async () => {
   assert.equal(models.isAllowedModel('qwen/qwen3-coder:free'), true);
   assert.equal(models.isAllowedModel('anthropic/claude-opus-4'), false);
   assert.equal(models.isAllowedModel(''), true);

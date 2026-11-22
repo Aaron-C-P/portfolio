@@ -46,16 +46,16 @@ export function verifyLemonSignature(rawBody, signature, secret) {
 
 const ts = (v) => (v ? Date.parse(v) || null : null);
 
-export function handleLemonEvent(payload) {
+export async function handleLemonEvent(payload) {
   const event = payload?.meta?.event_name || '';
   if (!event.startsWith('subscription_') || payload?.data?.type !== 'subscriptions') return { ignored: true };
   const attrs = payload.data.attributes || {};
   const custom = payload.meta.custom_data || {};
   const subId = String(payload.data.id);
 
-  let user = custom.user_id ? q.get('SELECT * FROM users WHERE id = ?', Number(custom.user_id)) : null;
-  if (!user) user = q.get(`SELECT * FROM users WHERE sub_provider = 'lemonsqueezy' AND sub_id = ?`, subId);
-  if (!user && attrs.user_email) user = q.get('SELECT * FROM users WHERE email = ?', String(attrs.user_email).toLowerCase());
+  let user = custom.user_id ? await q.get('SELECT * FROM users WHERE id = ?', Number(custom.user_id)) : null;
+  if (!user) user = await q.get(`SELECT * FROM users WHERE sub_provider = 'lemonsqueezy' AND sub_id = ?`, subId);
+  if (!user && attrs.user_email) user = await q.get('SELECT * FROM users WHERE email = ?', String(attrs.user_email).toLowerCase());
   if (!user) return { ignored: true, reason: 'no matching user' };
 
   const plan =
@@ -63,7 +63,7 @@ export function handleLemonEvent(payload) {
     (PLANS[custom.plan] && custom.plan !== 'trial' ? custom.plan : null) ||
     (user.plan !== 'trial' ? user.plan : 'starter');
 
-  q.run(
+  await q.run(
     `UPDATE users SET plan = ?, sub_provider = 'lemonsqueezy', sub_id = ?, sub_status = ?,
        sub_renews_at = ?, sub_ends_at = ?, portal_url = COALESCE(?, portal_url)
      WHERE id = ?`,
@@ -73,7 +73,7 @@ export function handleLemonEvent(payload) {
   return { userId: user.id, plan, status: attrs.status };
 }
 
-billing.post('/webhooks/lemonsqueezy', express.raw({ type: () => true, limit: '1mb' }), (req, res) => {
+billing.post('/webhooks/lemonsqueezy', express.raw({ type: () => true, limit: '1mb' }), async (req, res) => {
   const secret = config.billing.lemonWebhookSecret;
   if (!secret) return res.status(503).json({ error: 'Webhook secret not configured.' });
   if (!verifyLemonSignature(req.body, req.headers['x-signature'], secret))
@@ -84,8 +84,8 @@ billing.post('/webhooks/lemonsqueezy', express.raw({ type: () => true, limit: '1
   } catch {
     return res.status(400).json({ error: 'Bad JSON.' });
   }
-  const result = handleLemonEvent(payload);
-  q.run('INSERT INTO billing_events (provider, event, user_id, payload, created_at) VALUES (?, ?, ?, ?, ?)',
+  const result = await handleLemonEvent(payload);
+  await q.run('INSERT INTO billing_events (provider, event, user_id, payload, created_at) VALUES (?, ?, ?, ?, ?)',
     'lemonsqueezy', payload?.meta?.event_name || '', result.userId || null, req.body.toString('utf8').slice(0, 20000), now());
   res.json({ ok: true, ...result });
 });
