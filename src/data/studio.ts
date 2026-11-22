@@ -32,7 +32,7 @@ import webberHome from "@/assets/work/webber-home.jpg";
 import webberDashboard from "@/assets/work/webber-dashboard.jpg";
 import webberBuilder from "@/assets/work/webber-builder.jpg";
 import webberNew from "@/assets/work/webber-new.jpg";
-import hamsterHaven from "@/assets/work/hamster-haven.png";
+import hamsterHaven from "@/assets/work/hamster-haven.webp";
 
 export { hamsterHaven };
 
@@ -542,7 +542,7 @@ export const projects: Project[] = [
       "Sizes, ventilation and a manufacturing plan are still to be worked out",
     ],
     image: hamsterHaven,
-    imageAlt: "A cardboard prototype of a modular hamster habitat on a workshop table",
+    imageAlt: "A cardboard prototype of a modular hamster habitat on a wooden table",
     photo: true,
     live: null,
     repo: null,
